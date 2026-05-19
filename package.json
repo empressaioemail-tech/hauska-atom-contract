@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "clean": "rimraf dist coverage *.tsbuildinfo",
+    "clean": "rimraf dist coverage",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
