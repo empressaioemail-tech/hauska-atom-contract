@@ -1,0 +1,74 @@
+{
+  "name": "@hauska/atom-contract",
+  "version": "1.0.0",
+  "description": "The typed-data substrate every Hauska atom satisfies: identity, context interface, composition declaration, and history anchoring. Peer to the Hauska SDK; consumed directly by every product surface and MCP server.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "rimraf dist coverage *.tsbuildinfo",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --max-warnings=0",
+    "prepublishOnly": "npm run clean && npm run lint && npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "drizzle-orm": ">=0.30.0 <1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "drizzle-orm": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "eslint": "^9.0.0",
+    "rimraf": "^6.0.0",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^2.1.9"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/empressaioemail-tech/hauska-atom-contract.git"
+  },
+  "bugs": {
+    "url": "https://github.com/empressaioemail-tech/hauska-atom-contract/issues"
+  },
+  "homepage": "https://github.com/empressaioemail-tech/hauska-atom-contract#readme",
+  "keywords": [
+    "hauska",
+    "atom",
+    "contract",
+    "substrate",
+    "agent",
+    "typed-data",
+    "MCP"
+  ],
+  "sideEffects": false
+}
