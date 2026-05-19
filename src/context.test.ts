@@ -33,6 +33,36 @@ describe("httpContextSummary", () => {
       latestEventAt: "",
     });
     expect(got.scopeFiltered).toBe(false);
+    // accessPolicy is optional and passes through; an absent server
+    // response leaves it undefined so visibility-gating consumers fall
+    // back to the registration's accessPolicy (or "public-free").
+    expect(got.accessPolicy).toBeUndefined();
+  });
+
+  it("passes accessPolicy through from the server response (per-instance partnership-pending tag)", async () => {
+    // The partnership-pending jurisdiction case: an atom type whose
+    // registration default is "public-free" still needs to mark
+    // individual instances "platform-internal" until partnership closes.
+    // httpContextSummary forwards the field verbatim from the wire.
+    const handle = httpContextSummary("jurisdiction-corpus", {
+      fetchImpl: makeFetch([
+        {
+          body: {
+            prose: "Smithville (partnership pending)",
+            accessPolicy: "platform-internal",
+          },
+        },
+        { body: { prose: "Bastrop UDC", accessPolicy: "public-free" } },
+      ]),
+      ttlMs: 0,
+    });
+    const smithville = await handle.contextSummary(
+      "smithville",
+      defaultScope(),
+    );
+    const bastrop = await handle.contextSummary("bastrop-udc", defaultScope());
+    expect(smithville.accessPolicy).toBe("platform-internal");
+    expect(bastrop.accessPolicy).toBe("public-free");
   });
 
   it("caches within TTL and refreshes after invalidate", async () => {

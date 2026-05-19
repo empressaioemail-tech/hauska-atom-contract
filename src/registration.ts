@@ -29,6 +29,35 @@ export type AtomMode =
   | "focus";
 
 /**
+ * Atom access tier per ADR-017. Drives catalog visibility and surface-level
+ * gating at the MCP / API boundary.
+ *
+ * - `public-free`     — visible in the unauthenticated public catalog.
+ * - `public-paid`     — visible in the catalog; entitlement-gated at fetch.
+ * - `platform-internal` — visible to platform staff only; never enumerated
+ *   to public clients. Used for partnership-pending data that has been
+ *   ingested but is not yet sanctioned for public surfacing.
+ * - `tenant-private`  — visible only to the owning tenant.
+ *
+ * An atom that omits the field is treated as `"public-free"` by surfaces
+ * that gate on visibility. The contract itself performs no enforcement;
+ * downstream filters (MCP `list_*`, catalog APIs) honor the tag.
+ *
+ * The field may appear on:
+ *   - {@link AtomRegistration.accessPolicy} — atom-type default; useful
+ *     when an entire atom type is platform-internal (e.g. an audit atom).
+ *   - {@link ContextSummary.accessPolicy} — per-instance value; lets a
+ *     mostly-public atom mark individual instances internal (the
+ *     partnership-pending jurisdiction case). When both are present the
+ *     instance value wins.
+ */
+export type AccessPolicy =
+  | "public-free"
+  | "public-paid"
+  | "platform-internal"
+  | "tenant-private";
+
+/**
  * Stable reference to a single atom instance. The {@link displayLabel} is
  * populated by {@link parseInlineReferences} from the third token of
  * `{{atom|type|id|label}}`; downstream code should treat the label as
@@ -151,6 +180,17 @@ export interface AtomRegistration<
    * first lookup.
    */
   composition: ReadonlyArray<AtomComposition>;
+
+  /**
+   * Atom-type default access tier per ADR-017. Surfaces that gate on
+   * visibility (MCP `list_*`, public catalog APIs) treat an omitted field
+   * as `"public-free"`. Per-instance overrides flow through
+   * {@link ContextSummary.accessPolicy}; when both are present the
+   * instance value wins.
+   *
+   * @see {@link AccessPolicy} for the value semantics.
+   */
+  accessPolicy?: AccessPolicy;
 
   /**
    * Optional, machine-readable list of event-type strings this atom is

@@ -6,7 +6,7 @@
  * know whether the {@link Scope} object actually changed the result.
  */
 
-import type { AtomReference } from "./registration.js";
+import type { AccessPolicy, AtomReference } from "./registration.js";
 import type { Scope } from "./scope.js";
 
 /**
@@ -67,6 +67,17 @@ export interface ContextSummary<_TType extends string = string> {
    * defaults to `false`.
    */
   scopeFiltered: boolean;
+
+  /**
+   * Per-instance access tier per ADR-017. Surfaces that gate on visibility
+   * (MCP `list_*`, public catalog APIs) treat an omitted field as the
+   * registration's `accessPolicy` default — or `"public-free"` when the
+   * registration also omits it. Lets a mostly-public atom mark individual
+   * instances internal (e.g. partnership-pending jurisdictions).
+   *
+   * @see {@link AccessPolicy} for the value semantics.
+   */
+  accessPolicy?: AccessPolicy;
 }
 
 /**
@@ -165,6 +176,11 @@ export function httpContextSummary<TType extends string>(
       latestEventAt: "",
     },
     scopeFiltered: raw.scopeFiltered ?? false,
+    // Pass through verbatim. The field is optional so an absent server
+    // response leaves it `undefined`; visibility-gating surfaces fall back
+    // to the registration's `accessPolicy` (or `"public-free"`) per the
+    // ContextSummary.accessPolicy contract.
+    accessPolicy: raw.accessPolicy,
   });
 
   // Build a stable cache key + a stable wire-format string from a Scope.

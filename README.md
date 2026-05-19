@@ -44,6 +44,7 @@ import {
   PostgresEventAnchoringService,
   wrapForStorage,
   unwrapFromStorage,
+  type AccessPolicy,
   type AtomRegistration,
   type AtomMode,
   type AtomReference,
@@ -151,6 +152,37 @@ Composition edges may opt out of presence validation by setting
 and `resolveComposition` while the child remains unregistered, so a
 parent atom can ship a declaration that names a child slated for a
 later sprint without crashing the boot.
+
+## Access policy (visibility tier)
+
+Atoms may declare an ADR-017 access tier. The contract performs no
+enforcement; downstream surfaces (MCP `list_*`, catalog APIs) gate on
+the value.
+
+```ts
+type AccessPolicy =
+  | "public-free"        // unauthenticated public catalog
+  | "public-paid"        // catalog-visible, entitlement-gated at fetch
+  | "platform-internal"  // platform staff only; never enumerated publicly
+  | "tenant-private";    // owning tenant only
+```
+
+The field appears in two places:
+
+- `AtomRegistration.accessPolicy?` — atom-type default. Useful when the
+  entire type is internal (e.g. an audit atom).
+- `ContextSummary.accessPolicy?` — per-instance value. Lets a
+  mostly-public atom mark individual instances internal — for example,
+  a public `jurisdiction-corpus` catalog where partnership-pending
+  jurisdictions are tagged `"platform-internal"` until partnership
+  closes.
+
+Resolution: per-instance `ContextSummary.accessPolicy` wins when
+present, otherwise fall back to the registration's `accessPolicy`,
+otherwise treat the atom as `"public-free"`. The prompt-builder
+catalog (`registry.describeForPrompt()`) normalizes the registration
+value to `"public-free"` when undeclared so downstream filters branch
+without nullish guards.
 
 ## History (`EventAnchoringService`)
 

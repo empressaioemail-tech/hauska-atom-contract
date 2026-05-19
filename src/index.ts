@@ -10,6 +10,7 @@
  */
 
 export type {
+  AccessPolicy,
   AtomMode,
   AtomReference,
   AtomProps,

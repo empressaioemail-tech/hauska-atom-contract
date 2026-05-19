@@ -2,6 +2,58 @@
 
 All notable changes to `@hauska/atom-contract` are documented here.
 
+## [1.1.0] - 2026-05-19
+
+Visibility partitioning. Wires the ADR-017 `accessPolicy` tier into
+the contract so catalog and MCP surfaces can gate visibility without
+inventing their own tagging scheme. Driver: the 2026-05-19 sprint's
+partnership-first sourcing constraint — Smithville, Elgin, and Bastrop
+County need to ingest as platform-internal until Sylvia closes
+partnership, while Bastrop UDC ships public.
+
+### Shape decision
+
+The dispatch offered two paths: reuse the ADR-017 `accessPolicy` model
+or add a fresh boolean-ish `visibility` field. **Chose ADR-017**: the
+four-value union (`public-free` / `public-paid` / `platform-internal`
+/ `tenant-private`) is documented, covers anticipated tenant- and
+paid-tier cases without a second migration, and avoids ending up with
+two overlapping concepts after ADR-017 lands properly.
+
+### Added
+
+- `AccessPolicy` type — the four-value ADR-017 union — exported from
+  the package barrel.
+- `AtomRegistration.accessPolicy?: AccessPolicy` — atom-type default
+  tier. Undeclared = `"public-free"`.
+- `ContextSummary.accessPolicy?: AccessPolicy` — per-instance override.
+  Lets a mostly-public atom (e.g. `jurisdiction-corpus`) mark
+  individual instances `"platform-internal"` until partnership closes.
+  Per-instance value wins when both are present; otherwise fall back
+  to the registration default, then `"public-free"`.
+- `AtomPromptDescription.accessPolicy: AccessPolicy` —
+  `registry.describeForPrompt()` normalizes the registration's
+  undeclared field to `"public-free"` so downstream visibility filters
+  can branch without nullish guards.
+- `httpContextSummary` passes `accessPolicy` through from the server
+  response verbatim. Absent → `undefined`, so the per-instance /
+  registration / `"public-free"` fallback chain is preserved.
+
+### Consumer impact
+
+No breaking changes. Existing v1.0.0 consumers pin `^1.0.0` and pick
+up v1.1.0 automatically. Registrations that omit `accessPolicy`
+continue to behave as before; downstream surfaces that do not consult
+the field are unaffected.
+
+### Not changed
+
+Render-mode stubs (per-mode React components) live in a sibling
+package — this contract package ships the AtomMode union only, so
+there are no render-mode stubs to update in this repo. The dispatch's
+"flag in expanded mode for operator inspection" expectation belongs
+on the eventual `<AtomShell>` consumer.
+
 ## [1.0.0] - 2026-05-18
 
 Initial public release. M2-C extraction of the workspace-private

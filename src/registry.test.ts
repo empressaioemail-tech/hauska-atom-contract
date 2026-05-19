@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createAtomRegistry, AtomNotRegisteredError } from "./registry.js";
-import type { AtomRegistration } from "./registration.js";
+import type { AccessPolicy, AtomRegistration } from "./registration.js";
 import { defaultScope } from "./scope.js";
 
 function makeStub<TType extends string>(
@@ -146,6 +146,61 @@ describe("createAtomRegistry", () => {
       ]),
     );
     expect(registry.validate().ok).toBe(true);
+  });
+
+  it("describeForPrompt surfaces the registration's accessPolicy (and normalizes undeclared to public-free)", () => {
+    // ADR-017 access tier: present on the registration, surfaced verbatim
+    // through the prompt-description catalog. Atoms that omit the field
+    // normalize to "public-free" so downstream visibility filters can
+    // branch on the value without a nullish guard.
+    const registry = createAtomRegistry();
+    const internal: AtomRegistration<"audit-log", ["card"]> = {
+      ...makeStub("audit-log", "ops"),
+      accessPolicy: "platform-internal",
+    };
+    registry.register(internal);
+    registry.register(makeStub("task", "sprint"));
+    const desc = registry.describeForPrompt();
+    const audit = desc.find((d) => d.entityType === "audit-log");
+    const task = desc.find((d) => d.entityType === "task");
+    expect(audit?.accessPolicy).toBe("platform-internal");
+    expect(task?.accessPolicy).toBe("public-free");
+  });
+
+  it("preserves the registration's accessPolicy through register → resolve", () => {
+    // Round-trip: a registration that declares accessPolicy must resolve
+    // back through the registry with the value intact, so MCP / catalog
+    // surfaces can read it off the resolved registration.
+    const registry = createAtomRegistry();
+    const reg: AtomRegistration<"jurisdiction-corpus", ["card"]> = {
+      ...makeStub("jurisdiction-corpus", "catalog"),
+      accessPolicy: "public-free",
+    };
+    registry.register(reg);
+    const result = registry.resolve("jurisdiction-corpus");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.registration.accessPolicy).toBe("public-free");
+    }
+  });
+
+  it("each AccessPolicy value type-checks on a registration", () => {
+    // Exercises every member of the ADR-017 union so a future narrowing
+    // of the type triggers a compile error here as well as in tests that
+    // pin the public-free / platform-internal values.
+    const values: ReadonlyArray<AccessPolicy> = [
+      "public-free",
+      "public-paid",
+      "platform-internal",
+      "tenant-private",
+    ];
+    for (const v of values) {
+      const reg: AtomRegistration<"x", ["card"]> = {
+        ...makeStub("x", "catalog"),
+        accessPolicy: v,
+      };
+      expect(reg.accessPolicy).toBe(v);
+    }
   });
 
   it("validate still flags non-forwardRef dangling edges in a parent that has a forwardRef sibling edge", () => {

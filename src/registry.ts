@@ -12,6 +12,7 @@
  */
 
 import type {
+  AccessPolicy,
   AtomRegistration,
   AnyAtomRegistration,
   AtomMode,
@@ -70,6 +71,13 @@ export interface AtomPromptDescription {
    * the field without nullish guards.
    */
   eventTypes: ReadonlyArray<string>;
+  /**
+   * Atom-type default {@link AccessPolicy} from the registration.
+   * Normalized to `"public-free"` when undeclared so consumers can
+   * filter without nullish guards. Per-instance overrides live on
+   * {@link ContextSummary.accessPolicy} and are not visible here.
+   */
+  accessPolicy: AccessPolicy;
 }
 
 /**
@@ -202,6 +210,10 @@ export function createAtomRegistry(): AtomRegistry {
         // optional (undeclared = "no declared events"); the catalog
         // surfaces always returns an array.
         eventTypes: reg.eventTypes ?? [],
+        // Normalize undefined → "public-free" per the ADR-017 contract so
+        // downstream visibility filters can branch on the value without a
+        // nullish guard.
+        accessPolicy: reg.accessPolicy ?? "public-free",
       }));
     },
   };
