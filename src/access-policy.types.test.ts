@@ -87,7 +87,8 @@ describe("AccessPolicy (type-level)", () => {
       "public-paid",
       "platform-internal",
       "tenant-private",
+      "tenant-shared",
     ];
-    expect(all).toHaveLength(4);
+    expect(all).toHaveLength(5);
   });
 });

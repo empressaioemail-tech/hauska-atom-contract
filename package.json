@@ -1,6 +1,6 @@
 {
   "name": "@hauska/atom-contract",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "The typed-data substrate every Hauska atom satisfies: identity, context interface, composition declaration, and history anchoring. Peer to the Hauska SDK; consumed directly by every product surface and MCP server.",
   "type": "module",
   "main": "./dist/index.js",
@@ -13,6 +13,10 @@
     "./testing": {
       "types": "./dist/testing/index.d.ts",
       "import": "./dist/testing/index.js"
+    },
+    "./encumbrances": {
+      "types": "./dist/encumbrances/index.d.ts",
+      "import": "./dist/encumbrances/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -31,7 +35,8 @@
     "prepublishOnly": "npm run clean && npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
-    "drizzle-orm": ">=0.30.0 <1.0.0"
+    "drizzle-orm": ">=0.30.0 <1.0.0",
+    "zod": "^3.24.1"
   },
   "peerDependenciesMeta": {
     "drizzle-orm": {
