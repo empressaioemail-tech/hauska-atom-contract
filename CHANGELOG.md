@@ -2,6 +2,38 @@
 
 All notable changes to `@hauska/atom-contract` are documented here.
 
+## [1.2.0] - 2026-05-26
+
+Recorded private encumbrance atom types per ADR-020 and
+`constraint-resolution` per ADR-021. Unblocks Cortex Phase 1
+(cc-agent-C) and engine registry registration (cc-agent-E).
+
+### Added
+
+- `@hauska/atom-contract/encumbrances` subpath — Zod schemas, TS
+  interfaces, sample fixtures, and recommended render-mode constants
+  for: `recorded-instrument`, `restriction-clause`, `restriction-corpus`,
+  `administrative-rule`, `constraint-resolution`.
+- `ENCUMBRANCE_RENDER_MODES` / `ENCUMBRANCE_DEFAULT_RENDER_MODE` —
+  documents `focus` as the default for `restriction-clause` citation
+  surfaces.
+- `ENCUMBRANCE_DEFAULT_ACCESS_POLICY` — atom-type defaults; all
+  encumbrance payloads reject `public-free` at validation time.
+
+### Changed
+
+- `AccessPolicy` union gains `tenant-shared` (ADR-017; required by
+  ADR-020 `restriction-corpus` and HOA packs).
+- `zod@^3.24.1` added as a direct dependency (schemas only; main barrel
+  unchanged).
+
+### Consumer impact
+
+Non-breaking for existing v1.1.0 consumers on the main import path.
+Encumbrance consumers pin `^1.2.0` and import
+`@hauska/atom-contract/encumbrances`. Engine atom-registry registration
+is a separate `@hauska-engine/atoms` bump (cc-agent-E dispatch).
+
 ## [1.1.0] - 2026-05-19
 
 Visibility partitioning. Wires the ADR-017 `accessPolicy` tier into

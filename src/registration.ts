@@ -38,6 +38,8 @@ export type AtomMode =
  *   to public clients. Used for partnership-pending data that has been
  *   ingested but is not yet sanctioned for public surfacing.
  * - `tenant-private`  — visible only to the owning tenant.
+ * - `tenant-shared`   — shared between explicit tenants (cross-tenant
+ *   benchmarking opt-in per ADR-017; encumbrance corpora, HOA packs).
  *
  * An atom that omits the field is treated as `"public-free"` by surfaces
  * that gate on visibility. The contract itself performs no enforcement;
@@ -55,7 +57,8 @@ export type AccessPolicy =
   | "public-free"
   | "public-paid"
   | "platform-internal"
-  | "tenant-private";
+  | "tenant-private"
+  | "tenant-shared";
 
 /**
  * Stable reference to a single atom instance. The {@link displayLabel} is

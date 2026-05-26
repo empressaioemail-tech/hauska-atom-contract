@@ -164,7 +164,8 @@ type AccessPolicy =
   | "public-free"        // unauthenticated public catalog
   | "public-paid"        // catalog-visible, entitlement-gated at fetch
   | "platform-internal"  // platform staff only; never enumerated publicly
-  | "tenant-private";    // owning tenant only
+  | "tenant-private"     // owning tenant only
+  | "tenant-shared";     // explicit cross-tenant share (ADR-017)
 ```
 
 The field appears in two places:
@@ -228,6 +229,34 @@ The delimiter is `|`. The previous shape used `:` and could not
 represent Spec 51 entityIds that themselves contain `:` (e.g.
 `parcel-briefing:{parcelId}:{intentHash}`). The old shape is no longer
 parsed: there is no dual-parse compatibility path.
+
+## Encumbrance atom types (ADR-020 / ADR-021)
+
+Private recorded land-use instruments ship as Zod-validated payloads on
+the `./encumbrances` subpath (v1.2.0+). Types are **never**
+`public-free`; schemas accept only `tenant-private` and
+`tenant-shared`.
+
+```ts
+import {
+  RECORDED_INSTRUMENT_SCHEMA,
+  RESTRICTION_CLAUSE_SCHEMA,
+  ENCUMBRANCE_RENDER_MODES,
+  SAMPLE_RECORDED_INSTRUMENT,
+} from "@hauska/atom-contract/encumbrances";
+```
+
+| `entityType` | Purpose | Recommended render modes |
+|---|---|---|
+| `recorded-instrument` | Parent instrument; wet PDF via `sourceDocumentCid` | `card`, `compact`, `expanded` |
+| `restriction-clause` | Enforceable snippet; plan-review citation target | `inline` … `focus` (**default `focus`**) |
+| `restriction-corpus` | Subdivision CC&R pack | `card`, `expanded` |
+| `administrative-rule` | Unrecorded HOA guidelines (`legalWeight: advisory`) | `inline`, `compact`, `card`, `expanded` |
+| `constraint-resolution` | Effective constraint lattice (ADR-021) | `card`, `expanded` |
+
+Engine `AtomRegistration` literals and ingest producers belong in
+`hauska-engine/packages/atoms/` (cc-agent-E); Cortex Phase 1 may
+validate uploads with these schemas before the engine registry lands.
 
 ## Testing utilities
 
