@@ -2,6 +2,34 @@
 
 All notable changes to `@hauska/atom-contract` are documented here.
 
+## [1.3.0] - 2026-05-28
+
+Adds brokerage workspace packaging contracts for Property Workspace V1.
+This release is contract-only: schemas, exported types, and fixtures for
+downstream engine and legacy-design-tools integration.
+
+### Added
+
+- `@hauska/atom-contract/workspace` subpath with Zod schemas, TS types,
+  and validators for `property-workspace`, `brief-run`,
+  `workspace-attachment`, and `workspace-share-edge`.
+- Shared metadata schema (`did`, `createdAt`, `updatedAt`, `accessPolicy`)
+  and common user-reference schema for workspace payloads.
+- Validation fixtures and schema conformance tests for all four new
+  contract entities.
+
+### Consumer migration notes
+
+- Update dependency to `@hauska/atom-contract@^1.3.0`.
+- Import workspace contracts from `@hauska/atom-contract/workspace`.
+- Validate outbound/inbound workspace payloads against the new schemas
+  before passing entities to engine ingestion or legacy-design-tools APIs.
+- Preserve the common metadata fields on all four entities. Existing
+  payloads missing `did`, `createdAt`, `updatedAt`, or `accessPolicy`
+  must be backfilled by consumers before validation succeeds.
+- `workspace-attachment` now enforces kind-specific payload shape:
+  `note` requires `body`; `link|image|pdf` require `uri`.
+
 ## [1.2.0] - 2026-05-26
 
 Recorded private encumbrance atom types per ADR-020 and
