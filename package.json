@@ -1,6 +1,6 @@
 {
   "name": "@hauska/atom-contract",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "The typed-data substrate every Hauska atom satisfies: identity, context interface, composition declaration, and history anchoring. Peer to the Hauska SDK; consumed directly by every product surface and MCP server.",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,6 +17,10 @@
     "./encumbrances": {
       "types": "./dist/encumbrances/index.d.ts",
       "import": "./dist/encumbrances/index.js"
+    },
+    "./workspace": {
+      "types": "./dist/workspace/index.d.ts",
+      "import": "./dist/workspace/index.js"
     },
     "./package.json": "./package.json"
   },
