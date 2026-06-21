@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+import {
+  createWidthedConfidence,
+  WIDTHED_CONFIDENCE_SCHEMA,
+  type WidthedConfidence,
+} from "../read-contract/common.js";
 import { WORKSPACE_ATOM_METADATA_SCHEMA, type WorkspaceAtomMetadata } from "./common.js";
 
 export interface BriefRunCitationRef {
@@ -12,8 +17,20 @@ export interface BriefRun extends WorkspaceAtomMetadata {
   workspaceDid: string;
   runInputs: Record<string, unknown>;
   citationRefs: ReadonlyArray<BriefRunCitationRef>;
-  confidence: number;
+  confidence: WidthedConfidence;
   generatedAt: string;
+}
+
+/** Asserted confidence on a brief-run before live calibration fuel exists. */
+export function createBriefRunAssertedConfidence(
+  estimate: number,
+): WidthedConfidence {
+  return createWidthedConfidence({
+    estimate,
+    n: 0,
+    intervalWidth: 1,
+    provenance: "asserted",
+  });
 }
 
 export const BRIEF_RUN_CITATION_REF_SCHEMA = z.object({
@@ -26,10 +43,14 @@ export const BRIEF_RUN_SCHEMA = WORKSPACE_ATOM_METADATA_SCHEMA.extend({
   workspaceDid: z.string().min(1),
   runInputs: z.record(z.string(), z.unknown()),
   citationRefs: z.array(BRIEF_RUN_CITATION_REF_SCHEMA),
-  confidence: z.number().min(0).max(1),
+  confidence: WIDTHED_CONFIDENCE_SCHEMA,
   generatedAt: z.string().min(1),
 });
 
 export function validateBriefRun(input: unknown): BriefRun {
-  return BRIEF_RUN_SCHEMA.parse(input);
+  const parsed = BRIEF_RUN_SCHEMA.parse(input);
+  return {
+    ...parsed,
+    confidence: createWidthedConfidence(parsed.confidence),
+  };
 }

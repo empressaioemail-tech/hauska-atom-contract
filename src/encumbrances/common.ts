@@ -10,6 +10,11 @@
 import { z } from "zod";
 
 import type { AccessPolicy, AtomMode } from "../registration.js";
+import {
+  createWidthedConfidence,
+  WIDTHED_CONFIDENCE_SCHEMA,
+  type WidthedConfidence,
+} from "../read-contract/common.js";
 
 /** ADR-020 instrument categories. */
 export type InstrumentType =
@@ -110,14 +115,28 @@ export const STRUCTURED_FIELDS_SCHEMA = z
 
 export type StructuredFields = z.infer<typeof STRUCTURED_FIELDS_SCHEMA>;
 
-const CONFIDENCE = z.number().min(0).max(1);
-
 export const QUALITY_GATE_FIELDS = {
-  confidence: CONFIDENCE,
+  confidence: WIDTHED_CONFIDENCE_SCHEMA,
   evaluatedAt: z.string().min(1),
   reasoningSummary: z.string().min(1).optional(),
   sourceCitation: z.string().min(1),
 } as const;
+
+/**
+ * Asserted source-quality confidence for encumbrance extract quality gates.
+ * Pre-calibration deposits use `provenance: "asserted"`, `n: 0`, and full
+ * interval width until outcome fuel exists.
+ */
+export function createEncumbranceQualityConfidence(
+  estimate: number,
+): WidthedConfidence {
+  return createWidthedConfidence({
+    estimate,
+    n: 0,
+    intervalWidth: 1,
+    provenance: "asserted",
+  });
+}
 
 /**
  * Recommended render modes for engine / product registrations.

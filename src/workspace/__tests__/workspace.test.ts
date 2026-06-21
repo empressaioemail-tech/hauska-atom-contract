@@ -63,4 +63,12 @@ describe("workspace schema guardrails", () => {
     };
     expect(WORKSPACE_SHARE_EDGE_SCHEMA.safeParse(invalid).success).toBe(false);
   });
+
+  it("rejects bare scalar confidence on brief-run", () => {
+    const invalid = {
+      ...SAMPLE_BRIEF_RUN,
+      confidence: 0.91,
+    };
+    expect(BRIEF_RUN_SCHEMA.safeParse(invalid).success).toBe(false);
+  });
 });

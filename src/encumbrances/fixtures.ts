@@ -4,6 +4,7 @@
  */
 
 import type { AdministrativeRuleAtomInstance } from "./administrative-rule.js";
+import { createEncumbranceQualityConfidence } from "./common.js";
 import type { ConstraintResolutionAtomInstance } from "./constraint-resolution.js";
 import type { RecordedInstrumentAtomInstance } from "./recorded-instrument.js";
 import type { RestrictionClauseAtomInstance } from "./restriction-clause.js";
@@ -52,7 +53,7 @@ export const SAMPLE_RESTRICTION_CLAUSE: RestrictionClauseAtomInstance = {
   bodyText:
     "No structure shall exceed thirty-five (35) feet in height above finished grade.",
   structuredFields: { maxHeightFt: 35 },
-  confidence: 0.92,
+  confidence: createEncumbranceQualityConfidence(0.92),
   extractedBy: "encumbrance-extract-v1",
   accessPolicy: "tenant-private",
   legalWeight: "recorded",
@@ -79,7 +80,7 @@ export const SAMPLE_ADMINISTRATIVE_RULE: AdministrativeRuleAtomInstance = {
   clauseDid: "did:hauska:rule:oak-hollow-fence-guideline",
   clausePath: "Design Guidelines § 3.1",
   bodyText: "Front-yard fences shall use wrought iron or masonry only.",
-  confidence: 0.88,
+  confidence: createEncumbranceQualityConfidence(0.88),
   extractedBy: "encumbrance-extract-v1",
   accessPolicy: "tenant-private",
   legalWeight: "advisory",
@@ -98,7 +99,7 @@ export const SAMPLE_CONSTRAINT_RESOLUTION: ConstraintResolutionAtomInstance = {
       basisCid: "bafyZoningSetbackSection",
       ruleSummary: "Front setback 25 ft minimum (zoning).",
       precedenceRank: 1,
-      confidence: 0.99,
+      confidence: createEncumbranceQualityConfidence(0.99),
       legalWeight: "recorded",
       precedenceReason:
         "Adopted municipal code sets the public minimum; private covenant may be stricter.",
@@ -109,7 +110,7 @@ export const SAMPLE_CONSTRAINT_RESOLUTION: ConstraintResolutionAtomInstance = {
       basisCid: "bafyClauseHeightLimit",
       ruleSummary: "Maximum structure height 35 ft (CC&R).",
       precedenceRank: 2,
-      confidence: 0.92,
+      confidence: createEncumbranceQualityConfidence(0.92),
       legalWeight: "recorded",
       precedenceReason:
         "Recorded covenant is stricter than zoning height allowance on the same topic.",

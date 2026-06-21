@@ -30,6 +30,17 @@ Requires Node 18.18+ and `drizzle-orm` (^0.30.0) if you intend to use
 `PostgresEventAnchoringService`. Atoms that don't anchor history can
 use `createInMemoryEventService()` from the `./testing` subpath.
 
+## Publishing (operators)
+
+The `hauska-sdk` npm account uses **staged publishing + Windows Hello**
+(passkey 2FA), not granular tokens. See
+[`docs/npm-publish-automation.md`](docs/npm-publish-automation.md).
+
+```powershell
+.\publish-1.4.0.ps1
+.\publish-approve-1.4.0.ps1 -StageId <uuid-from-stage-list>
+```
+
 ## Public surface
 
 ```ts
@@ -257,6 +268,35 @@ import {
 Engine `AtomRegistration` literals and ingest producers belong in
 `hauska-engine/packages/atoms/` (cc-agent-E); Cortex Phase 1 may
 validate uploads with these schemas before the engine registry lands.
+
+## Read-contract types (Calibrated Spine F4 / F6 / K6)
+
+Widthed, three-axis confidence returned at read time. Unwidthed,
+unsourced confidence is unrepresentable: the estimate is a branded
+nominal type constructible only through `createWidthedConfidence`.
+No derived numbers are stored in this package.
+
+```ts
+import {
+  createReadContract,
+  createWidthedConfidence,
+  READ_CONTRACT_SCHEMA,
+  SAMPLE_READ_CONTRACT,
+  type ReadContract,
+  type CalibrationProvenance,
+} from "@hauska/atom-contract/read-contract";
+```
+
+| Export | Role |
+|---|---|
+| `WidthedConfidence` | Inseparable estimate + `n` + `intervalWidth` + provenance |
+| `ThreeAxisConfidence` | Accuracy, source-quality, and consequence axes |
+| `ReadContract` | Full read-contract object every surface must emit |
+| `ModelAttributionStamp` | Ledger deposit stamp (model, prompt, atom-set id) |
+| `CalibrationProvenance` | `asserted` \| `backtest` \| `seed` \| `live` |
+
+Propagation to MCP, cortex-api, Cortex, extension, and map is a
+consumer-side Wave 2 co-bump after pinning `^1.4.0`.
 
 ## Testing utilities
 

@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+import {
+  WIDTHED_CONFIDENCE_SCHEMA,
+  type WidthedConfidence,
+} from "../read-contract/common.js";
 import { ENCUMBRANCE_ACCESS_POLICY_SCHEMA, type LegalWeight } from "./common.js";
 
 /** Basis atom cited in a resolved rule entry (ADR-021). */
@@ -30,7 +34,7 @@ export interface ResolvedRuleEntry {
   basisCid: string;
   ruleSummary: string;
   precedenceRank: number;
-  confidence: number;
+  confidence: WidthedConfidence;
   legalWeight: LegalWeight;
   precedenceReason: string;
   evaluatedAt: string;
@@ -62,7 +66,7 @@ const RESOLVED_RULE_SCHEMA = z.object({
   basisCid: z.string().min(1),
   ruleSummary: z.string().min(1),
   precedenceRank: z.number().int(),
-  confidence: z.number().min(0).max(1),
+  confidence: WIDTHED_CONFIDENCE_SCHEMA,
   legalWeight: z.enum(["recorded", "advisory"]),
   precedenceReason: z.string().min(1),
   evaluatedAt: z.string().min(1),

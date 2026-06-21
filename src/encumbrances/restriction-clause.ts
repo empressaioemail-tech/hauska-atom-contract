@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import type { WidthedConfidence } from "../read-contract/common.js";
 import {
   ENCUMBRANCE_ACCESS_POLICY_SCHEMA,
   QUALITY_GATE_FIELDS,
@@ -13,7 +14,7 @@ export interface RestrictionClauseAtomInstance {
   clausePath: string;
   bodyText: string;
   structuredFields?: z.infer<typeof STRUCTURED_FIELDS_SCHEMA>;
-  confidence: number;
+  confidence: WidthedConfidence;
   extractedBy: string;
   humanVerifiedAt?: string;
   verifiedByActorDid?: string;

@@ -97,4 +97,13 @@ describe("encumbrance access policy", () => {
     const result = ADMINISTRATIVE_RULE_SCHEMA.safeParse(bad);
     expect(result.success).toBe(false);
   });
+
+  it("rejects bare scalar confidence on restriction-clause", () => {
+    const bad = {
+      ...SAMPLE_RESTRICTION_CLAUSE,
+      confidence: 0.92,
+    };
+    const result = RESTRICTION_CLAUSE_SCHEMA.safeParse(bad);
+    expect(result.success).toBe(false);
+  });
 });

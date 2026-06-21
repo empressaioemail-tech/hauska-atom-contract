@@ -1,4 +1,5 @@
 import type { BriefRun } from "./brief-run.js";
+import { createBriefRunAssertedConfidence } from "./brief-run.js";
 import type { PropertyWorkspace } from "./property-workspace.js";
 import type { WorkspaceAttachment } from "./workspace-attachment.js";
 import type { WorkspaceShareEdge } from "./workspace-share-edge.js";
@@ -48,7 +49,7 @@ export const SAMPLE_BRIEF_RUN: BriefRun = {
       sourceType: "attachment",
     },
   ],
-  confidence: 0.91,
+  confidence: createBriefRunAssertedConfidence(0.91),
   generatedAt: "2026-05-28T10:05:00Z",
 };
 

@@ -2,6 +2,81 @@
 
 All notable changes to `@hauska/atom-contract` are documented here.
 
+## [1.5.0] - 2026-06-21
+
+Calibrated Spine Wave 2 — migrate legacy scalar confidence on
+`./encumbrances` and `./workspace` subpaths to `WidthedConfidence`.
+
+### Changed (breaking on subpaths)
+
+- `./encumbrances` `QUALITY_GATE_FIELDS.confidence` — `number` →
+  `WidthedConfidence` (Zod: `WIDTHED_CONFIDENCE_SCHEMA`).
+- `./encumbrances` atom instances (`restriction-clause`,
+  `administrative-rule`) and `constraint-resolution.rules[].confidence`
+  — same widthed shape; bare scalars fail schema validation.
+- `./workspace` `BriefRun.confidence` — `number` → `WidthedConfidence`.
+
+### Added
+
+- `createEncumbranceQualityConfidence()` — asserted quality-gate helper
+  for encumbrance extract deposits (`n: 0`, `intervalWidth: 1`,
+  `provenance: "asserted"`).
+- `createBriefRunAssertedConfidence()` — same pattern for brief-run
+  deposits.
+- Schema tests rejecting bare scalar confidence on encumbrance and
+  brief-run payloads.
+
+### Consumer migration notes
+
+- Pin `@hauska/atom-contract@^1.5.0` when adopting widthed encumbrance
+  or workspace confidence fields.
+- Replace `confidence: 0.92` with
+  `confidence: createEncumbranceQualityConfidence(0.92)` (or full
+  `createWidthedConfidence()` when `n`, width, and provenance are known).
+- Co-bump with cortex-api encumbrance and brokerage workspace paths
+  (cc-agent-C) in the same release window.
+
+## [1.4.0] - 2026-06-21
+
+Calibrated Spine Wave 1 read-contract substrate (F4 / F6 / K6).
+Contract-only: types, Zod schemas, branded constructors, and fixtures.
+No derived numbers are stored; consumers derive agreement and posteriors
+at read time.
+
+### Added
+
+- `@hauska/atom-contract/read-contract` subpath with:
+  - `WidthedConfidence` — estimate + `n` + `intervalWidth` +
+    `CalibrationProvenance` as one inseparable object; estimate is a
+    branded nominal type with no exported scalar confidence alias.
+  - `ThreeAxisConfidence` — `calibratedConfidence` (accuracy, earned),
+    `assertedConfidence` (source-quality, asserted), `consequence`
+    (severity stratum from ASCE 7 / IBC classification inputs).
+  - `ReadContract` — three-axis object plus optional
+    `ModelAttributionStamp` for ledger deposit provenance.
+  - `CalibrationProvenance` union: `asserted` | `backtest` | `seed` |
+    `live` (K6).
+  - `ModelAttributionStamp` — model id/version, prompt and context
+    template versions, sampling params, retrieved atom-set id (F3
+    ledger stamp shape; not persisted derived quantities).
+  - `LegacyEngineEnvelopeConfidence` — documented migration source
+    only; not a valid emission shape once F4 propagation lands.
+  - Zod schemas, `create*` factories, sample fixtures, and type-level
+    tests enforcing the no-scalar-accessor contract.
+
+### Consumer migration notes
+
+- Pin `@hauska/atom-contract@^1.4.0` and import from
+  `@hauska/atom-contract/read-contract`.
+- Replace bare `{ value, kind }` confidence emissions with
+  `ReadContract` / `ThreeAxisConfidence`; use
+  `createWidthedConfidence` — raw numbers fail the branded estimate
+  type.
+- Co-bump required across MCP server, cortex-api, Cortex, extension,
+  and map once each surface is migrated (Wave 2 propagation).
+- Main barrel unchanged; existing v1.3.0 consumers are unaffected
+  until they opt into the subpath.
+
 ## [1.3.0] - 2026-05-28
 
 Adds brokerage workspace packaging contracts for Property Workspace V1.
