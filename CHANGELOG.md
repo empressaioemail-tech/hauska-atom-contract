@@ -2,6 +2,38 @@
 
 All notable changes to `@hauska/atom-contract` are documented here.
 
+## [1.6.0] - 2026-06-30
+
+Temporal-Context Engine substrate (anticipatory atoms, would_affect edges,
+evt_ node prefix). Additive release — no changes to `accessPolicy` or other
+existing unions.
+
+### Added
+
+- `@hauska/atom-contract/temporal` subpath:
+  - **Anticipatory event atoms** — `claim_type` prefix `anticipatory.<kind>`
+    (open sub-kind; unknown kinds fall back to base event-family behavior).
+    `valid_from` MAY be in the future (only atom type where this is
+    semantically correct). New deposits require `confidence.basis: "asserted"`.
+    `warnFutureValidFromOnNonAnticipatory()` flags future `valid_from` on
+    other claim types as a data-quality warning.
+  - **`WouldAffectEdge`** — structural `would_affect` edge from `evt_`
+    source to subject node (`parcel_`, `jurisdiction_`, etc.) with required
+    ISO 8601 `effectiveDate` and `immutable: true` discriminant. Effect
+    probability is not on this edge (derived atom, re-estimated over time).
+  - **`evt_` node-type prefix** — added to `NodeTypePrefix` registry.
+    `deriveEvtNodeId(source, externalId)` and `validateEvtNodeAnchor()`
+    enforce stable-ID discipline; unanchored manual IDs are rejected.
+  - **Interval query helpers** — `isAtomVisibleAtAsOf()` /
+    `filterAtomsForAsOf()` with explicit `includeAnticipatory` opt-in so
+    future-dated anticipatory atoms are not silently excluded.
+
+### Consumer migration notes
+
+- Pin `@hauska/atom-contract@^1.6.0` when adopting TCE types (cc-agent-C,
+  cc-agent-E co-bump window).
+- Import from `@hauska/atom-contract/temporal`; main barrel unchanged.
+
 ## [1.5.0] - 2026-06-21
 
 Calibrated Spine Wave 2 — migrate legacy scalar confidence on

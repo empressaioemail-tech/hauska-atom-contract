@@ -1,6 +1,6 @@
 {
   "name": "@hauska/atom-contract",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "The typed-data substrate every Hauska atom satisfies: identity, context interface, composition declaration, and history anchoring. Peer to the Hauska SDK; consumed directly by every product surface and MCP server.",
   "type": "module",
   "main": "./dist/index.js",
@@ -25,6 +25,10 @@
     "./read-contract": {
       "types": "./dist/read-contract/index.d.ts",
       "import": "./dist/read-contract/index.js"
+    },
+    "./temporal": {
+      "types": "./dist/temporal/index.d.ts",
+      "import": "./dist/temporal/index.js"
     },
     "./package.json": "./package.json"
   },
