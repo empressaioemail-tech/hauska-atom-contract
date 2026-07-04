@@ -35,8 +35,10 @@ All commands from `P:\hauska-atom-contract`. TLS requires `npm-hauska.ps1` (`NOD
 
 ```powershell
 cd P:\hauska-atom-contract
-.\publish-1.4.0.ps1
+.\publish-1.5.0.ps1
 ```
+
+(For 1.4.0 and earlier, use `.\publish-1.4.0.ps1`.)
 
 This script:
 
@@ -106,6 +108,7 @@ Granular tokens may work in CI with bypass-2FA, but **operator publishes from th
 |---|---|---|---|
 | 1.3.0 | 2026-05-28 | `9d74b4a9-db6a-4f87-82a7-81d70b5648d8` | First staged publish; `publish-approve-1.3.0.ps1` |
 | 1.4.0 | 2026-06-21 | `74b600c6-587f-41d1-a9ea-0ee796999ba2` | Read-contract subpath; `publish-1.4.0.ps1` + `publish-approve-1.4.0.ps1` |
+| 1.5.0 | 2026-06-21 | operator-assisted | Conformance + export + widthed subpaths; stale stage rejected, re-staged at shasum `1422fb5d…` |
 
 ---
 
@@ -114,7 +117,8 @@ Granular tokens may work in CI with bypass-2FA, but **operator publishes from th
 | Script | Purpose |
 |---|---|
 | `npm-hauska.ps1` | npm wrapper with Windows trust store for TLS |
-| `publish-1.4.0.ps1` | Stage flow step 1 (login + `stage publish`) — rename/copy for next version bump |
+| `publish-1.5.0.ps1` | Stage flow step 1 for 1.5.0 (login + `stage publish`) |
+| `publish-1.4.0.ps1` | Stage flow step 1 for 1.4.0 (historical) |
 | `publish-approve-1.4.0.ps1` | Stage flow step 2 (`stage approve`) — reusable for any version |
 | `publish-approve-1.3.0.ps1` | Historical; same approve pattern as 1.3.0 |
 

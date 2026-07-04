@@ -32,6 +32,11 @@ import type {
   EventAnchoringService,
   ReadHistoryOptions,
 } from "../history.js";
+import {
+  validateAtomConformance,
+  type ValidateAtomConformanceInput,
+} from "../conformance/validate.js";
+import { ATOM_CONFORMANCE_TARGET_VERSION } from "../conformance/common.js";
 
 /**
  * Convenience wrapper around {@link createAtomRegistry} for tests. Accepts
@@ -251,3 +256,48 @@ export function runAtomContractTests<
 export const DEFAULT_CONTRACT_FIXTURE: AtomContractFixture = {
   entityId: "contract-test-id",
 };
+
+export interface AtomConformanceTestOptions {
+  /** Data-level atoms require signed history; app-level skip it. */
+  tier?: "data" | "app";
+  signedHistory?: { events: unknown[] };
+}
+
+/**
+ * Conformance test suite for the architecture-homes target shape (doc 02).
+ * Validates read-contract, accessPolicy, and signed-history at runtime.
+ *
+ * @example
+ *   import { describe } from "vitest";
+ *   import { runAtomConformanceTests } from "@hauska/atom-contract/testing";
+ *   describe("code-section conformance", () => {
+ *     runAtomConformanceTests("code-section", {
+ *       tier: "data",
+ *       readContract: emission.readContract,
+ *       accessPolicy: "public-free",
+ *       signedHistory: { events: emission.events },
+ *     });
+ *   });
+ */
+export function runAtomConformanceTests(
+  label: string,
+  input: ValidateAtomConformanceInput,
+  _opts: AtomConformanceTestOptions = {},
+): void {
+  describe(`atom conformance: ${label}`, () => {
+    it(`targets conformance version ${ATOM_CONFORMANCE_TARGET_VERSION}`, () => {
+      expect(ATOM_CONFORMANCE_TARGET_VERSION).toBe("1.5.0");
+    });
+
+    it("passes validateAtomConformance", () => {
+      const result = validateAtomConformance(input);
+      if (!result.ok) {
+        const detail = result.errors
+          .map((e) => `${e.path}: ${e.message}`)
+          .join("; ");
+        expect.fail(`conformance failed: ${detail}`);
+      }
+      expect(result.ok).toBe(true);
+    });
+  });
+}

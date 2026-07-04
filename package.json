@@ -26,6 +26,14 @@
       "types": "./dist/read-contract/index.d.ts",
       "import": "./dist/read-contract/index.js"
     },
+    "./conformance": {
+      "types": "./dist/conformance/index.d.ts",
+      "import": "./dist/conformance/index.js"
+    },
+    "./export": {
+      "types": "./dist/export/index.d.ts",
+      "import": "./dist/export/index.js"
+    },
     "./temporal": {
       "types": "./dist/temporal/index.d.ts",
       "import": "./dist/temporal/index.js"
