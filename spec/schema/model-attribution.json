@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hauska.io/schemas/model-attribution.json",
+  "title": "ModelAttributionStamp",
+  "description": "Model-attribution stamp for the rich raw ledger (F3). Stamped on deposit; joins a judgment to the model, prompt, context, sampling configuration, and retrieved atom set used at write time.",
+  "type": "object",
+  "properties": {
+    "modelId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the model that produced this judgment."
+    },
+    "modelVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Version string of the model."
+    },
+    "promptTemplateVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Version of the prompt template used."
+    },
+    "contextTemplateVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Version of the context template used."
+    },
+    "samplingParams": {
+      "type": "object",
+      "description": "Sampling parameters used during model inference.",
+      "properties": {
+        "temperature": {
+          "type": "number",
+          "description": "Temperature parameter for sampling."
+        },
+        "topP": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Top-p (nucleus) sampling parameter."
+        },
+        "maxTokens": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "description": "Maximum tokens to generate."
+        },
+        "seed": {
+          "type": "integer",
+          "description": "Random seed for reproducible generation."
+        }
+      },
+      "additionalProperties": true
+    },
+    "retrievedAtomSetId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the retrieved atom set used as context."
+    }
+  },
+  "required": ["modelId", "modelVersion", "promptTemplateVersion", "contextTemplateVersion", "samplingParams", "retrievedAtomSetId"],
+  "additionalProperties": false
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hauska.io/schemas/widthed-confidence.json",
+  "title": "WidthedConfidence",
+  "description": "Inseparable accuracy-or-source-quality confidence object per Calibrated Spine F4/F6/K6. Every field is required; the estimate is branded and not assignable from a bare number. Consumers must hold a complete WidthedConfidence object.",
+  "type": "object",
+  "properties": {
+    "estimate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Branded point estimate in the unit interval [0,1]. Not assignable from a bare number; must be constructed through the full WidthedConfidence shape."
+    },
+    "n": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sample size or observation count used to earn this confidence estimate."
+    },
+    "intervalWidth": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Width of the confidence interval in the unit interval [0,1]."
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["asserted", "backtest", "seed", "live"],
+      "description": "How the accuracy-axis estimate was earned or labeled: asserted (claimed), backtest (historical), seed (initial), or live (production-earned)."
+    }
+  },
+  "required": ["estimate", "n", "intervalWidth", "provenance"],
+  "additionalProperties": false
+}

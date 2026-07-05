@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hauska.io/schemas/context-summary.json",
+  "title": "ContextSummary",
+  "description": "Four-layer context payload returned by an atom's contextSummary function. Provides prose, typed data, key metrics, and related atoms, plus history provenance and access policy.",
+  "type": "object",
+  "properties": {
+    "prose": {
+      "type": "string",
+      "description": "Human-readable prose summary suitable for AI prompt insertion."
+    },
+    "typed": {
+      "type": "object",
+      "description": "Atom-typed payload. Open structure allowing atom-specific fields.",
+      "additionalProperties": true
+    },
+    "keyMetrics": {
+      "type": "array",
+      "description": "Compact key/value tiles surfaced in card and compact modes.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "Metric label (e.g., 'Area', 'Assessed Value')."
+          },
+          "value": {
+            "oneOf": [
+              {"type": "string"},
+              {"type": "number"}
+            ],
+            "description": "Metric value as string or number."
+          },
+          "unit": {
+            "type": "string",
+            "description": "Optional unit string (e.g., 'sq ft', 'USD')."
+          }
+        },
+        "required": ["label", "value"],
+        "additionalProperties": false
+      }
+    },
+    "relatedAtoms": {
+      "type": "array",
+      "description": "Other atoms this one references; used for crawl and chip rendering.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "atom",
+            "description": "Reference kind discriminator."
+          },
+          "entityType": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Entity type of the referenced atom."
+          },
+          "entityId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Entity ID of the referenced atom."
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["inline", "compact", "card", "expanded", "focus"],
+            "description": "Optional render mode hint."
+          },
+          "displayLabel": {
+            "type": "string",
+            "description": "Inline-prose display label. Presentation-only; never used for identity."
+          }
+        },
+        "required": ["kind", "entityType", "entityId"],
+        "additionalProperties": false
+      }
+    },
+    "historyProvenance": {
+      "type": "object",
+      "description": "Provenance of the latest history event. Always present; if no events yet, set latestEventId to empty string and latestEventAt to the atom's creation timestamp.",
+      "properties": {
+        "latestEventId": {
+          "type": "string",
+          "description": "ID of the latest event, or empty string if no events exist."
+        },
+        "latestEventAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 timestamp of the latest event."
+        }
+      },
+      "required": ["latestEventId", "latestEventAt"],
+      "additionalProperties": false
+    },
+    "scopeFiltered": {
+      "type": "boolean",
+      "description": "True when the Scope object changed the resolved payload relative to the unscoped baseline."
+    },
+    "accessPolicy": {
+      "type": "string",
+      "enum": ["public-free", "public-paid", "platform-internal", "tenant-private", "tenant-shared"],
+      "description": "Per-instance access tier per ADR-017. Surfaces that gate on visibility treat an omitted field as the registration's accessPolicy default — or 'public-free' when the registration also omits it."
+    }
+  },
+  "required": ["prose", "typed", "keyMetrics", "relatedAtoms", "historyProvenance", "scopeFiltered"],
+  "additionalProperties": false
+}

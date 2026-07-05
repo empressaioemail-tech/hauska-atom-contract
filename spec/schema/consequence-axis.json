@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hauska.io/schemas/consequence-axis.json",
+  "title": "ConsequenceAxis",
+  "description": "Severity axis per Calibrated Spine F6. Asserted, audited, and derived from code risk classifications (ASCE 7, IBC). No invented severity scalar is stored — only classification inputs and a discrete stratum identifier.",
+  "type": "object",
+  "properties": {
+    "derivation": {
+      "type": "object",
+      "description": "Classification metadata from which the consequence stratum is derived.",
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": ["asce7-risk-category", "ibc-occupancy-importance", "derived-composite"],
+          "description": "Source of the consequence derivation."
+        },
+        "asce7RiskCategory": {
+          "type": "string",
+          "enum": ["I", "II", "III", "IV"],
+          "description": "ASCE 7 risk categories I–IV."
+        },
+        "ibcOccupancyGroup": {
+          "type": "string",
+          "minLength": 1,
+          "description": "IBC occupancy group classification."
+        },
+        "ibcImportanceFactor": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "IBC importance factor."
+        },
+        "jurisdictionCode": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Jurisdiction code identifier."
+        }
+      },
+      "required": ["source", "asce7RiskCategory"],
+      "additionalProperties": false
+    },
+    "stratum": {
+      "type": "string",
+      "enum": ["routine", "elevated", "critical", "essential"],
+      "description": "Discrete consequence stratum derived from code classifications at read time. Not a continuous severity score."
+    },
+    "assertedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when the stratum was asserted."
+    },
+    "auditRef": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional audit trail reference (code section, AHJ schedule, etc.)."
+    }
+  },
+  "required": ["derivation", "stratum", "assertedAt"],
+  "additionalProperties": false
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hauska.io/schemas/read-contract.json",
+  "title": "ReadContract",
+  "description": "The read-contract object every confidence-emitting surface must return per Calibrated Spine F4/F6. No bare scalar confidence field exists on this type. Contains three distinct confidence axes: calibrated (accuracy, earned), asserted (source-quality), and consequence (severity).",
+  "type": "object",
+  "properties": {
+    "axes": {
+      "type": "object",
+      "description": "Three distinct confidence axes per the calibration architecture.",
+      "properties": {
+        "calibratedConfidence": {
+          "$ref": "widthed-confidence.json",
+          "description": "Accuracy axis, earned (commitment #2 governs only this axis)."
+        },
+        "assertedConfidence": {
+          "$ref": "widthed-confidence.json",
+          "description": "Source-quality axis, asserted with provenance on every write."
+        },
+        "consequence": {
+          "$ref": "consequence-axis.json",
+          "description": "Severity axis, asserted-audited, derived from code risk classifications."
+        }
+      },
+      "required": ["calibratedConfidence", "assertedConfidence", "consequence"],
+      "additionalProperties": false
+    },
+    "assembledAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when the read-contract was assembled at read time."
+    },
+    "modelAttribution": {
+      "$ref": "model-attribution.json",
+      "description": "Model-attribution stamp from the ledger deposit that sourced this read. Omitted on deterministic / non-model reads."
+    }
+  },
+  "required": ["axes", "assembledAt"],
+  "additionalProperties": false
+}
