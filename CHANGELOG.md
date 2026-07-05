@@ -2,6 +2,14 @@
 
 All notable changes to `@hauska/atom-contract` are documented here.
 
+## [1.6.1] - 2026-07-05
+
+Restores git provenance for the conformance + export modules (shipped in the
+1.5.0 tarball but untracked in git until PR #3); carries the 1.6.0
+anticipatory-atom / would_affect / evt_ features. No API changes versus the
+1.5.0 tarball plus 1.6.0 temporal additions; provenance-only republish so
+published tree equals git HEAD.
+
 ## [1.6.0] - 2026-06-30
 
 Temporal-Context Engine substrate (anticipatory atoms, would_affect edges,
