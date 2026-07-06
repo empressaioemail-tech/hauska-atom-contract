@@ -40,7 +40,7 @@ export const SAMPLE_WELL: WellAtomInstance = {
 
 export const SAMPLE_WELLBORE: WellboreAtomInstance = {
   entityType: "wellbore",
-  wellboreDid: "wbore_a1b2c3d4e5f6g7h8",
+  wellboreDid: "wbore_a1b2c3d4e5f6a7b8",
   wellDid: "well_42001300010000",
   sidetrackSequence: 0,
   directionalSurveyCid: "bafyk1234567890abcdef",
@@ -55,12 +55,12 @@ export const SAMPLE_WELLBORE: WellboreAtomInstance = {
 
 export const SAMPLE_COMPLETION: CompletionAtomInstance = {
   entityType: "completion",
-  completionDid: "cmpl_1a2b3c4d5e6f7g8h",
-  wellboreDid: "wbore_a1b2c3d4e5f6g7h8",
+  completionDid: "cmpl_1a2b3c4d5e6f7a8b",
+  wellboreDid: "wbore_a1b2c3d4e5f6a7b8",
   completionDate: "2024-02-20",
   perforatedIntervals: [
-    { topDepth: 8200, bottomDepth: 8300, zoneDid: "zone_wolfcamp_a" },
-    { topDepth: 8400, bottomDepth: 8500, zoneDid: "zone_wolfcamp_b" },
+    { topDepth: 8200, bottomDepth: 8300, zoneDid: "zone_0123456789abcdef" },
+    { topDepth: 8400, bottomDepth: 8500, zoneDid: "zone_fedcba9876543210" },
   ],
   sourceCitation: "RRC W-2 2024-001",
   extractedAt: "2024-03-01T12:00:00Z",
@@ -70,7 +70,7 @@ export const SAMPLE_COMPLETION: CompletionAtomInstance = {
 
 export const SAMPLE_ZONE: ZoneAtomInstance = {
   entityType: "zone",
-  zoneDid: "zone_wolfcamp_a",
+  zoneDid: "zone_0123456789abcdef",
   formationName: "Wolfcamp A",
   tops: 8150,
   sourceCitation: "Texas Geological Survey 2023",
@@ -81,10 +81,11 @@ export const SAMPLE_ZONE: ZoneAtomInstance = {
 
 export const SAMPLE_PAD: PadAtomInstance = {
   entityType: "pad",
-  padDid: "pad_sample_001",
+  padDid: "pad_0123456789abcdef",
   wellDids: ["well_42001300010000", "well_42001300020000"],
   surfaceLocation: { latitude: 31.5, longitude: -102.1, datum: "WGS84" },
   derivationMethod: "proximity-clustering-100m",
+  confidence: createOgAssertedConfidence(0.95),
   sourceCitation: "Derived from RRC well locations",
   extractedAt: "2024-03-01T12:00:00Z",
   asOf: "2024-02-20",
@@ -93,7 +94,8 @@ export const SAMPLE_PAD: PadAtomInstance = {
 
 export const SAMPLE_PRODUCTION_TIMESERIES: ProductionTimeseriesAtomInstance = {
   entityType: "production-timeseries",
-  streamDid: "prodts_lease_oil_001",
+  streamDid: "prodts_0123456789abcdef",
+  streamKind: "reported",
   anchorKind: "rrc-lease",
   anchorDid: "rrclease_08-12345",
   product: "oil",
@@ -107,7 +109,7 @@ export const SAMPLE_PRODUCTION_TIMESERIES: ProductionTimeseriesAtomInstance = {
 
 export const SAMPLE_EQUIPMENT_STATE: EquipmentStateAtomInstance = {
   entityType: "equipment-state",
-  equipmentDid: "equip_rodpump_001",
+  equipmentDid: "equip_0123456789abcdef",
   wellDid: "well_42001300010000",
   equipmentKind: "rod-pump",
   stateSnapshot: { strokesPerMinute: 12, fillage: 0.85, runtime: "active" },
@@ -120,7 +122,7 @@ export const SAMPLE_EQUIPMENT_STATE: EquipmentStateAtomInstance = {
 
 export const SAMPLE_MINERAL_LEASE: MineralLeaseAtomInstance = {
   entityType: "mineral-lease",
-  leaseDid: "mlease_sample_001",
+  leaseDid: "mlease_0123456789abcdef",
   lessorActorDids: ["actor_lessor_001"],
   lesseeActorDid: "actor_lessee_001",
   evidencedByInstrumentDids: ["instr_recorded_001"],
@@ -180,7 +182,7 @@ export const SAMPLE_TRACT: TractAtomInstance = {
 
 export const SAMPLE_OWNERSHIP_INTEREST: OwnershipInterestAtomInstance = {
   entityType: "ownership-interest",
-  interestDid: "intr_sample_001",
+  interestDid: "intr_0123456789abcdef",
   interestType: "mineral",
   ownerActorDid: "actor_owner_001",
   anchorTractDid: "tract_reeves-123",
@@ -203,7 +205,7 @@ export const SAMPLE_OWNERSHIP_INTEREST: OwnershipInterestAtomInstance = {
  */
 export const SAMPLE_POOLED_UNIT: RevenueAllocationUnitAtomInstance = {
   entityType: "revenue-allocation-unit",
-  unitDid: "unit_pooled_sample_001",
+  unitDid: "unit_0123456789abcdef",
   basis: "pooled-unit",
   wellDids: ["well_42001300010000", "well_42001300020000"],
   operatorActorDid: "actor_operator_001",
@@ -245,7 +247,7 @@ export const SAMPLE_POOLED_UNIT: RevenueAllocationUnitAtomInstance = {
  */
 export const SAMPLE_ALLOCATION_WELL_UNIT: RevenueAllocationUnitAtomInstance = {
   entityType: "revenue-allocation-unit",
-  unitDid: "unit_allocation_sample_001",
+  unitDid: "unit_fedcba9876543210",
   basis: "allocation-well",
   wellDids: ["well_42001300030000"],
   operatorActorDid: "actor_operator_001",

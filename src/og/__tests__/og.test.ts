@@ -99,12 +99,13 @@ describe("O&G fixtures — Zod validation", () => {
 });
 
 describe("obligation (core) — Zod validation", () => {
-  it("validates obligation fixture", () => {
+  it("validates obligation fixture with domain-neutral anchor", () => {
     const sampleObligation = {
       entityType: "obligation" as const,
-      obligationDid: "oblg_sample_001",
+      obligationDid: "oblg_0123456789abcdef",
       obligationType: "delay-rental" as const,
-      leaseDid: "mlease_sample_001",
+      anchorDid: "mlease_0123456789abcdef",
+      anchorKind: "mineral-lease",
       owedToActorDid: "actor_lessor_001",
       dueDate: "2025-01-01",
       recurrence: "annual",
@@ -119,10 +120,10 @@ describe("obligation (core) — Zod validation", () => {
     expect(OBLIGATION_SCHEMA.safeParse(sampleObligation).success).toBe(true);
   });
 
-  it("requires leaseDid on obligation", () => {
+  it("requires anchorDid on obligation", () => {
     const bad = {
       entityType: "obligation",
-      obligationDid: "oblg_sample_001",
+      obligationDid: "oblg_0123456789abcdef",
       obligationType: "delay-rental",
       dueDate: "2025-01-01",
       status: "upcoming",
@@ -145,6 +146,7 @@ describe("O&G access policy", () => {
     expect(OG_DEFAULT_ACCESS_POLICY["rrc-lease"]).toBe("public-free");
     expect(OG_DEFAULT_ACCESS_POLICY.tract).toBe("public-free");
     expect(OG_DEFAULT_ACCESS_POLICY["revenue-allocation-unit"]).toBe("public-free");
+    expect(OG_DEFAULT_ACCESS_POLICY.obligation).toBe("tenant-private");
   });
 
   it("requires sourceCitation on all O&G atoms", () => {
@@ -160,18 +162,18 @@ describe("O&G access policy", () => {
     expect(WELLBORE_SCHEMA.safeParse(badWellbore).success).toBe(false);
   });
 
-  it("validates perforated intervals on completion", () => {
-    const badCompletion = {
+  it("allows empty perforated intervals on completion", () => {
+    const completionWithEmpty = {
       ...SAMPLE_COMPLETION,
       perforatedIntervals: [],
     };
-    const result = COMPLETION_SCHEMA.safeParse(badCompletion);
+    const result = COMPLETION_SCHEMA.safeParse(completionWithEmpty);
     expect(result.success).toBe(true);
   });
 
-  it("requires wellDids array on pad", () => {
-    const badPad = { ...SAMPLE_PAD, wellDids: [] };
-    const result = PAD_SCHEMA.safeParse(badPad);
+  it("allows empty wellDids array on pad", () => {
+    const padWithEmpty = { ...SAMPLE_PAD, wellDids: [] };
+    const result = PAD_SCHEMA.safeParse(padWithEmpty);
     expect(result.success).toBe(true);
   });
 
@@ -351,5 +353,126 @@ describe("INSTRUMENT_TYPES extension (C1b)", () => {
     expect(INSTRUMENT_TYPES).toContain("ratification-of-unit");
     expect(INSTRUMENT_TYPES).toContain("amendment-of-unit-designation");
     expect(INSTRUMENT_TYPES).toContain("release-of-unit");
+  });
+});
+
+describe("O&G negative validation tests (C1c finding #9)", () => {
+  it("rejects pooled-unit carrying sourcePlatCid (cross-basis leakage)", () => {
+    const badUnit = {
+      ...SAMPLE_POOLED_UNIT,
+      sourcePlatCid: "bafyk_plat_should_not_exist",
+    };
+    const result = REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(badUnit);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects allocation-well carrying sourceInstrumentDids (cross-basis leakage)", () => {
+    const badUnit = {
+      ...SAMPLE_ALLOCATION_WELL_UNIT,
+      sourceInstrumentDids: ["instr_should_not_exist"],
+    };
+    const result = REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(badUnit);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects bare scalar confidence on obligation", () => {
+    const badObligation = {
+      entityType: "obligation",
+      obligationDid: "oblg_0123456789abcdef",
+      obligationType: "delay-rental",
+      anchorDid: "mlease_0123456789abcdef",
+      dueDate: "2025-01-01",
+      status: "upcoming",
+      confidence: 0.9,
+      sourceCitation: "Lease clause extract",
+      extractedAt: "2024-03-01T12:00:00Z",
+      accessPolicy: "tenant-private",
+    };
+    const result = OBLIGATION_SCHEMA.safeParse(badObligation);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects bare scalar confidence on tractParticipations", () => {
+    const badUnit = {
+      ...SAMPLE_POOLED_UNIT,
+      tractParticipations: [
+        {
+          tractDid: "tract_reeves-123",
+          factor: 0.65,
+          allocationMethod: "stated-fraction",
+          source: "Unit Designation 2023-001",
+          confidence: 0.9,
+        },
+      ],
+    };
+    const result = REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(badUnit);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects bare scalar confidence on clauseExtracts", () => {
+    const badLease = {
+      ...SAMPLE_MINERAL_LEASE,
+      clauseExtracts: [
+        {
+          clauseType: "shut-in",
+          extractedText: "Lessee may pay shut-in royalty...",
+          confidence: 0.9,
+          sourceCitation: "Instrument page 3",
+          sourceInstrumentDid: "instr_recorded_001",
+          pageRef: "3",
+        },
+      ],
+    };
+    const result = MINERAL_LEASE_SCHEMA.safeParse(badLease);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid accessPolicy", () => {
+    const badWell = { ...SAMPLE_WELL, accessPolicy: "invalid-policy" };
+    const result = WELL_SCHEMA.safeParse(badWell);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects wellDid with invalid prefix", () => {
+    const badWell = { ...SAMPLE_WELL, wellDid: "banana_42001300010000" };
+    const result = WELL_SCHEMA.safeParse(badWell);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects wellDid not matching derived ID from apiNumber14", () => {
+    const badWell = { ...SAMPLE_WELL, wellDid: "well_99999999999999" };
+    const result = WELL_SCHEMA.safeParse(badWell);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects ownership-interest with neither anchorTractDid nor anchorLeaseDid", () => {
+    const badInterest = {
+      ...SAMPLE_OWNERSHIP_INTEREST,
+      anchorTractDid: undefined,
+      anchorLeaseDid: undefined,
+    };
+    const result = OWNERSHIP_INTEREST_SCHEMA.safeParse(badInterest);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects derived production stream without required fields", () => {
+    const badStream = {
+      ...SAMPLE_PRODUCTION_TIMESERIES,
+      streamKind: "derived-allocation",
+    };
+    const result = PRODUCTION_TIMESERIES_SCHEMA.safeParse(badStream);
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts derived production stream with all required fields", () => {
+    const goodStream = {
+      ...SAMPLE_PRODUCTION_TIMESERIES,
+      streamKind: "derived-allocation",
+      derivationMethod: "well-level allocation from lease total",
+      confidence: createOgAssertedConfidence(0.8),
+      derivesFromStreamDid: "prodts_fedcba9876543210",
+    };
+    const result = PRODUCTION_TIMESERIES_SCHEMA.safeParse(goodStream);
+    expect(result.success).toBe(true);
   });
 });
