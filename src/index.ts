@@ -1,5 +1,5 @@
 /**
- * Public surface of `@hauska/atom-contract`.
+ * Public surface of `@empressaio/atom-contract`.
  *
  * The barrel re-exports every primitive but never anything from
  * `src/testing/` — testing utilities live behind the `./testing` subpath

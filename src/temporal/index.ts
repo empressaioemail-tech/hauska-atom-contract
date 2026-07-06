@@ -1,7 +1,7 @@
 /**
- * Temporal-Context Engine types for @hauska/atom-contract v1.6.0.
+ * Temporal-Context Engine types for @empressaio/atom-contract v1.6.0.
  *
- * Import from `@hauska/atom-contract/temporal`. Adds anticipatory event
+ * Import from `@empressaio/atom-contract/temporal`. Adds anticipatory event
  * atoms, would_affect structural edges, and the evt_ node-type prefix.
  */
 

@@ -1,5 +1,5 @@
 /**
- * In-memory integration test for the `@hauska/atom-contract` framework.
+ * In-memory integration test for the `@empressaio/atom-contract` framework.
  *
  * Exercises the full path register → validate → resolve → contextSummary
  * → compose → appendEvent → readHistory → latestEvent using the
@@ -90,7 +90,7 @@ function makeSheetAtom(): AtomRegistration<"test-sheet", ["compact"]> {
   };
 }
 
-describe("@hauska/atom-contract registry+history integration (in-memory)", () => {
+describe("@empressaio/atom-contract registry+history integration (in-memory)", () => {
   it("register → validate → resolve → contextSummary → compose → appendEvent → readHistory", async () => {
     const registry = createAtomRegistry();
     registry.register(makeBriefingAtom());

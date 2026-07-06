@@ -12,9 +12,9 @@ Catalog atom registrations (the actual atom types — `engagement`,
 `code-section`, `jurisdiction-corpus`, etc.) live in consumer packages
 that depend on this one.
 
-Empressa commercial substrate, peer to `@empressaio/sdk` and `hauska-engine`,
+Empressa commercial substrate, peer to `@hauska-sdk/*` and `hauska-engine`,
 per doc_repo ADR-018 (atom contract substrate layer placement). The
-package has zero `@empressaio/sdk` dependency: an MCP server or product
+package has zero `@hauska-sdk/*` dependency: an MCP server or product
 surface can depend on the contract without inheriting the commerce
 stack.
 
@@ -255,6 +255,25 @@ import {
   ENCUMBRANCE_RENDER_MODES,
   SAMPLE_RECORDED_INSTRUMENT,
 } from "@empressaio/atom-contract/encumbrances";
+```
+
+## Oil & Gas atom types (ADR-025)
+
+O&G operational, land, and capital atoms ship as Zod-validated payloads on
+the `./og` subpath (v1.7.0). Covers the asset spine (well, wellbore,
+completion, zone, pad), production timeseries, equipment state, the land
+leg (mineral-lease, rrc-lease, tract, ownership-interest), and revenue
+allocation units. Obligation (core domain-neutral type) ships in the main
+module, not `./og`.
+
+```ts
+import {
+  WELL_SCHEMA,
+  MINERAL_LEASE_SCHEMA,
+  REVENUE_ALLOCATION_UNIT_SCHEMA,
+  SAMPLE_WELL,
+  OG_DEFAULT_ACCESS_POLICY,
+} from "@empressaio/atom-contract/og";
 ```
 
 | `entityType` | Purpose | Recommended render modes |

@@ -1,7 +1,7 @@
 /**
  * Brokerage workspace packaging contract types for V1.
  *
- * Import from `@hauska/atom-contract/workspace` in engine and legacy
+ * Import from `@empressaio/atom-contract/workspace` in engine and legacy
  * design tools for schema validation and fixture scaffolding.
  */
 export * from "./common.js";
