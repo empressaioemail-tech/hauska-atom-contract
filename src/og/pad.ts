@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import type { AccessPolicy } from "../registration.js";
 import { WIDTHED_CONFIDENCE_SCHEMA, type WidthedConfidence } from "../read-contract/common.js";
-import { GEO_LOCATION_SCHEMA, OG_QUALITY_GATE_FIELDS, type GeoLocation } from "./common.js";
+import { GEO_LOCATION_SCHEMA, OG_ACCESS_POLICY_SCHEMA, OG_QUALITY_GATE_FIELDS, type GeoLocation } from "./common.js";
 
 /**
  * Pad atom instance per ADR-025 — derived surface grouping of wells at a site.
@@ -35,11 +35,5 @@ export const PAD_SCHEMA = z.object({
   derivationMethod: z.string().min(1),
   confidence: WIDTHED_CONFIDENCE_SCHEMA,
   ...OG_QUALITY_GATE_FIELDS,
-  accessPolicy: z.enum([
-    "public-free",
-    "public-paid",
-    "platform-internal",
-    "tenant-private",
-    "tenant-shared",
-  ]),
+  accessPolicy: OG_ACCESS_POLICY_SCHEMA,
 });

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import type { AccessPolicy } from "../registration.js";
-import { OG_QUALITY_GATE_FIELDS } from "./common.js";
+import { OG_ACCESS_POLICY_SCHEMA, OG_QUALITY_GATE_FIELDS } from "./common.js";
 
 /**
  * Wellbore atom instance per ADR-025 — one drilled hole including sidetracks.
@@ -42,11 +42,5 @@ export const WELLBORE_SCHEMA = z.object({
   kickoffDepth: z.number().optional(),
   measuredDepth: z.number().optional(),
   ...OG_QUALITY_GATE_FIELDS,
-  accessPolicy: z.enum([
-    "public-free",
-    "public-paid",
-    "platform-internal",
-    "tenant-private",
-    "tenant-shared",
-  ]),
+  accessPolicy: OG_ACCESS_POLICY_SCHEMA,
 });

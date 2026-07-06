@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import type { AccessPolicy } from "../registration.js";
 import {
+  OG_ACCESS_POLICY_SCHEMA,
   OG_QUALITY_GATE_FIELDS,
   PERFORATED_INTERVAL_SCHEMA,
   type PerforatedInterval,
@@ -40,11 +41,5 @@ export const COMPLETION_SCHEMA = z.object({
   completionDate: z.string().min(1),
   perforatedIntervals: z.array(PERFORATED_INTERVAL_SCHEMA),
   ...OG_QUALITY_GATE_FIELDS,
-  accessPolicy: z.enum([
-    "public-free",
-    "public-paid",
-    "platform-internal",
-    "tenant-private",
-    "tenant-shared",
-  ]),
+  accessPolicy: OG_ACCESS_POLICY_SCHEMA,
 });

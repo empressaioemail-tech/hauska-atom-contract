@@ -4,6 +4,7 @@ import type { AccessPolicy } from "../registration.js";
 import {
   CLAUSE_EXTRACT_SCHEMA,
   MINERAL_LEASE_STATUSES,
+  OG_ACCESS_POLICY_SCHEMA,
   OG_QUALITY_GATE_FIELDS,
   type ClauseExtract,
   type MineralLeaseStatus,
@@ -55,11 +56,5 @@ export const MINERAL_LEASE_SCHEMA = z.object({
     MINERAL_LEASE_STATUSES as [MineralLeaseStatus, ...MineralLeaseStatus[]],
   ),
   ...OG_QUALITY_GATE_FIELDS,
-  accessPolicy: z.enum([
-    "public-free",
-    "public-paid",
-    "platform-internal",
-    "tenant-private",
-    "tenant-shared",
-  ]),
+  accessPolicy: OG_ACCESS_POLICY_SCHEMA,
 });

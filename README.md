@@ -2,7 +2,7 @@
 
 The typed-data substrate every Empressa atom must satisfy: identity,
 context interface, composition declaration, and history anchoring.
-Peer to the Empressa SDK; consumed directly by every product surface
+Peer to the Hauska SDK (`@hauska-sdk/*`); consumed directly by every product surface
 and MCP server.
 
 This package is **framework only**. It ships the contract, the runtime

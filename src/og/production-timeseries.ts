@@ -5,6 +5,7 @@ import { WIDTHED_CONFIDENCE_SCHEMA, type WidthedConfidence } from "../read-contr
 import {
   ANCHOR_KINDS,
   GRANULARITIES,
+  OG_ACCESS_POLICY_SCHEMA,
   OG_QUALITY_GATE_FIELDS,
   PRODUCT_TYPES,
   type AnchorKind,
@@ -67,13 +68,7 @@ export const PRODUCTION_TIMESERIES_SCHEMA = z
     derivesFromStreamDid: z.string().min(1).optional(),
     confidence: WIDTHED_CONFIDENCE_SCHEMA.optional(),
     ...OG_QUALITY_GATE_FIELDS,
-    accessPolicy: z.enum([
-      "public-free",
-      "public-paid",
-      "platform-internal",
-      "tenant-private",
-      "tenant-shared",
-    ]),
+    accessPolicy: OG_ACCESS_POLICY_SCHEMA,
   })
   .refine(
     (data) => {

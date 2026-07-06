@@ -5,6 +5,7 @@ import { API_14_PATTERN, normalizeApi14 } from "../temporal/node-id.js";
 import {
   FIELD_REF_SCHEMA,
   GEO_LOCATION_SCHEMA,
+  OG_ACCESS_POLICY_SCHEMA,
   OG_QUALITY_GATE_FIELDS,
   WELL_TYPES,
   type FieldRef,
@@ -64,13 +65,7 @@ export const WELL_SCHEMA = z
     fieldRef: FIELD_REF_SCHEMA.optional(),
     district: z.string().min(1),
     ...OG_QUALITY_GATE_FIELDS,
-    accessPolicy: z.enum([
-      "public-free",
-      "public-paid",
-      "platform-internal",
-      "tenant-private",
-      "tenant-shared",
-    ]),
+    accessPolicy: OG_ACCESS_POLICY_SCHEMA,
   })
   .refine(
     (data) => {

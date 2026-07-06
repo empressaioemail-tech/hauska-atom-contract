@@ -12,6 +12,7 @@ import { z } from "zod";
 
 import type { AccessPolicy } from "./registration.js";
 import { WIDTHED_CONFIDENCE_SCHEMA, type WidthedConfidence } from "./read-contract/common.js";
+import { OG_ACCESS_POLICY_SCHEMA } from "./og/common.js";
 
 /**
  * Obligation type discriminator. ADR-025 specifies O&G obligation types;
@@ -108,11 +109,5 @@ export const OBLIGATION_SCHEMA = z.object({
   sourceCitation: z.string().min(1),
   extractedAt: z.string().min(1),
   asOf: z.string().min(1).optional(),
-  accessPolicy: z.enum([
-    "public-free",
-    "public-paid",
-    "platform-internal",
-    "tenant-private",
-    "tenant-shared",
-  ]),
+  accessPolicy: OG_ACCESS_POLICY_SCHEMA,
 });

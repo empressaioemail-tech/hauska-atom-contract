@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import type { AccessPolicy } from "../registration.js";
-import { OG_QUALITY_GATE_FIELDS } from "./common.js";
+import { OG_ACCESS_POLICY_SCHEMA, OG_QUALITY_GATE_FIELDS } from "./common.js";
 
 /**
  * Zone atom instance per ADR-025 — formation or interval.
@@ -29,11 +29,5 @@ export const ZONE_SCHEMA = z.object({
   formationName: z.string().min(1),
   tops: z.number().optional(),
   ...OG_QUALITY_GATE_FIELDS,
-  accessPolicy: z.enum([
-    "public-free",
-    "public-paid",
-    "platform-internal",
-    "tenant-private",
-    "tenant-shared",
-  ]),
+  accessPolicy: OG_ACCESS_POLICY_SCHEMA,
 });

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import type { AccessPolicy } from "../registration.js";
 import { WIDTHED_CONFIDENCE_SCHEMA, type WidthedConfidence } from "../read-contract/common.js";
-import { OG_QUALITY_GATE_FIELDS } from "./common.js";
+import { OG_ACCESS_POLICY_SCHEMA, OG_QUALITY_GATE_FIELDS } from "./common.js";
 
 /**
  * Allocation method for tract participation factors. Per ADR-025 Herbert review,
@@ -152,13 +152,7 @@ const BASE_SCHEMA = z.object({
   effectiveTo: z.string().min(1).optional(),
   tractParticipations: z.array(TRACT_PARTICIPATION_SCHEMA).min(1),
   ...OG_QUALITY_GATE_FIELDS,
-  accessPolicy: z.enum([
-    "public-free",
-    "public-paid",
-    "platform-internal",
-    "tenant-private",
-    "tenant-shared",
-  ]),
+  accessPolicy: OG_ACCESS_POLICY_SCHEMA,
 });
 
 /**

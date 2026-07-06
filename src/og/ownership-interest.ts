@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import type { AccessPolicy } from "../registration.js";
 import { WIDTHED_CONFIDENCE_SCHEMA, type WidthedConfidence } from "../read-contract/common.js";
-import { INTEREST_TYPES, type InterestType } from "./common.js";
+import { INTEREST_TYPES, OG_ACCESS_POLICY_SCHEMA, type InterestType } from "./common.js";
 
 /**
  * Ownership-interest atom instance per ADR-025 — single type with
@@ -56,13 +56,7 @@ export const OWNERSHIP_INTEREST_SCHEMA = z
     sourceCitation: z.string().min(1),
     extractedAt: z.string().min(1),
     asOf: z.string().min(1).optional(),
-    accessPolicy: z.enum([
-      "public-free",
-      "public-paid",
-      "platform-internal",
-      "tenant-private",
-      "tenant-shared",
-    ]),
+    accessPolicy: OG_ACCESS_POLICY_SCHEMA,
   })
   .refine(
     (data) => {

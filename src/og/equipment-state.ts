@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { AccessPolicy } from "../registration.js";
 import {
   EQUIPMENT_KINDS,
+  OG_ACCESS_POLICY_SCHEMA,
   type EquipmentKind,
 } from "./common.js";
 
@@ -44,11 +45,5 @@ export const EQUIPMENT_STATE_SCHEMA = z.object({
   sourceCitation: z.string().min(1),
   extractedAt: z.string().min(1),
   asOf: z.string().min(1),
-  accessPolicy: z.enum([
-    "public-free",
-    "public-paid",
-    "platform-internal",
-    "tenant-private",
-    "tenant-shared",
-  ]),
+  accessPolicy: OG_ACCESS_POLICY_SCHEMA,
 });

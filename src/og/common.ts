@@ -31,6 +31,13 @@ import {
   WIDTHED_CONFIDENCE_SCHEMA,
   type WidthedConfidence,
 } from "../read-contract/common.js";
+import { ACCESS_POLICY_SCHEMA } from "../conformance/common.js";
+
+/**
+ * O&G access policy schema, derived from the canonical ACCESS_POLICY_SCHEMA.
+ * Per ADR-025, all O&G atoms use the same five-value access policy enum.
+ */
+export const OG_ACCESS_POLICY_SCHEMA = ACCESS_POLICY_SCHEMA;
 
 /**
  * Node-type prefixes registered additively for O&G atoms (ADR-025).

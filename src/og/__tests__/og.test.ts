@@ -337,6 +337,73 @@ describe("revenue-allocation-unit validation (C1b)", () => {
     const result = REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(badUnit);
     expect(result.success).toBe(false);
   });
+
+  it("rejects psa basis with neither sourceInstrumentDids nor sourceNote", () => {
+    const psaUnit = {
+      entityType: "revenue-allocation-unit" as const,
+      unitDid: "unit_abcdef1234567890",
+      basis: "psa" as const,
+      wellDids: ["well_42001300010000"],
+      operatorActorDid: "actor_operator_001",
+      effectiveFrom: "2023-06-01",
+      tractParticipations: [
+        {
+          tractDid: "tract_Reeves-123",
+          factor: 0.5,
+          allocationMethod: "stated-fraction" as const,
+          source: "PSA Agreement 2023-06-01",
+          confidence: createOgAssertedConfidence(0.85),
+        },
+        {
+          tractDid: "tract_Reeves-124",
+          factor: 0.5,
+          allocationMethod: "stated-fraction" as const,
+          source: "PSA Agreement 2023-06-01",
+          confidence: createOgAssertedConfidence(0.85),
+        },
+      ],
+      sourceCitation: "Operator-provided PSA summary",
+      extractedAt: "2024-03-01T12:00:00Z",
+      asOf: "2024-02-20",
+      accessPolicy: "tenant-private" as const,
+    };
+    const result = REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(psaUnit);
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts psa basis with sourceNote only (no instruments)", () => {
+    const psaUnit = {
+      entityType: "revenue-allocation-unit" as const,
+      unitDid: "unit_abcdef1234567890",
+      basis: "psa" as const,
+      wellDids: ["well_42001300010000"],
+      operatorActorDid: "actor_operator_001",
+      effectiveFrom: "2023-06-01",
+      tractParticipations: [
+        {
+          tractDid: "tract_Reeves-123",
+          factor: 0.5,
+          allocationMethod: "stated-fraction" as const,
+          source: "PSA Agreement 2023-06-01",
+          confidence: createOgAssertedConfidence(0.85),
+        },
+        {
+          tractDid: "tract_Reeves-124",
+          factor: 0.5,
+          allocationMethod: "stated-fraction" as const,
+          source: "PSA Agreement 2023-06-01",
+          confidence: createOgAssertedConfidence(0.85),
+        },
+      ],
+      sourceNote: "Unrecorded PSA between operator and working interest owners",
+      sourceCitation: "Operator-provided PSA summary",
+      extractedAt: "2024-03-01T12:00:00Z",
+      asOf: "2024-02-20",
+      accessPolicy: "tenant-private" as const,
+    };
+    const result = REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(psaUnit);
+    expect(result.success).toBe(true);
+  });
 });
 
 describe("INSTRUMENT_TYPES extension (C1b)", () => {
