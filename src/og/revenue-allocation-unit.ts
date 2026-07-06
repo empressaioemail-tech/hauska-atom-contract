@@ -200,26 +200,28 @@ const PSA_SCHEMA = BASE_SCHEMA.extend({
   ratificationInstrumentDids: z.array(z.string().min(1)).optional(),
   ratificationGaps: z.array(RATIFICATION_GAP_SCHEMA).optional(),
   sourcePlatCid: z.undefined(),
-}).refine(
-  (data) => {
-    const hasInstruments =
-      data.sourceInstrumentDids !== undefined && data.sourceInstrumentDids.length > 0;
-    const hasSourceNote = data.sourceNote !== undefined;
-    return hasInstruments || hasSourceNote;
-  },
-  {
-    message: "PSA basis requires either sourceInstrumentDids or sourceNote",
-    path: ["sourceInstrumentDids"],
-  },
-);
+});
 
 /**
  * Revenue-allocation-unit schema with discriminated union on basis. Each basis
  * variant enforces its required fields; for example, pooled-unit requires
  * sourceInstrumentDids, allocation-well requires sourcePlatCid.
+ * PSA basis requires either sourceInstrumentDids or sourceNote (validated post-parse).
  */
-export const REVENUE_ALLOCATION_UNIT_SCHEMA = z.discriminatedUnion("basis", [
-  POOLED_UNIT_SCHEMA,
-  ALLOCATION_WELL_SCHEMA,
-  PSA_SCHEMA,
-]);
+export const REVENUE_ALLOCATION_UNIT_SCHEMA = z
+  .discriminatedUnion("basis", [POOLED_UNIT_SCHEMA, ALLOCATION_WELL_SCHEMA, PSA_SCHEMA])
+  .refine(
+    (data) => {
+      if (data.basis === "psa") {
+        const hasInstruments =
+          data.sourceInstrumentDids !== undefined && data.sourceInstrumentDids.length > 0;
+        const hasSourceNote = data.sourceNote !== undefined;
+        return hasInstruments || hasSourceNote;
+      }
+      return true;
+    },
+    {
+      message: "PSA basis requires either sourceInstrumentDids or sourceNote",
+      path: ["basis"],
+    },
+  );

@@ -140,7 +140,7 @@ export const SAMPLE_MINERAL_LEASE: MineralLeaseAtomInstance = {
       pageRef: "3",
     },
   ],
-  tractDids: ["tract_reeves-123"],
+  tractDids: ["tract_Reeves-123"],
   status: "hbp",
   sourceCitation: "County records + landman book",
   extractedAt: "2024-03-01T12:00:00Z",
@@ -167,7 +167,7 @@ export const SAMPLE_RRC_LEASE: RrcLeaseAtomInstance = {
 
 export const SAMPLE_TRACT: TractAtomInstance = {
   entityType: "tract",
-  tractDid: "tract_reeves-123",
+  tractDid: "tract_Reeves-123",
   legalDescription: "Section 12, Block 50, Township 5 South",
   plssOrSurveyRef: "TTRR Survey",
   abstractNumber: "123",
@@ -185,7 +185,7 @@ export const SAMPLE_OWNERSHIP_INTEREST: OwnershipInterestAtomInstance = {
   interestDid: "intr_0123456789abcdef",
   interestType: "mineral",
   ownerActorDid: "actor_owner_001",
-  anchorTractDid: "tract_reeves-123",
+  anchorTractDid: "tract_Reeves-123",
   decimalInterest: 0.125,
   fraction: "1/8",
   effectiveFrom: "2020-01-01",
@@ -212,14 +212,14 @@ export const SAMPLE_POOLED_UNIT: RevenueAllocationUnitAtomInstance = {
   effectiveFrom: "2023-01-01",
   tractParticipations: [
     {
-      tractDid: "tract_reeves-123",
+      tractDid: "tract_Reeves-123",
       factor: 0.65,
       allocationMethod: "stated-fraction",
       source: "Unit Designation 2023-001",
       confidence: createOgAssertedConfidence(0.9),
     },
     {
-      tractDid: "tract_reeves-124",
+      tractDid: "tract_Reeves-124",
       factor: 0.35,
       allocationMethod: "acreage",
       source: "Unit Designation 2023-001",
@@ -230,7 +230,7 @@ export const SAMPLE_POOLED_UNIT: RevenueAllocationUnitAtomInstance = {
   ratificationInstrumentDids: ["instr_ratification_001", "instr_ratification_002"],
   ratificationGaps: [
     {
-      tractDid: "tract_reeves-124",
+      tractDid: "tract_Reeves-124",
       gapDescription: "Ratification pending for 15% interest holder",
     },
   ],
@@ -254,7 +254,7 @@ export const SAMPLE_ALLOCATION_WELL_UNIT: RevenueAllocationUnitAtomInstance = {
   effectiveFrom: "2024-02-01",
   tractParticipations: [
     {
-      tractDid: "tract_reeves-123",
+      tractDid: "tract_Reeves-123",
       factor: 0.58,
       allocationMethod: "lateral-length",
       source: "RRC W-1 allocation attachment, plat 2024-03-001",
@@ -263,7 +263,7 @@ export const SAMPLE_ALLOCATION_WELL_UNIT: RevenueAllocationUnitAtomInstance = {
       productiveLateralFootage: 4850,
     },
     {
-      tractDid: "tract_reeves-125",
+      tractDid: "tract_Reeves-125",
       factor: 0.42,
       allocationMethod: "lateral-length",
       source: "RRC W-1 allocation attachment, plat 2024-03-001",
