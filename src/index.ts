@@ -76,3 +76,14 @@ export type {
   AtomPromptDescription,
 } from "./registry.js";
 export { createAtomRegistry, AtomNotRegisteredError } from "./registry.js";
+
+export type {
+  ObligationAtomInstance,
+  ObligationType,
+  ObligationStatus,
+} from "./obligation.js";
+export {
+  OBLIGATION_SCHEMA,
+  OBLIGATION_TYPES,
+  OBLIGATION_STATUSES,
+} from "./obligation.js";

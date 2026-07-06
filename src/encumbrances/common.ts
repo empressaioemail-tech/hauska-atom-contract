@@ -16,13 +16,20 @@ import {
   type WidthedConfidence,
 } from "../read-contract/common.js";
 
-/** ADR-020 instrument categories. */
+/**
+ * ADR-020 instrument categories.
+ * Extended in 1.7.0 (ADR-025) with O&G instrument types.
+ */
 export type InstrumentType =
   | "plat-restriction"
   | "cc-r-declaration"
   | "deed-restriction"
   | "easement"
   | "lien"
+  | "oil-gas-lease"
+  | "mineral-deed"
+  | "assignment"
+  | "division-order"
   | "other";
 
 export const INSTRUMENT_TYPES: ReadonlyArray<InstrumentType> = [
@@ -31,6 +38,10 @@ export const INSTRUMENT_TYPES: ReadonlyArray<InstrumentType> = [
   "deed-restriction",
   "easement",
   "lien",
+  "oil-gas-lease",
+  "mineral-deed",
+  "assignment",
+  "division-order",
   "other",
 ];
 

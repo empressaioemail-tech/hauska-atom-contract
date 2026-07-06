@@ -1,6 +1,65 @@
 # Changelog
 
-All notable changes to `@hauska/atom-contract` are documented here.
+All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
+
+## [1.7.0] - 2026-07-06
+
+O&G ontology module (ADR-025) and package rename to Empressa branding. Additive
+minor — no changes to existing unions, required fields, or exports. Consumers on
+`^1.6` are unaffected until they import `./og` or adopt the new package name.
+
+### Added
+
+- `@empressaio/atom-contract/og` subpath — O&G atom types per ADR-025:
+  - **Asset spine (operations lens):** `well`, `wellbore`, `completion`, `zone`,
+    `pad` with node prefixes `well_`, `wbore_`, `cmpl_`, `zone_`, `pad_`.
+    Legible-DID exception: `well_<api14>` embeds API-14 identity rather than
+    hashing.
+  - **Production:** `production-timeseries` (`prodts_` prefix) models the
+    reporting split (Texas oil at RRC lease level, gas at well level). Public
+    regulatory streams are `public-free`; operator telemetry streams are
+    `tenant-private`. `equipment-state` (`equip_` prefix) is operator-overlay
+    data (`tenant-private` by default).
+  - **Land leg:** `mineral-lease` (`mlease_` prefix), `rrc-lease` (`rrclease_`
+    prefix with legible DID `rrclease_<district>-<leaseNo>`), `tract`
+    (`tract_<county>-<abstract>` where abstract-keyed), `ownership-interest`
+    (`intr_` prefix, discriminated type with `interestType` field). Reconciles
+    with ADR-020: `mineral-lease.evidencedByInstrumentDids` links to
+    `recorded-instrument` atoms.
+  - Zod schemas, TypeScript interfaces, sample fixtures, and recommended
+    render-mode/access-policy constants for all eleven types.
+- **Core `obligation` type** (ships in main contract module, not `./og`):
+  domain-neutral from birth (Mox and O&G consume the same shape). Node prefix
+  `oblg_` registers with core prefix set. Status is engine-derived, never
+  hand-asserted; each derivation is a `procedure-execution` atom (ADR-013).
+  `./og` re-exports `obligation` for convenience.
+- **Additive INSTRUMENT_TYPES extension** in `./encumbrances`: `oil-gas-lease`,
+  `mineral-deed`, `assignment`, `division-order` added to the ADR-020 union.
+  Per ADR-025 reconciliation: the recorded mineral lease instrument is a
+  `recorded-instrument`, not a new recording type.
+
+### Changed
+
+- **Package renamed:** `@hauska/atom-contract` → `@empressaio/atom-contract`.
+  Branding decision per `_decisions/2026-07-06_branding_hauska_sdk_only.md`.
+  Existing `@hauska/atom-contract@^1.6` consumers stay green on the old name;
+  consumers adopt 1.7.0 by changing the package name alongside the version bump
+  they already need to import `./og`.
+- README title and branding updated to Empressa throughout.
+
+### Consumer migration notes
+
+- Pin `@empressaio/atom-contract@^1.7.0` and change package name in dependencies
+  when adopting O&G types.
+- Import O&G contracts from `@empressaio/atom-contract/og`; main barrel and
+  other subpaths unchanged.
+- `obligation` is exported from the main barrel (`@empressaio/atom-contract`)
+  as a core type; `./og` re-exports it for O&G consumers' convenience.
+- Every O&G atom carries `WidthedConfidence`, `sourceCitation`, `extractedAt`,
+  `asOf?`, and `accessPolicy` per ADR-025's quality-gate discipline. At
+  activation the entire domain is uncalibrated (`provenance: "asserted"`).
+- No publish to npm is included in this release; publish is staged for operator
+  manual execution.
 
 ## [1.6.1] - 2026-07-05
 

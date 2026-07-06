@@ -1,7 +1,7 @@
 {
-  "name": "@hauska/atom-contract",
-  "version": "1.6.1",
-  "description": "The typed-data substrate every Hauska atom satisfies: identity, context interface, composition declaration, and history anchoring. Peer to the Hauska SDK; consumed directly by every product surface and MCP server.",
+  "name": "@empressaio/atom-contract",
+  "version": "1.7.0",
+  "description": "The typed-data substrate every Empressa atom satisfies: identity, context interface, composition declaration, and history anchoring. Peer to the Empressa SDK; consumed directly by every product surface and MCP server.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -37,6 +37,10 @@
     "./temporal": {
       "types": "./dist/temporal/index.d.ts",
       "import": "./dist/temporal/index.js"
+    },
+    "./og": {
+      "types": "./dist/og/index.d.ts",
+      "import": "./dist/og/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -88,13 +92,16 @@
   },
   "homepage": "https://github.com/empressaioemail-tech/hauska-atom-contract#readme",
   "keywords": [
+    "empressa",
     "hauska",
     "atom",
     "contract",
     "substrate",
     "agent",
     "typed-data",
-    "MCP"
+    "MCP",
+    "oil-gas",
+    "O&G"
   ],
   "sideEffects": false
 }
