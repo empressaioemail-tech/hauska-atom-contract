@@ -20,7 +20,12 @@ export interface ZoneAtomInstance {
 
 export const ZONE_SCHEMA = z.object({
   entityType: z.literal("zone"),
-  zoneDid: z.string().min(1),
+  zoneDid: z
+    .string()
+    .min(1)
+    .refine((val) => /^zone_[0-9a-f]{16}$/.test(val), {
+      message: "zoneDid must be in format zone_<16-hex-chars>",
+    }),
   formationName: z.string().min(1),
   tops: z.number().optional(),
   ...OG_QUALITY_GATE_FIELDS,

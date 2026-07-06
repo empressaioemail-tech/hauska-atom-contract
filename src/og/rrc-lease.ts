@@ -27,23 +27,38 @@ export interface RrcLeaseAtomInstance {
   accessPolicy: AccessPolicy;
 }
 
-export const RRC_LEASE_SCHEMA = z.object({
-  entityType: z.literal("rrc-lease"),
-  rrcLeaseDid: z.string().min(1),
-  leaseNumber: z.string().min(1),
-  leaseName: z.string().min(1),
-  district: z.string().min(1),
-  fieldRef: FIELD_REF_SCHEMA.optional(),
-  operatorActorDid: z.string().min(1),
-  wellCount: z.number().optional(),
-  status: z.string().min(1),
-  acreage: z.number().optional(),
-  ...OG_QUALITY_GATE_FIELDS,
-  accessPolicy: z.enum([
-    "public-free",
-    "public-paid",
-    "platform-internal",
-    "tenant-private",
-    "tenant-shared",
-  ]),
-});
+export const RRC_LEASE_SCHEMA = z
+  .object({
+    entityType: z.literal("rrc-lease"),
+    rrcLeaseDid: z
+      .string()
+      .min(1)
+      .refine((val) => val.startsWith("rrclease_"), {
+        message: "rrcLeaseDid must start with rrclease_ prefix",
+      }),
+    leaseNumber: z.string().min(1),
+    leaseName: z.string().min(1),
+    district: z.string().min(1),
+    fieldRef: FIELD_REF_SCHEMA.optional(),
+    operatorActorDid: z.string().min(1),
+    wellCount: z.number().optional(),
+    status: z.string().min(1),
+    acreage: z.number().optional(),
+    ...OG_QUALITY_GATE_FIELDS,
+    accessPolicy: z.enum([
+      "public-free",
+      "public-paid",
+      "platform-internal",
+      "tenant-private",
+      "tenant-shared",
+    ]),
+  })
+  .refine(
+    (data) => {
+      return data.rrcLeaseDid === `rrclease_${data.district}-${data.leaseNumber}`;
+    },
+    {
+      message: "rrcLeaseDid must match the derived ID from district and leaseNumber",
+      path: ["rrcLeaseDid"],
+    },
+  );

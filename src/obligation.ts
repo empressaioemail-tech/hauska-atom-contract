@@ -11,7 +11,7 @@
 import { z } from "zod";
 
 import type { AccessPolicy } from "./registration.js";
-import { WIDTHED_CONFIDENCE_SCHEMA } from "./read-contract/common.js";
+import { WIDTHED_CONFIDENCE_SCHEMA, type WidthedConfidence } from "./read-contract/common.js";
 
 /**
  * Obligation type discriminator. ADR-025 specifies O&G obligation types;
@@ -60,15 +60,18 @@ export const OBLIGATION_STATUSES: ReadonlyArray<ObligationStatus> = [
 ];
 
 /**
- * Obligation atom instance. Domain-neutral; O&G anchors to leaseDid
- * (mineral-lease), Mox would anchor to facility or other domain-specific DID.
+ * Obligation atom instance. Domain-neutral from birth (ADR-025 operator ruling
+ * 2): O&G anchors to mineral-lease DIDs (anchorKind: 'mineral-lease'), Mox
+ * anchors to facility DIDs (anchorKind: 'facility'). The core type must not
+ * freeze a lease-specific field name.
  * DID format: oblg_<hash> (hashed derivation from source, externalId).
  */
 export interface ObligationAtomInstance {
   entityType: "obligation";
   obligationDid: string;
   obligationType: ObligationType;
-  leaseDid: string;
+  anchorDid: string;
+  anchorKind?: string;
   owedToActorDid?: string;
   owedToInterestDid?: string;
   dueDate: string;
@@ -76,7 +79,7 @@ export interface ObligationAtomInstance {
   amount?: number;
   graceTerms?: string;
   status: ObligationStatus;
-  confidence: ReturnType<typeof WIDTHED_CONFIDENCE_SCHEMA["parse"]>;
+  confidence: WidthedConfidence;
   sourceCitation: string;
   extractedAt: string;
   asOf?: string;
@@ -85,11 +88,15 @@ export interface ObligationAtomInstance {
 
 export const OBLIGATION_SCHEMA = z.object({
   entityType: z.literal("obligation"),
-  obligationDid: z.string().min(1),
-  obligationType: z.enum(
-    OBLIGATION_TYPES as [ObligationType, ...ObligationType[]],
-  ),
-  leaseDid: z.string().min(1),
+  obligationDid: z
+    .string()
+    .min(1)
+    .refine((val) => /^oblg_[0-9a-f]{16}$/.test(val), {
+      message: "obligationDid must be in format oblg_<16-hex-chars>",
+    }),
+  obligationType: z.enum(OBLIGATION_TYPES as [ObligationType, ...ObligationType[]]),
+  anchorDid: z.string().min(1),
+  anchorKind: z.string().min(1).optional(),
   owedToActorDid: z.string().min(1).optional(),
   owedToInterestDid: z.string().min(1).optional(),
   dueDate: z.string().min(1),

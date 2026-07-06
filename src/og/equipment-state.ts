@@ -26,8 +26,18 @@ export interface EquipmentStateAtomInstance {
 
 export const EQUIPMENT_STATE_SCHEMA = z.object({
   entityType: z.literal("equipment-state"),
-  equipmentDid: z.string().min(1),
-  wellDid: z.string().min(1),
+  equipmentDid: z
+    .string()
+    .min(1)
+    .refine((val) => /^equip_[0-9a-f]{16}$/.test(val), {
+      message: "equipmentDid must be in format equip_<16-hex-chars>",
+    }),
+  wellDid: z
+    .string()
+    .min(1)
+    .refine((val) => val.startsWith("well_"), {
+      message: "wellDid must start with well_ prefix",
+    }),
   equipmentKind: z.enum(EQUIPMENT_KINDS as [EquipmentKind, ...EquipmentKind[]]),
   stateSnapshot: z.record(z.unknown()),
   telemetryStreamRefs: z.array(z.string().min(1)),

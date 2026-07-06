@@ -36,7 +36,12 @@ export interface MineralLeaseAtomInstance {
 
 export const MINERAL_LEASE_SCHEMA = z.object({
   entityType: z.literal("mineral-lease"),
-  leaseDid: z.string().min(1),
+  leaseDid: z
+    .string()
+    .min(1)
+    .refine((val) => /^mlease_[0-9a-f]{16}$/.test(val), {
+      message: "leaseDid must be in format mlease_<16-hex-chars>",
+    }),
   lessorActorDids: z.array(z.string().min(1)).min(1),
   lesseeActorDid: z.string().min(1),
   evidencedByInstrumentDids: z.array(z.string().min(1)).min(1),

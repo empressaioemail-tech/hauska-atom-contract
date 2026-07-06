@@ -208,6 +208,15 @@ export type PerforatedInterval = z.infer<typeof PERFORATED_INTERVAL_SCHEMA>;
  * development, depth severance). Each extract carries confidence +
  * sourceCitation into the instrument and page.
  */
+export interface ClauseExtract {
+  clauseType: "shut-in" | "pugh" | "continuous-development" | "depth-severance";
+  extractedText: string;
+  confidence: WidthedConfidence;
+  sourceCitation: string;
+  sourceInstrumentDid: string;
+  pageRef?: string;
+}
+
 export const CLAUSE_EXTRACT_SCHEMA = z.object({
   clauseType: z.enum([
     "shut-in",
@@ -221,8 +230,6 @@ export const CLAUSE_EXTRACT_SCHEMA = z.object({
   sourceInstrumentDid: z.string().min(1),
   pageRef: z.string().min(1).optional(),
 });
-
-export type ClauseExtract = z.infer<typeof CLAUSE_EXTRACT_SCHEMA>;
 
 /**
  * Quality gate fields: sourceCitation, extractedAt/asOf per ADR-025.
@@ -284,7 +291,8 @@ export const OG_DEFAULT_RENDER_MODE = {
 
 /**
  * Default access policies per ADR-025. Public regulatory data is public-free;
- * operator telemetry and land books are tenant-private.
+ * operator telemetry and land books are tenant-private. Obligation (core type,
+ * domain-neutral) defaults to tenant-private per operator ruling 3.
  */
 export const OG_DEFAULT_ACCESS_POLICY = {
   well: "public-free",
@@ -299,4 +307,5 @@ export const OG_DEFAULT_ACCESS_POLICY = {
   tract: "public-free",
   "ownership-interest": "tenant-private",
   "revenue-allocation-unit": "public-free",
+  obligation: "tenant-private",
 } as const satisfies Record<string, AccessPolicy>;

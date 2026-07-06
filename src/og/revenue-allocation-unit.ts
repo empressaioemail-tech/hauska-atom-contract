@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import type { AccessPolicy } from "../registration.js";
-import { WIDTHED_CONFIDENCE_SCHEMA } from "../read-contract/common.js";
+import { WIDTHED_CONFIDENCE_SCHEMA, type WidthedConfidence } from "../read-contract/common.js";
 import { OG_QUALITY_GATE_FIELDS } from "./common.js";
 
 /**
@@ -50,7 +50,7 @@ export interface TractParticipation {
   factor: number;
   allocationMethod: AllocationMethod;
   source: string;
-  confidence: ReturnType<typeof WIDTHED_CONFIDENCE_SCHEMA["parse"]>;
+  confidence: WidthedConfidence;
   /** For allocation-well basis: take points on this tract */
   takePoints?: number;
   /** For allocation-well basis: productive lateral footage on this tract */
@@ -125,6 +125,12 @@ export interface RevenueAllocationUnitAtomInstance {
   // standalone), never "missing data."
   sourcePlatCid?: string;
 
+  // PSA basis fields: PSAs are frequently unrecorded private agreements.
+  // sourceInstrumentDids is OPTIONAL for psa basis; when absent, the unit
+  // carries an operator-asserted sourceNote naming what the assertion rests on.
+  // Never require a recorded instrument that structurally may not exist.
+  sourceNote?: string;
+
   sourceCitation: string;
   extractedAt: string;
   asOf?: string;
@@ -133,7 +139,12 @@ export interface RevenueAllocationUnitAtomInstance {
 
 const BASE_SCHEMA = z.object({
   entityType: z.literal("revenue-allocation-unit"),
-  unitDid: z.string().min(1),
+  unitDid: z
+    .string()
+    .min(1)
+    .refine((val) => /^unit_[0-9a-f]{16}$/.test(val), {
+      message: "unitDid must be in format unit_<16-hex-chars>",
+    }),
   basis: z.enum(UNIT_BASES as [UnitBasis, ...UnitBasis[]]),
   wellDids: z.array(z.string().min(1)),
   operatorActorDid: z.string().min(1),
@@ -160,6 +171,7 @@ const POOLED_UNIT_SCHEMA = BASE_SCHEMA.extend({
   ratificationInstrumentDids: z.array(z.string().min(1)).optional(),
   ratificationGaps: z.array(RATIFICATION_GAP_SCHEMA).optional(),
   sourcePlatCid: z.undefined(),
+  sourceNote: z.undefined(),
 });
 
 /**
@@ -172,18 +184,34 @@ const ALLOCATION_WELL_SCHEMA = BASE_SCHEMA.extend({
   sourceInstrumentDids: z.undefined(),
   ratificationInstrumentDids: z.undefined(),
   ratificationGaps: z.undefined(),
+  sourceNote: z.undefined(),
 });
 
 /**
- * Schema for psa basis: like pooled-unit, may have sourceInstrumentDids.
+ * Schema for psa basis: PSAs are frequently unrecorded private agreements.
+ * sourceInstrumentDids is OPTIONAL (populated when a memorandum or the PSA
+ * itself is of record); when absent, requires an operator-asserted sourceNote.
+ * Per ADR-025 C1c finding #10.
  */
 const PSA_SCHEMA = BASE_SCHEMA.extend({
   basis: z.literal("psa"),
-  sourceInstrumentDids: z.array(z.string().min(1)).min(1),
+  sourceInstrumentDids: z.array(z.string().min(1)).optional(),
+  sourceNote: z.string().min(1).optional(),
   ratificationInstrumentDids: z.array(z.string().min(1)).optional(),
   ratificationGaps: z.array(RATIFICATION_GAP_SCHEMA).optional(),
   sourcePlatCid: z.undefined(),
-});
+}).refine(
+  (data) => {
+    const hasInstruments =
+      data.sourceInstrumentDids !== undefined && data.sourceInstrumentDids.length > 0;
+    const hasSourceNote = data.sourceNote !== undefined;
+    return hasInstruments || hasSourceNote;
+  },
+  {
+    message: "PSA basis requires either sourceInstrumentDids or sourceNote",
+    path: ["sourceInstrumentDids"],
+  },
+);
 
 /**
  * Revenue-allocation-unit schema with discriminated union on basis. Each basis
