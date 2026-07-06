@@ -73,14 +73,27 @@ export function isEventClaimType(claimType: string): claimType is EventClaimType
 
 /**
  * Registered node-type ID prefixes. Every stable graph node ID begins with
- * one of these prefixes.
+ * one of these prefixes. 1.7.0 extension: O&G prefixes per ADR-025.
  */
 export type NodeTypePrefix =
   | "parcel_"
   | "jurisdiction_"
   | "code-section_"
   | "security_"
-  | "evt_";
+  | "evt_"
+  | "well_"
+  | "wbore_"
+  | "cmpl_"
+  | "zone_"
+  | "pad_"
+  | "mlease_"
+  | "rrclease_"
+  | "tract_"
+  | "intr_"
+  | "oblg_"
+  | "prodts_"
+  | "equip_"
+  | "unit_";
 
 export const NODE_TYPE_PREFIX_VALUES: ReadonlyArray<NodeTypePrefix> = [
   "parcel_",
@@ -88,6 +101,19 @@ export const NODE_TYPE_PREFIX_VALUES: ReadonlyArray<NodeTypePrefix> = [
   "code-section_",
   "security_",
   "evt_",
+  "well_",
+  "wbore_",
+  "cmpl_",
+  "zone_",
+  "pad_",
+  "mlease_",
+  "rrclease_",
+  "tract_",
+  "intr_",
+  "oblg_",
+  "prodts_",
+  "equip_",
+  "unit_",
 ];
 
 export const NODE_TYPE_PREFIX_SCHEMA = z.enum([
@@ -96,6 +122,19 @@ export const NODE_TYPE_PREFIX_SCHEMA = z.enum([
   "code-section_",
   "security_",
   "evt_",
+  "well_",
+  "wbore_",
+  "cmpl_",
+  "zone_",
+  "pad_",
+  "mlease_",
+  "rrclease_",
+  "tract_",
+  "intr_",
+  "oblg_",
+  "prodts_",
+  "equip_",
+  "unit_",
 ]);
 
 /** ISO 8601 calendar date (YYYY-MM-DD). */

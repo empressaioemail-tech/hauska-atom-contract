@@ -25,6 +25,7 @@
 import { z } from "zod";
 
 import type { AccessPolicy, AtomMode } from "../registration.js";
+import type { NodeTypePrefix } from "../temporal/common.js";
 import {
   createWidthedConfidence,
   WIDTHED_CONFIDENCE_SCHEMA,
@@ -35,8 +36,10 @@ import {
  * Node-type prefixes registered additively for O&G atoms (ADR-025).
  * well_, wbore_, cmpl_, zone_, pad_, mlease_, rrclease_, tract_, intr_,
  * prodts_, equip_, unit_. (oblg_ is core, not ./og-specific.)
+ * Re-exported from the core registry to avoid parallel source of truth.
  */
-export type OgNodeTypePrefix =
+export type OgNodeTypePrefix = Extract<
+  NodeTypePrefix,
   | "well_"
   | "wbore_"
   | "cmpl_"
@@ -48,7 +51,8 @@ export type OgNodeTypePrefix =
   | "intr_"
   | "prodts_"
   | "equip_"
-  | "unit_";
+  | "unit_"
+>;
 
 export const OG_NODE_TYPE_PREFIXES: ReadonlyArray<OgNodeTypePrefix> = [
   "well_",
