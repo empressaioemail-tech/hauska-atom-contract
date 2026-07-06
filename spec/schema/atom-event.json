@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empressa.io/schemas/atom-event.json",
+  "title": "AtomEvent",
+  "description": "Materialized event row for event-anchored atom history. chainHash is deterministic SHA-256 (TODO: will be replaced with cryptographic anchor). prevHash links to the previous event's chainHash for the same (entityType, entityId) pair, forming a tamper-evident chain.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ULID-like monotonic event identifier."
+    },
+    "entityType": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Atom type identifier (e.g., 'jurisdiction', 'parcel')."
+    },
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier for the atom instance."
+    },
+    "eventType": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Event type string (e.g., 'created', 'updated', 'verified')."
+    },
+    "actor": {
+      "type": "object",
+      "description": "Identity of the actor that produced this event.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["user", "agent", "system"],
+          "description": "Actor type: user (human), agent (AI/bot), or system (automated)."
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Opaque actor identifier."
+        }
+      },
+      "required": ["kind", "id"],
+      "additionalProperties": false
+    },
+    "payload": {
+      "type": "object",
+      "description": "Mutation payload as recorded by the atom; stored verbatim as JSONB.",
+      "additionalProperties": true
+    },
+    "prevHash": {
+      "type": ["string", "null"],
+      "description": "SHA-256 hash of the previous event in the chain, or null for the first event."
+    },
+    "chainHash": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Deterministic SHA-256 hash of this event. Forms a tamper-evident chain with prevHash."
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when the event occurred (business time)."
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when the event was recorded in the system."
+    }
+  },
+  "required": ["id", "entityType", "entityId", "eventType", "actor", "payload", "prevHash", "chainHash", "occurredAt", "recordedAt"],
+  "additionalProperties": false
+}

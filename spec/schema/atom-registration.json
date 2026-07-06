@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empressa.io/schemas/atom-registration.json",
+  "title": "AtomRegistration",
+  "description": "The four-layer atom contract: identity, context interface, composition declaration, and history anchoring. This is the registration envelope that declares what an atom is and how it behaves. Every conformant atom must satisfy this shape.",
+  "type": "object",
+  "properties": {
+    "entityType": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable atom identity. Must be a literal string (e.g., 'jurisdiction', 'parcel', 'task')."
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Required, queryable domain grouping. Atoms are grouped by domain for prompt-builder derivation and catalog filtering."
+    },
+    "supportedModes": {
+      "type": "array",
+      "description": "Render modes the atom implementation supports.",
+      "items": {
+        "type": "string",
+        "enum": ["inline", "compact", "card", "expanded", "focus"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "defaultMode": {
+      "type": "string",
+      "enum": ["inline", "compact", "card", "expanded", "focus"],
+      "description": "Default mode used when the caller does not specify one. Must be a member of supportedModes."
+    },
+    "accessPolicy": {
+      "type": "string",
+      "enum": ["public-free", "public-paid", "platform-internal", "tenant-private", "tenant-shared"],
+      "description": "Atom-type default access tier per ADR-017. Surfaces that gate on visibility treat an omitted field as 'public-free'. Per-instance overrides flow through the context summary."
+    },
+    "eventTypes": {
+      "type": "array",
+      "description": "Optional, machine-readable list of event-type strings this atom is allowed to emit. Convention: dotted names namespaced by entityType (e.g., 'sheet.created', 'snapshot.referenced-in-submission').",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "composition": {
+      "type": "array",
+      "description": "Declarative composition graph. Pass an empty array to declare 'no children'. The field is required so a registration cannot silently omit the composition layer.",
+      "items": {
+        "type": "object",
+        "description": "A single composition edge declaring a child atom type.",
+        "properties": {
+          "childType": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Entity type of the child atom."
+          },
+          "relationLabel": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable label for the relationship (e.g., 'contains', 'references')."
+          },
+          "cardinality": {
+            "type": "string",
+            "enum": ["one", "many"],
+            "description": "Cardinality of the relationship."
+          }
+        },
+        "required": ["childType", "relationLabel", "cardinality"],
+        "additionalProperties": false
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Provenance fields declaring how this atom instance was sourced.",
+      "properties": {
+        "sourceAdapter": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identifier of the adapter that sourced this atom (e.g., 'buildingeye-api', 'assessor-scraper')."
+        },
+        "sourceUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL or URI of the original data source."
+        },
+        "contentHash": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hash of the source content for tamper-detection and cache invalidation."
+        },
+        "fetchedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 timestamp when the atom was fetched from the source."
+        }
+      },
+      "required": ["sourceAdapter", "fetchedAt"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["entityType", "domain", "supportedModes", "defaultMode", "composition"],
+  "additionalProperties": false
+}
