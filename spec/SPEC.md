@@ -1,6 +1,6 @@
-# Hauska Atom Specification
+# Empressa Atom Specification
 
-**Version:** 1.6.1 (tracks `@hauska/atom-contract` npm package)  
+**Version:** 1.7.0 (tracks `@empressaio/atom-contract` npm package)  
 **Status:** Open Standard  
 **Target:** Language-neutral, implementation-agnostic
 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-The **Hauska Atom** is an open specification for representing agent-readable, jurisdictional, and physical-world facts. An atom is the fundamental unit of typed data in the Hauska ecosystem, designed to be:
+The **Empressa Atom Specification** is an open standard for representing agent-readable, jurisdictional, and physical-world facts. An atom is the fundamental unit of typed data in the Empressa ecosystem, designed to be:
 
 - **Verifiable**: Every atom carries provenance, confidence metrics, and an event-anchored history.
 - **Composable**: Atoms declare their relationships to other atoms, forming a knowledge graph.
@@ -21,7 +21,7 @@ This specification defines the **Atom Contract**: the four-layer structure every
 
 ## Four-Layer Contract
 
-Every Hauska atom satisfies four layers:
+Every Empressa atom satisfies four layers:
 
 ### 1. **Identity Layer**
 
@@ -102,7 +102,7 @@ The **`accessPolicy`** field controls catalog visibility and surface-level gatin
 
 ## Earned-Confidence Model (WidthedConfidence)
 
-Hauska atoms **do not use bare scalar confidence values**. Instead, every confidence statement is a **`WidthedConfidence`** object:
+Empressa atoms **do not use bare scalar confidence values**. Instead, every confidence statement is a **`WidthedConfidence`** object:
 
 ```json
 {
@@ -153,7 +153,7 @@ See [`read-contract.json`](schema/read-contract.json), [`consequence-axis.json`]
 
 ## Atom Conformance
 
-The `@hauska/atom-contract` package exports a conformance validator:
+The `@empressaio/atom-contract` package exports a conformance validator:
 
 ### `validateAtomConformance(input)`
 
@@ -191,13 +191,13 @@ Validates the integrity of the `prevHash` → `chainHash` chain:
 
 ## Versioning
 
-This specification is **tied to the `@hauska/atom-contract` npm package version**. Changes to the JSON Schemas or the conformance target are published as new npm versions.
+This specification is **tied to the `@empressaio/atom-contract` npm package version**. Changes to the JSON Schemas or the conformance target are published as new npm versions.
 
-**Current Version:** `1.6.1`  
+**Current Version:** `1.7.0`  
 **Conformance Target Version:** `1.5.0` (used by `validateAtomConformance`)
 
 Implementers should:
-1. Pin to a specific `@hauska/atom-contract` version.
+1. Pin to a specific `@empressaio/atom-contract` version.
 2. Use the exported `validateAtomConformance` function to verify conformance.
 3. Consult the [CHANGELOG](../CHANGELOG.md) when upgrading.
 
@@ -235,14 +235,16 @@ To mint a conformant atom in **any language**:
    - Use `validateAtomConformance` to check the full shape.
    - Use `verifyEventChain` to validate history integrity.
 
+**Extension Modules:** The seven core JSON Schemas cover the atom contract itself. Domain-specific atom types (encumbrances, O&G) ship in the TypeScript package as separate subpaths (`./encumbrances`, `./og`) with Zod-validated payloads. JSON Schemas for extension modules are generated at publish time. See the [spec README](README.md#extension-modules) for details on the O&G module (asset spine, production timeseries, land leg, revenue-allocation-unit) and encumbrances module (recorded-instrument, restriction-clause).
+
 ---
 
 ## Reference Implementation
 
 The **canonical reference implementation** is the TypeScript package:
 
-**`@hauska/atom-contract`**  
-**npm:** [https://www.npmjs.com/package/@hauska/atom-contract](https://www.npmjs.com/package/@hauska/atom-contract)  
+**`@empressaio/atom-contract`**  
+**npm:** [https://www.npmjs.com/package/@empressaio/atom-contract](https://www.npmjs.com/package/@empressaio/atom-contract)  
 **GitHub:** [https://github.com/empressaioemail-tech/hauska-atom-contract](https://github.com/empressaioemail-tech/hauska-atom-contract)
 
 The TypeScript package exports:
@@ -250,12 +252,13 @@ The TypeScript package exports:
 - Zod schemas for runtime validation.
 - `validateAtomConformance` and `verifyEventChain` functions.
 - Event-anchoring service interface and Postgres implementation.
+- **Extension modules**: `./encumbrances` (ADR-020/021) and `./og` (ADR-025 O&G ontology) ship domain-specific atom types (recorded-instrument, restriction-clause, well, mineral-lease, revenue-allocation-unit, etc.) with Zod-validated payloads. The core `obligation` type ships in the main module.
 
 ---
 
 ## Compliance Summary
 
-A **conformant Hauska atom** must:
+A **conformant Empressa atom** must:
 
 ✅ Declare `entityType`, `entityId`, and `domain`.  
 ✅ Implement a `contextSummary` function returning the four-layer payload.  
@@ -269,7 +272,7 @@ A **conformant Hauska atom** must:
 
 ## License & Governance
 
-This specification is **open and freely implementable**. The JSON Schemas are published under the same license as the `@hauska/atom-contract` package. Community contributions are welcome via GitHub issues and pull requests.
+This specification is **open and freely implementable**. The JSON Schemas are published under the same license as the `@empressaio/atom-contract` package. Community contributions are welcome via GitHub issues and pull requests.
 
 ---
 
@@ -278,4 +281,4 @@ This specification is **open and freely implementable**. The JSON Schemas are pu
 - [JSON Schema Directory](schema/) — Machine-readable definitions for all atom structures.
 - [README](README.md) — Quick links and versioning summary.
 - [CHANGELOG](../CHANGELOG.md) — Version history and migration notes.
-- [npm Package](https://www.npmjs.com/package/@hauska/atom-contract) — TypeScript reference implementation.
+- [npm Package](https://www.npmjs.com/package/@empressaio/atom-contract) — TypeScript reference implementation.

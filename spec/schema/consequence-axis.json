@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hauska.io/schemas/consequence-axis.json",
+  "$id": "https://empressa.io/schemas/consequence-axis.json",
   "title": "ConsequenceAxis",
   "description": "Severity axis per Calibrated Spine F6. Asserted, audited, and derived from code risk classifications (ASCE 7, IBC). No invented severity scalar is stored — only classification inputs and a discrete stratum identifier.",
   "type": "object",

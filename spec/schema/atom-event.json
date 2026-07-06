@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hauska.io/schemas/atom-event.json",
+  "$id": "https://empressa.io/schemas/atom-event.json",
   "title": "AtomEvent",
   "description": "Materialized event row for event-anchored atom history. chainHash is deterministic SHA-256 (TODO: will be replaced with cryptographic anchor). prevHash links to the previous event's chainHash for the same (entityType, entityId) pair, forming a tamper-evident chain.",
   "type": "object",

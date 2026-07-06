@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hauska.io/schemas/context-summary.json",
+  "$id": "https://empressa.io/schemas/context-summary.json",
   "title": "ContextSummary",
   "description": "Four-layer context payload returned by an atom's contextSummary function. Provides prose, typed data, key metrics, and related atoms, plus history provenance and access policy.",
   "type": "object",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hauska.io/schemas/atom-registration.json",
+  "$id": "https://empressa.io/schemas/atom-registration.json",
   "title": "AtomRegistration",
   "description": "The four-layer atom contract: identity, context interface, composition declaration, and history anchoring. This is the registration envelope that declares what an atom is and how it behaves. Every conformant atom must satisfy this shape.",
   "type": "object",

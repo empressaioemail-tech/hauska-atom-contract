@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hauska.io/schemas/read-contract.json",
+  "$id": "https://empressa.io/schemas/read-contract.json",
   "title": "ReadContract",
   "description": "The read-contract object every confidence-emitting surface must return per Calibrated Spine F4/F6. No bare scalar confidence field exists on this type. Contains three distinct confidence axes: calibrated (accuracy, earned), asserted (source-quality), and consequence (severity).",
   "type": "object",

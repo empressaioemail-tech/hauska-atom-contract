@@ -1,6 +1,6 @@
-# Hauska Atom Open Specification
+# Empressa Atom Open Specification
 
-**Version:** 1.6.1  
+**Version:** 1.7.0  
 **Status:** Open Standard  
 **Language:** Agnostic (JSON Schema draft 2020-12)
 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This directory contains the **language-neutral, open specification** for the Hauska Atom contract. The specification enables any programming language to mint conformant atoms—agent-readable, jurisdictional, and physical-world facts with provenance, confidence, and tamper-evident history.
+This directory contains the **language-neutral, open specification** for the Empressa Atom contract. The specification enables any programming language to mint conformant atoms—agent-readable, jurisdictional, and physical-world facts with provenance, confidence, and tamper-evident history.
 
 ---
 
@@ -16,7 +16,7 @@ This directory contains the **language-neutral, open specification** for the Hau
 
 ### 📄 [SPEC.md](SPEC.md)
 
-The **canonical, implementation-agnostic description** of the Hauska Atom contract. Read this first to understand:
+The **canonical, implementation-agnostic description** of the Empressa Atom contract. Read this first to understand:
 
 - The **four-layer contract** (identity, context, composition, history).
 - **Provenance fields** (`sourceAdapter`, `sourceUrl`, `contentHash`, `fetchedAt`).
@@ -39,13 +39,27 @@ The **canonical, implementation-agnostic description** of the Hauska Atom contra
 | [`model-attribution.json`](schema/model-attribution.json) | [`src/read-contract/model-attribution.ts`](../src/read-contract/model-attribution.ts) | Model-attribution stamp (model, prompt, context, sampling params). |
 | [`atom-event.json`](schema/atom-event.json) | [`src/history.ts`](../src/history.ts) | Event-anchored history (id, entityType, entityId, actor, payload, chainHash). |
 
+### Extension Modules
+
+The TypeScript reference implementation ships domain-specific atom types in separate subpaths:
+
+| Module | Subpath | Description |
+|--------|---------|-------------|
+| **Encumbrances** | `./encumbrances` | Private recorded land-use instruments (recorded-instrument, restriction-clause) per ADR-020/ADR-021. Schemas validated at runtime via Zod; JSON Schemas generated at publish. |
+| **Oil & Gas** | `./og` | O&G operational, land, and capital atoms per ADR-025. Covers asset spine (well, wellbore, completion, zone, pad), production timeseries, equipment state, land leg (mineral-lease, rrc-lease, tract, ownership-interest), and revenue-allocation-unit. Schemas validated at runtime via Zod; JSON Schemas generated at publish. |
+| **Obligation** | `.` (core) | Domain-neutral obligation type (core atom; not O&G-specific). Shipped in main module. |
+
+**Node Type Prefix Registry (v1.7.0):** The core `NODE_TYPE_PREFIX` registry includes 13 O&G prefixes (`well_`, `wbore_`, `cmpl_`, `zone_`, `pad_`, `mlease_`, `rrclease_`, `tract_`, `intr_`, `prodts_`, `equip_`, `unit_`, and `oblg_` for obligation).
+
+**Instrument Types (v1.7.0):** The `INSTRUMENT_TYPES` enum includes the unit family (oil-gas-lease, mineral-deed, assignment, division-order, unit-designation, declaration-of-pooling, ratification-of-unit, amendment-of-unit-designation, release-of-unit) per ADR-025 C1b extension.
+
 ---
 
 ## Versioning
 
-This specification is **tightly coupled** to the `@hauska/atom-contract` npm package version:
+This specification is **tightly coupled** to the `@empressaio/atom-contract` npm package version:
 
-- **Current Package Version:** `1.6.1`
+- **Current Package Version:** `1.7.0`
 - **Conformance Target Version:** `1.5.0` (embedded in `validateAtomConformance`)
 
 When the TypeScript types change, the JSON Schemas are updated in lockstep and published as a new npm version. **Always pin to a specific package version** to avoid schema drift.
@@ -61,7 +75,7 @@ When the TypeScript types change, the JSON Schemas are updated in lockstep and p
    - Use a JSON Schema validator library in your language (e.g., `ajv` for JavaScript, `jsonschema` for Python, `gojsonschema` for Go).
    - Load the schemas from this directory.
 3. **Call the conformance validator**:
-   - **Option A:** Use the TypeScript reference implementation (`@hauska/atom-contract/conformance`) via Node.js.
+   - **Option A:** Use the TypeScript reference implementation (`@empressaio/atom-contract/conformance`) via Node.js.
    - **Option B:** Port `validateAtomConformance` and `verifyEventChain` to your language.
 4. **Emit atoms** that satisfy the four-layer contract (identity, context, composition, history).
 
@@ -70,8 +84,8 @@ When the TypeScript types change, the JSON Schemas are updated in lockstep and p
 Import directly from the npm package:
 
 ```typescript
-import { validateAtomConformance, verifyEventChain } from '@hauska/atom-contract/conformance';
-import type { AtomRegistration, ContextSummary, ReadContract } from '@hauska/atom-contract';
+import { validateAtomConformance, verifyEventChain } from '@empressaio/atom-contract/conformance';
+import type { AtomRegistration, ContextSummary, ReadContract } from '@empressaio/atom-contract';
 
 const result = validateAtomConformance({
   tier: 'data',
@@ -91,7 +105,7 @@ if (result.ok) {
 
 ## Reference Implementation
 
-**TypeScript Package:** [`@hauska/atom-contract`](https://www.npmjs.com/package/@hauska/atom-contract)  
+**TypeScript Package:** [`@empressaio/atom-contract`](https://www.npmjs.com/package/@empressaio/atom-contract)  
 **GitHub:** [empressaioemail-tech/hauska-atom-contract](https://github.com/empressaioemail-tech/hauska-atom-contract)
 
 The package exports:
@@ -104,7 +118,7 @@ The package exports:
 
 ## License
 
-The JSON Schemas in this directory are published under the same license as the `@hauska/atom-contract` package. See the [LICENSE](../LICENSE) file for details.
+The JSON Schemas in this directory are published under the same license as the `@empressaio/atom-contract` package. See the [LICENSE](../LICENSE) file for details.
 
 ---
 
@@ -125,5 +139,5 @@ Community contributions are welcome! To propose changes:
 
 - **[SPEC.md](SPEC.md)** — Read the full specification.
 - **[schema/](schema/)** — Browse the JSON Schemas.
-- **[npm Package](https://www.npmjs.com/package/@hauska/atom-contract)** — Install the TypeScript reference implementation.
+- **[npm Package](https://www.npmjs.com/package/@empressaio/atom-contract)** — Install the TypeScript reference implementation.
 - **[CHANGELOG](../CHANGELOG.md)** — See what changed between versions.

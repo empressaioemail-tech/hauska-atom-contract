@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hauska.io/schemas/model-attribution.json",
+  "$id": "https://empressa.io/schemas/model-attribution.json",
   "title": "ModelAttributionStamp",
   "description": "Model-attribution stamp for the rich raw ledger (F3). Stamped on deposit; joins a judgment to the model, prompt, context, sampling configuration, and retrieved atom set used at write time.",
   "type": "object",

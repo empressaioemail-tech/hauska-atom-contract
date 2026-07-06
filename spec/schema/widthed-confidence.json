@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hauska.io/schemas/widthed-confidence.json",
+  "$id": "https://empressa.io/schemas/widthed-confidence.json",
   "title": "WidthedConfidence",
   "description": "Inseparable accuracy-or-source-quality confidence object per Calibrated Spine F4/F6/K6. Every field is required; the estimate is branded and not assignable from a bare number. Consumers must hold a complete WidthedConfidence object.",
   "type": "object",
