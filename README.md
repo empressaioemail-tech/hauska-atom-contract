@@ -1,8 +1,8 @@
-# `@hauska/atom-contract`
+# `@empressaio/atom-contract`
 
-The typed-data substrate every Hauska atom must satisfy: identity,
+The typed-data substrate every Empressa atom must satisfy: identity,
 context interface, composition declaration, and history anchoring.
-Peer to the Hauska SDK; consumed directly by every product surface
+Peer to the Hauska SDK (`@hauska-sdk/*`); consumed directly by every product surface
 and MCP server.
 
 This package is **framework only**. It ships the contract, the runtime
@@ -12,7 +12,7 @@ Catalog atom registrations (the actual atom types — `engagement`,
 `code-section`, `jurisdiction-corpus`, etc.) live in consumer packages
 that depend on this one.
 
-Hauska commercial substrate, peer to `@hauska-sdk/*` and `hauska-engine`,
+Empressa commercial substrate, peer to `@hauska-sdk/*` and `hauska-engine`,
 per doc_repo ADR-018 (atom contract substrate layer placement). The
 package has zero `@hauska-sdk/*` dependency: an MCP server or product
 surface can depend on the contract without inheriting the commerce
@@ -21,9 +21,9 @@ stack.
 ## Install
 
 ```bash
-npm install @hauska/atom-contract
+npm install @empressaio/atom-contract
 # or
-pnpm add @hauska/atom-contract
+pnpm add @empressaio/atom-contract
 ```
 
 Requires Node 18.18+ and `drizzle-orm` (^0.30.0) if you intend to use
@@ -63,7 +63,7 @@ import {
   type Scope,
   type AtomComposition,
   type EventAnchoringService,
-} from "@hauska/atom-contract";
+} from "@empressaio/atom-contract";
 ```
 
 Testing utilities live behind a separate subpath so production bundles
@@ -74,7 +74,7 @@ import {
   createTestRegistry,
   createInMemoryEventService,
   runAtomContractTests,
-} from "@hauska/atom-contract/testing";
+} from "@empressaio/atom-contract/testing";
 ```
 
 ## The four-layer contract
@@ -254,7 +254,26 @@ import {
   RESTRICTION_CLAUSE_SCHEMA,
   ENCUMBRANCE_RENDER_MODES,
   SAMPLE_RECORDED_INSTRUMENT,
-} from "@hauska/atom-contract/encumbrances";
+} from "@empressaio/atom-contract/encumbrances";
+```
+
+## Oil & Gas atom types (ADR-025)
+
+O&G operational, land, and capital atoms ship as Zod-validated payloads on
+the `./og` subpath (v1.7.0). Covers the asset spine (well, wellbore,
+completion, zone, pad), production timeseries, equipment state, the land
+leg (mineral-lease, rrc-lease, tract, ownership-interest), and revenue
+allocation units. Obligation (core domain-neutral type) ships in the main
+module, not `./og`.
+
+```ts
+import {
+  WELL_SCHEMA,
+  MINERAL_LEASE_SCHEMA,
+  REVENUE_ALLOCATION_UNIT_SCHEMA,
+  SAMPLE_WELL,
+  OG_DEFAULT_ACCESS_POLICY,
+} from "@empressaio/atom-contract/og";
 ```
 
 | `entityType` | Purpose | Recommended render modes |
@@ -284,7 +303,7 @@ import {
   SAMPLE_READ_CONTRACT,
   type ReadContract,
   type CalibrationProvenance,
-} from "@hauska/atom-contract/read-contract";
+} from "@empressaio/atom-contract/read-contract";
 ```
 
 | Export | Role |
@@ -305,7 +324,7 @@ registration is well-formed in one function call:
 
 ```ts
 import { describe } from "vitest";
-import { runAtomContractTests } from "@hauska/atom-contract/testing";
+import { runAtomContractTests } from "@empressaio/atom-contract/testing";
 import { taskAtom } from "./task.reg";
 
 describe("task atom contract", () => {

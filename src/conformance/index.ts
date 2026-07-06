@@ -1,7 +1,7 @@
 /**
  * Architecture-homes atom conformance target (doc 02).
  *
- * Import from `@hauska/atom-contract/conformance`. Validates read-contract,
+ * Import from `@empressaio/atom-contract/conformance`. Validates read-contract,
  * accessPolicy, and signed-history for data-level atoms.
  */
 

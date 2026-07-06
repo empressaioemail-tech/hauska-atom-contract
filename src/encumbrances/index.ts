@@ -1,7 +1,7 @@
 /**
  * ADR-020 / ADR-021 encumbrance atom type definitions.
  *
- * Import from `@hauska/atom-contract/encumbrances`. Engine registry
+ * Import from `@empressaio/atom-contract/encumbrances`. Engine registry
  * bindings and ingest producers register against these schemas in
  * `hauska-engine/packages/atoms/` (cc-agent-E follow-on).
  */

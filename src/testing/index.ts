@@ -1,5 +1,5 @@
 /**
- * Testing utilities for `@hauska/atom-contract`.
+ * Testing utilities for `@empressaio/atom-contract`.
  *
  * Consumer atom registrations import {@link runAtomContractTests} to
  * prove their registration is well-formed in one function call. The
@@ -171,7 +171,7 @@ export interface AtomContractOptions {
  *
  * @example
  *   import { describe } from "vitest";
- *   import { runAtomContractTests } from "@hauska/atom-contract/testing";
+ *   import { runAtomContractTests } from "@empressaio/atom-contract/testing";
  *   import { taskAtom } from "./task.reg.js";
  *   describe("task atom contract", () => {
  *     runAtomContractTests(taskAtom, { withFixture: { entityId: "t1" } });
@@ -269,7 +269,7 @@ export interface AtomConformanceTestOptions {
  *
  * @example
  *   import { describe } from "vitest";
- *   import { runAtomConformanceTests } from "@hauska/atom-contract/testing";
+ *   import { runAtomConformanceTests } from "@empressaio/atom-contract/testing";
  *   describe("code-section conformance", () => {
  *     runAtomConformanceTests("code-section", {
  *       tier: "data",

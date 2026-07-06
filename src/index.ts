@@ -1,5 +1,5 @@
 /**
- * Public surface of `@hauska/atom-contract`.
+ * Public surface of `@empressaio/atom-contract`.
  *
  * The barrel re-exports every primitive but never anything from
  * `src/testing/` — testing utilities live behind the `./testing` subpath
@@ -76,3 +76,14 @@ export type {
   AtomPromptDescription,
 } from "./registry.js";
 export { createAtomRegistry, AtomNotRegisteredError } from "./registry.js";
+
+export type {
+  ObligationAtomInstance,
+  ObligationType,
+  ObligationStatus,
+} from "./obligation.js";
+export {
+  OBLIGATION_SCHEMA,
+  OBLIGATION_TYPES,
+  OBLIGATION_STATUSES,
+} from "./obligation.js";
