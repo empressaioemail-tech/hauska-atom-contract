@@ -4,6 +4,22 @@
  * O&G atoms carry structured confidence, source citation, and access policy
  * per the existing quality-gate discipline. Every confidence field is
  * WidthedConfidence; bare scalars are unrepresentable.
+ *
+ * Link vocabulary (semantic edges between atoms):
+ * - `evidenced-by`: mineral-lease → recorded-instrument (the wet-document trail)
+ * - `regulatory-expression-of`: rrc-lease → mineral-lease (many-to-many mapping)
+ * - `derives-from`: derived stream → source stream; ownership-interest → instruments
+ * - `located-on`: well → tract
+ * - `assigned-to`: well → rrc-lease (oil wells; the reporting split)
+ * - `produces-from`: completion → zone
+ * - `subject-to`: tract → recorded-instrument
+ * - `reconciles-with`: computed DOI → obtained operator DOI / signed division order
+ *   (added 1.7.0, C1b; external assertion reconciled against computed value;
+ *   discrepancies surface as disputes, never silent overwrites)
+ *
+ * Links are semantic relationships described in ADR-025 and consumed by the
+ * graph traversal layer (ADR-010). This contract module defines atom types
+ * and schemas; link resolution is handled by downstream graph engines.
  */
 
 import { z } from "zod";
@@ -18,7 +34,7 @@ import {
 /**
  * Node-type prefixes registered additively for O&G atoms (ADR-025).
  * well_, wbore_, cmpl_, zone_, pad_, mlease_, rrclease_, tract_, intr_,
- * prodts_, equip_. (oblg_ is core, not ./og-specific.)
+ * prodts_, equip_, unit_. (oblg_ is core, not ./og-specific.)
  */
 export type OgNodeTypePrefix =
   | "well_"
@@ -31,7 +47,8 @@ export type OgNodeTypePrefix =
   | "tract_"
   | "intr_"
   | "prodts_"
-  | "equip_";
+  | "equip_"
+  | "unit_";
 
 export const OG_NODE_TYPE_PREFIXES: ReadonlyArray<OgNodeTypePrefix> = [
   "well_",
@@ -45,6 +62,7 @@ export const OG_NODE_TYPE_PREFIXES: ReadonlyArray<OgNodeTypePrefix> = [
   "intr_",
   "prodts_",
   "equip_",
+  "unit_",
 ];
 
 /**
@@ -242,6 +260,7 @@ export const OG_RENDER_MODES = {
   "rrc-lease": ["card", "compact", "expanded"] as const,
   tract: ["card", "compact", "expanded"] as const,
   "ownership-interest": ["card", "compact", "expanded", "focus"] as const,
+  "revenue-allocation-unit": ["card", "compact", "expanded", "focus"] as const,
 } satisfies Record<string, ReadonlyArray<AtomMode>>;
 
 export const OG_DEFAULT_RENDER_MODE = {
@@ -256,6 +275,7 @@ export const OG_DEFAULT_RENDER_MODE = {
   "rrc-lease": "card",
   tract: "card",
   "ownership-interest": "focus",
+  "revenue-allocation-unit": "card",
 } as const satisfies Record<string, AtomMode>;
 
 /**
@@ -274,4 +294,5 @@ export const OG_DEFAULT_ACCESS_POLICY = {
   "rrc-lease": "public-free",
   tract: "public-free",
   "ownership-interest": "tenant-private",
+  "revenue-allocation-unit": "public-free",
 } as const satisfies Record<string, AccessPolicy>;

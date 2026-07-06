@@ -20,6 +20,8 @@ import {
   SAMPLE_WELL,
   SAMPLE_WELLBORE,
   SAMPLE_ZONE,
+  SAMPLE_POOLED_UNIT,
+  SAMPLE_ALLOCATION_WELL_UNIT,
 } from "../fixtures.js";
 import { MINERAL_LEASE_SCHEMA } from "../mineral-lease.js";
 import { OWNERSHIP_INTEREST_SCHEMA } from "../ownership-interest.js";
@@ -31,6 +33,8 @@ import { WELL_SCHEMA } from "../well.js";
 import { WELLBORE_SCHEMA } from "../wellbore.js";
 import { ZONE_SCHEMA } from "../zone.js";
 import { createOgAssertedConfidence } from "../common.js";
+import { REVENUE_ALLOCATION_UNIT_SCHEMA } from "../revenue-allocation-unit.js";
+import { INSTRUMENT_TYPES } from "../../encumbrances/common.js";
 
 describe("O&G fixtures — Zod validation", () => {
   it("validates well with legible DID", () => {
@@ -80,6 +84,18 @@ describe("O&G fixtures — Zod validation", () => {
       true,
     );
   });
+
+  it("validates revenue-allocation-unit with pooled-unit basis", () => {
+    expect(REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(SAMPLE_POOLED_UNIT).success).toBe(
+      true,
+    );
+  });
+
+  it("validates revenue-allocation-unit with allocation-well basis", () => {
+    expect(
+      REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(SAMPLE_ALLOCATION_WELL_UNIT).success,
+    ).toBe(true);
+  });
 });
 
 describe("obligation (core) — Zod validation", () => {
@@ -128,6 +144,7 @@ describe("O&G access policy", () => {
     expect(OG_DEFAULT_ACCESS_POLICY["ownership-interest"]).toBe("tenant-private");
     expect(OG_DEFAULT_ACCESS_POLICY["rrc-lease"]).toBe("public-free");
     expect(OG_DEFAULT_ACCESS_POLICY.tract).toBe("public-free");
+    expect(OG_DEFAULT_ACCESS_POLICY["revenue-allocation-unit"]).toBe("public-free");
   });
 
   it("requires sourceCitation on all O&G atoms", () => {
@@ -225,5 +242,114 @@ describe("O&G quality gate", () => {
     expect(confidence.provenance).toBe("asserted");
     expect(confidence.n).toBe(0);
     expect(confidence.intervalWidth).toBe(1);
+  });
+});
+
+describe("revenue-allocation-unit validation (C1b)", () => {
+  it("requires allocationMethod on every tractParticipation factor", () => {
+    const badUnit = {
+      ...SAMPLE_POOLED_UNIT,
+      tractParticipations: [
+        {
+          tractDid: "tract_reeves-123",
+          factor: 0.65,
+          source: "Unit Designation 2023-001",
+          confidence: createOgAssertedConfidence(0.9),
+        },
+      ],
+    };
+    const result = REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(badUnit);
+    expect(result.success).toBe(false);
+  });
+
+  it("requires source on every tractParticipation factor", () => {
+    const badUnit = {
+      ...SAMPLE_POOLED_UNIT,
+      tractParticipations: [
+        {
+          tractDid: "tract_reeves-123",
+          factor: 0.65,
+          allocationMethod: "stated-fraction",
+          confidence: createOgAssertedConfidence(0.9),
+        },
+      ],
+    };
+    const result = REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(badUnit);
+    expect(result.success).toBe(false);
+  });
+
+  it("validates all allocation methods", () => {
+    const methods = [
+      "stated-fraction",
+      "acreage",
+      "lateral-length",
+      "take-points",
+      "acre-feet",
+      "oil-in-place",
+      "other",
+    ];
+    for (const method of methods) {
+      const unit = {
+        ...SAMPLE_POOLED_UNIT,
+        tractParticipations: [
+          {
+            tractDid: "tract_reeves-123",
+            factor: 0.65,
+            allocationMethod: method,
+            source: "Unit Designation 2023-001",
+            confidence: createOgAssertedConfidence(0.9),
+          },
+        ],
+      };
+      expect(REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(unit).success).toBe(true);
+    }
+  });
+
+  it("validates unit basis discriminator", () => {
+    const bases = ["pooled-unit", "allocation-well", "psa"];
+    for (const basis of bases) {
+      let unit;
+      if (basis === "pooled-unit" || basis === "psa") {
+        unit = { ...SAMPLE_POOLED_UNIT, basis };
+      } else {
+        unit = { ...SAMPLE_ALLOCATION_WELL_UNIT, basis };
+      }
+      expect(REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(unit).success).toBe(true);
+    }
+  });
+
+  it("requires sourceInstrumentDids for pooled-unit basis", () => {
+    const badUnit = {
+      ...SAMPLE_POOLED_UNIT,
+      sourceInstrumentDids: undefined,
+    };
+    const result = REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(badUnit);
+    expect(result.success).toBe(false);
+  });
+
+  it("requires sourcePlatCid for allocation-well basis", () => {
+    const badUnit = {
+      ...SAMPLE_ALLOCATION_WELL_UNIT,
+      sourcePlatCid: undefined,
+    };
+    const result = REVENUE_ALLOCATION_UNIT_SCHEMA.safeParse(badUnit);
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("INSTRUMENT_TYPES extension (C1b)", () => {
+  it("includes O&G lease types", () => {
+    expect(INSTRUMENT_TYPES).toContain("oil-gas-lease");
+    expect(INSTRUMENT_TYPES).toContain("mineral-deed");
+    expect(INSTRUMENT_TYPES).toContain("assignment");
+    expect(INSTRUMENT_TYPES).toContain("division-order");
+  });
+
+  it("includes recorded unit family", () => {
+    expect(INSTRUMENT_TYPES).toContain("unit-designation");
+    expect(INSTRUMENT_TYPES).toContain("declaration-of-pooling");
+    expect(INSTRUMENT_TYPES).toContain("ratification-of-unit");
+    expect(INSTRUMENT_TYPES).toContain("amendment-of-unit-designation");
+    expect(INSTRUMENT_TYPES).toContain("release-of-unit");
   });
 });

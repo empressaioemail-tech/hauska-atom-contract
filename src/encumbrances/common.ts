@@ -18,7 +18,9 @@ import {
 
 /**
  * ADR-020 instrument categories.
- * Extended in 1.7.0 (ADR-025) with O&G instrument types.
+ * Extended in 1.7.0 (ADR-025) with O&G instrument types including the recorded
+ * unit family per Herbert review (85a): unit-designation, declaration-of-pooling,
+ * ratification-of-unit, amendment-of-unit-designation, release-of-unit.
  */
 export type InstrumentType =
   | "plat-restriction"
@@ -30,6 +32,11 @@ export type InstrumentType =
   | "mineral-deed"
   | "assignment"
   | "division-order"
+  | "unit-designation"
+  | "declaration-of-pooling"
+  | "ratification-of-unit"
+  | "amendment-of-unit-designation"
+  | "release-of-unit"
   | "other";
 
 export const INSTRUMENT_TYPES: ReadonlyArray<InstrumentType> = [
@@ -42,6 +49,11 @@ export const INSTRUMENT_TYPES: ReadonlyArray<InstrumentType> = [
   "mineral-deed",
   "assignment",
   "division-order",
+  "unit-designation",
+  "declaration-of-pooling",
+  "ratification-of-unit",
+  "amendment-of-unit-designation",
+  "release-of-unit",
   "other",
 ];
 

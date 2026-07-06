@@ -18,6 +18,7 @@ export * from "./mineral-lease.js";
 export * from "./rrc-lease.js";
 export * from "./tract.js";
 export * from "./ownership-interest.js";
+export * from "./revenue-allocation-unit.js";
 export * from "./fixtures.js";
 
 export {

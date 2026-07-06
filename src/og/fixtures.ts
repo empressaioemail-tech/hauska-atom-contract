@@ -15,6 +15,7 @@ import type { MineralLeaseAtomInstance } from "./mineral-lease.js";
 import type { RrcLeaseAtomInstance } from "./rrc-lease.js";
 import type { TractAtomInstance } from "./tract.js";
 import type { OwnershipInterestAtomInstance } from "./ownership-interest.js";
+import type { RevenueAllocationUnitAtomInstance } from "./revenue-allocation-unit.js";
 
 export const SAMPLE_WELL: WellAtomInstance = {
   entityType: "well",
@@ -193,4 +194,85 @@ export const SAMPLE_OWNERSHIP_INTEREST: OwnershipInterestAtomInstance = {
   extractedAt: "2024-03-01T12:00:00Z",
   asOf: "2024-02-20",
   accessPolicy: "tenant-private",
+};
+
+/**
+ * Sample pooled-unit sourced from recorded instruments with ratifications.
+ * Per ADR-025 Herbert review: unit-designation + ratifications from ≥65% in
+ * interest per tract (Opiela evidentiary pattern).
+ */
+export const SAMPLE_POOLED_UNIT: RevenueAllocationUnitAtomInstance = {
+  entityType: "revenue-allocation-unit",
+  unitDid: "unit_pooled_sample_001",
+  basis: "pooled-unit",
+  wellDids: ["well_42001300010000", "well_42001300020000"],
+  operatorActorDid: "actor_operator_001",
+  effectiveFrom: "2023-01-01",
+  tractParticipations: [
+    {
+      tractDid: "tract_reeves-123",
+      factor: 0.65,
+      allocationMethod: "stated-fraction",
+      source: "Unit Designation 2023-001",
+      confidence: createOgAssertedConfidence(0.9),
+    },
+    {
+      tractDid: "tract_reeves-124",
+      factor: 0.35,
+      allocationMethod: "acreage",
+      source: "Unit Designation 2023-001",
+      confidence: createOgAssertedConfidence(0.9),
+    },
+  ],
+  sourceInstrumentDids: ["instr_unit_designation_001"],
+  ratificationInstrumentDids: ["instr_ratification_001", "instr_ratification_002"],
+  ratificationGaps: [
+    {
+      tractDid: "tract_reeves-124",
+      gapDescription: "Ratification pending for 15% interest holder",
+    },
+  ],
+  sourceCitation: "Reeves County Records, Book 500 Page 123",
+  extractedAt: "2024-03-01T12:00:00Z",
+  asOf: "2024-02-20",
+  accessPolicy: "public-free",
+};
+
+/**
+ * Sample allocation-well sourced from RRC plat with per-tract take points and
+ * productive lateral footage. Per ADR-025: no county pooling instrument exists
+ * for allocation wells; absence is a signal, never "missing data."
+ */
+export const SAMPLE_ALLOCATION_WELL_UNIT: RevenueAllocationUnitAtomInstance = {
+  entityType: "revenue-allocation-unit",
+  unitDid: "unit_allocation_sample_001",
+  basis: "allocation-well",
+  wellDids: ["well_42001300030000"],
+  operatorActorDid: "actor_operator_001",
+  effectiveFrom: "2024-02-01",
+  tractParticipations: [
+    {
+      tractDid: "tract_reeves-123",
+      factor: 0.58,
+      allocationMethod: "lateral-length",
+      source: "RRC W-1 allocation attachment, plat 2024-03-001",
+      confidence: createOgAssertedConfidence(0.95),
+      takePoints: 2,
+      productiveLateralFootage: 4850,
+    },
+    {
+      tractDid: "tract_reeves-125",
+      factor: 0.42,
+      allocationMethod: "lateral-length",
+      source: "RRC W-1 allocation attachment, plat 2024-03-001",
+      confidence: createOgAssertedConfidence(0.95),
+      takePoints: 1,
+      productiveLateralFootage: 3510,
+    },
+  ],
+  sourcePlatCid: "bafyk_allocation_plat_2024_03_001",
+  sourceCitation: "RRC W-1 allocation attachment + as-drilled plat",
+  extractedAt: "2024-03-10T12:00:00Z",
+  asOf: "2024-03-01",
+  accessPolicy: "public-free",
 };

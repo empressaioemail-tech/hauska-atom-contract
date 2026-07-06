@@ -26,17 +26,38 @@ minor — no changes to existing unions, required fields, or exports. Consumers 
     (`intr_` prefix, discriminated type with `interestType` field). Reconciles
     with ADR-020: `mineral-lease.evidencedByInstrumentDids` links to
     `recorded-instrument` atoms.
+  - **Revenue allocation (C1b, Herbert review applied 2026-07-06):**
+    `revenue-allocation-unit` (`unit_` prefix) — first-class object with two
+    source adapters (pooled-unit from recorded instruments, allocation-well
+    from RRC plat), discriminated by `basis` field. Tract participations carry
+    operator-asserted factors tagged with `allocationMethod` (stated-fraction,
+    acreage, lateral-length, take-points, acre-feet, oil-in-place, other) and
+    source — schema enforces no bare factors without method + source. Pooled
+    units carry sourceInstrumentDids, ratificationInstrumentDids, and per-tract
+    ratificationGaps (Opiela evidentiary pattern). Allocation wells carry
+    sourcePlatCid with per-tract take points and productive lateral footage.
+    DOI is derived (engine run); obtained operator DOIs linked by
+    `reconciles-with` edge.
   - Zod schemas, TypeScript interfaces, sample fixtures, and recommended
-    render-mode/access-policy constants for all eleven types.
+    render-mode/access-policy constants for all twelve types.
 - **Core `obligation` type** (ships in main contract module, not `./og`):
   domain-neutral from birth (Mox and O&G consume the same shape). Node prefix
   `oblg_` registers with core prefix set. Status is engine-derived, never
   hand-asserted; each derivation is a `procedure-execution` atom (ADR-013).
   `./og` re-exports `obligation` for convenience.
 - **Additive INSTRUMENT_TYPES extension** in `./encumbrances`: `oil-gas-lease`,
-  `mineral-deed`, `assignment`, `division-order` added to the ADR-020 union.
-  Per ADR-025 reconciliation: the recorded mineral lease instrument is a
-  `recorded-instrument`, not a new recording type.
+  `mineral-deed`, `assignment`, `division-order` added to the ADR-020 union;
+  **recorded unit family (C1b)** added: `unit-designation`,
+  `declaration-of-pooling`, `ratification-of-unit`,
+  `amendment-of-unit-designation`, `release-of-unit`. Per ADR-025
+  reconciliation: the recorded mineral lease instrument is a
+  `recorded-instrument`, not a new recording type. Ratifications are
+  load-bearing (pooling often not binding until ratified).
+- **Link vocabulary extension (C1b):** `reconciles-with` semantic edge
+  documented in `./og/common.ts` — links computed DOI decimals to obtained
+  operator DOI / signed division orders. Discrepancies surface as disputes,
+  never silent overwrites. Per ADR-025 Herbert review: "The DOI is derived,
+  never source."
 
 ### Changed
 
