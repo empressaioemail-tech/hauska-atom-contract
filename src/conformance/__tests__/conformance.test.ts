@@ -10,6 +10,7 @@ import { SAMPLE_READ_CONTRACT } from "../../read-contract/fixtures.js";
 import {
   ATOM_CONFORMANCE_TARGET_VERSION,
   REASONING_CONFORMANCE_TARGET_VERSION,
+  PROPERTY_CONFORMANCE_TARGET_VERSION,
   ACCESS_POLICY_VALUES,
   validateAtomConformance,
   verifyEventChain,
@@ -27,6 +28,10 @@ describe("conformance — target version", () => {
 
   it("pins reasoning conformance target at 1.8.0", () => {
     expect(REASONING_CONFORMANCE_TARGET_VERSION).toBe("1.8.0");
+  });
+
+  it("pins property conformance target at 1.9.0", () => {
+    expect(PROPERTY_CONFORMANCE_TARGET_VERSION).toBe("1.9.0");
   });
 });
 

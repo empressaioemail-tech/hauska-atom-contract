@@ -28,6 +28,14 @@ export const REASONING_CONFORMANCE_TARGET_VERSION = "1.8.0" as const;
 export type ReasoningConformanceTargetVersion =
   typeof REASONING_CONFORMANCE_TARGET_VERSION;
 
+/**
+ * Pin property atom kind adopters to this semver (master WDLL 3.2–3.6).
+ */
+export const PROPERTY_CONFORMANCE_TARGET_VERSION = "1.9.0" as const;
+
+export type PropertyConformanceTargetVersion =
+  typeof PROPERTY_CONFORMANCE_TARGET_VERSION;
+
 /** Data-level atoms carry signed history; app-level workflow containers skip it. */
 export type AtomTier = "data" | "app";
 
