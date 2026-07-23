@@ -27,6 +27,9 @@ export type ObligationType =
   | "lease-expiration"
   | "continuous-development"
   | "pugh-release"
+  // --- additive 1.8.0 (licensed-source / ICC) ---
+  | "license-reference-royalty"
+  | "license-revenue-share"
   | "other";
 
 export const OBLIGATION_TYPES: ReadonlyArray<ObligationType> = [
@@ -38,8 +41,15 @@ export const OBLIGATION_TYPES: ReadonlyArray<ObligationType> = [
   "lease-expiration",
   "continuous-development",
   "pugh-release",
+  "license-reference-royalty",
+  "license-revenue-share",
   "other",
 ];
+
+/** License royalty types require owedToActorDid; O&G types keep it optional. */
+export const LICENSE_OBLIGATION_TYPES: ReadonlyArray<
+  Extract<ObligationType, "license-reference-royalty" | "license-revenue-share">
+> = ["license-reference-royalty", "license-revenue-share"];
 
 /**
  * Obligation status. Derived, never hand-asserted. Each status derivation is
@@ -110,4 +120,18 @@ export const OBLIGATION_SCHEMA = z.object({
   extractedAt: z.string().min(1),
   asOf: z.string().min(1).optional(),
   accessPolicy: OG_ACCESS_POLICY_SCHEMA,
+}).superRefine((data, ctx) => {
+  if (
+    LICENSE_OBLIGATION_TYPES.includes(
+      data.obligationType as (typeof LICENSE_OBLIGATION_TYPES)[number],
+    )
+  ) {
+    if (data.owedToActorDid === undefined || data.owedToActorDid.trim().length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "License obligation types require a non-empty owedToActorDid",
+        path: ["owedToActorDid"],
+      });
+    }
+  }
 });

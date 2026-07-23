@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { OBLIGATION_SCHEMA } from "../../obligation.js";
+import { OBLIGATION_SCHEMA, OBLIGATION_TYPES } from "../../obligation.js";
 import { OG_DEFAULT_ACCESS_POLICY } from "../common.js";
 import { COMPLETION_SCHEMA } from "../completion.js";
 import { EQUIPMENT_STATE_SCHEMA } from "../equipment-state.js";
@@ -134,6 +134,27 @@ describe("obligation (core) — Zod validation", () => {
     };
     const result = OBLIGATION_SCHEMA.safeParse(bad);
     expect(result.success).toBe(false);
+  });
+
+  it("allows O&G obligation without owedToActorDid", () => {
+    const ogObligation = {
+      entityType: "obligation" as const,
+      obligationDid: "oblg_0123456789abcdef",
+      obligationType: "delay-rental" as const,
+      anchorDid: "mlease_0123456789abcdef",
+      dueDate: "2025-01-01",
+      status: "upcoming" as const,
+      confidence: createOgAssertedConfidence(0.9),
+      sourceCitation: "Lease clause extract",
+      extractedAt: "2024-03-01T12:00:00Z",
+      accessPolicy: "tenant-private" as const,
+    };
+    expect(OBLIGATION_SCHEMA.safeParse(ogObligation).success).toBe(true);
+  });
+
+  it("includes license obligation types in OBLIGATION_TYPES", () => {
+    expect(OBLIGATION_TYPES).toContain("license-reference-royalty");
+    expect(OBLIGATION_TYPES).toContain("license-revenue-share");
   });
 });
 

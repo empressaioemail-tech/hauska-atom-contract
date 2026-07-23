@@ -19,6 +19,15 @@ export const ATOM_CONFORMANCE_TARGET_VERSION = "1.5.0" as const;
 export type AtomConformanceTargetVersion =
   typeof ATOM_CONFORMANCE_TARGET_VERSION;
 
+/**
+ * Pin reasoning-chain / actor-record adopters to this semver.
+ * Distinct from {@link ATOM_CONFORMANCE_TARGET_VERSION} until a unified bump.
+ */
+export const REASONING_CONFORMANCE_TARGET_VERSION = "1.8.0" as const;
+
+export type ReasoningConformanceTargetVersion =
+  typeof REASONING_CONFORMANCE_TARGET_VERSION;
+
 /** Data-level atoms carry signed history; app-level workflow containers skip it. */
 export type AtomTier = "data" | "app";
 

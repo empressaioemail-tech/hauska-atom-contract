@@ -11,4 +11,5 @@ export * from "./common.js";
 export * from "./consequence.js";
 export * from "./model-attribution.js";
 export * from "./read-contract.js";
+export * from "./reasoning-axes.js";
 export * from "./fixtures.js";

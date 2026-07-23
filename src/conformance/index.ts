@@ -7,10 +7,12 @@
 
 export {
   ATOM_CONFORMANCE_TARGET_VERSION,
+  REASONING_CONFORMANCE_TARGET_VERSION,
   ACCESS_POLICY_VALUES,
   ACCESS_POLICY_SCHEMA,
   ATOM_TIER_VALUES,
   type AtomConformanceTargetVersion,
+  type ReasoningConformanceTargetVersion,
   type AtomTier,
 } from "./common.js";
 

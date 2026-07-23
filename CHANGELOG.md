@@ -2,6 +2,61 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.8.0] - 2026-07-23
+
+Additive minor — reasoning-chain primitive, property consequence axes,
+ADR-015 `actor-record`, and license royalty obligation types. Consumers on
+`^1.7.0` stay green until they import the new exports. `./og`, `./encumbrances`,
+`./temporal`, and existing `ThreeAxisConfidence.consequence` requiredness are
+unchanged.
+
+### Added
+
+- **Core reasoning-chain primitive** (`src/reasoning-chain.ts`, `./reasoning` subpath):
+  - `AtomInputRef` with roles `fact` | `rule` | `derived` | `reference-field`.
+  - Discriminated `ReasoningChain`: `observed` | `derived` (requires
+    `derivationMethod` + `inputAtomRefs` min length 1).
+  - Zod schemas with refine mirroring O&G production-timeseries derived idiom.
+  - Typed `inputAtomRefs` express the `derives-from` semantic edge at the
+    contract level; O&G `derivesFromStreamDid` unchanged.
+- **Property reasoning read-contract axes** (`src/read-contract/reasoning-axes.ts`):
+  - `PropertyConsequence`: honest `property-risk` stratum OR explicit
+    `not-applicable` — never stuffed ASCE7/IBC values.
+  - `ReasoningThreeAxisConfidence` + `ReasoningReadContract` for property /
+    envelope emitters; life-safety surfaces keep `ReadContract` +
+    `ThreeAxisConfidence`.
+- **ADR-015 `actor-record`** (`src/actor-record.ts`):
+  - `ActorRecordAtomInstance` — typed target for `ObligationAtomInstance.owedToActorDid`.
+  - `ActorLicensingTerms` on `tenantKind: "licensed-source"` organizations.
+  - `ICC_ACTOR_RECORD_FIXTURE` (`did:hauska:actor:org:icc`).
+- **Additive `ObligationType` variants** for licensed-source royalties:
+  - `license-reference-royalty` (inbound per-reference meter, I-K).
+  - `license-revenue-share` (outbound sale cut).
+  - Zod refine: license types require non-empty `owedToActorDid`; O&G types
+    unchanged (optional).
+  - `ICC_LICENSE_REFERENCE_OBLIGATION_FIXTURE` reuses shipped
+    `ObligationAtomInstance` shape with `graceTerms: "pending-rate"`.
+- `REASONING_CONFORMANCE_TARGET_VERSION = "1.8.0"` in `./conformance`
+  (distinct from `ATOM_CONFORMANCE_TARGET_VERSION` at `1.5.0`).
+
+### Explicitly NOT in 1.8.0
+
+- Property fact/rule/derived **kinds** (Phase 1b, after StoragePort).
+- Standalone `SourceAttribution` module or parallel source-obligation type.
+- Gate inbound-meter runtime wiring (Phase 1d).
+
+### Consumer migration notes
+
+- Pin `@empressaio/atom-contract@^1.8.0` when adopting reasoning-chain or
+  actor-record surfaces.
+- Import reasoning primitives from the main barrel or `@empressaio/atom-contract/reasoning`.
+- Property Phase 1b emitters should use `ReasoningReadContract`; ICC /
+  life-safety code-risk surfaces keep `ReadContract`.
+- ICC inbound royalties: mint `ObligationAtomInstance` with
+  `obligationType: "license-reference-royalty"` and `owedToActorDid` pointing
+  at the licensed-source `actor-record`; rates read from
+  `actor-record.sourceLicensing`.
+
 ## [1.7.0] - 2026-07-06
 
 O&G ontology module (ADR-025) and package rename to Empressa branding. Additive
