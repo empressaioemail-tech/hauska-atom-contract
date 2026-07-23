@@ -9,6 +9,7 @@ import { SAMPLE_READ_CONTRACT } from "../../read-contract/fixtures.js";
 
 import {
   ATOM_CONFORMANCE_TARGET_VERSION,
+  REASONING_CONFORMANCE_TARGET_VERSION,
   ACCESS_POLICY_VALUES,
   validateAtomConformance,
   verifyEventChain,
@@ -22,6 +23,10 @@ import {
 describe("conformance — target version", () => {
   it("pins the co-bump semver", () => {
     expect(ATOM_CONFORMANCE_TARGET_VERSION).toBe("1.5.0");
+  });
+
+  it("pins reasoning conformance target at 1.8.0", () => {
+    expect(REASONING_CONFORMANCE_TARGET_VERSION).toBe("1.8.0");
   });
 });
 

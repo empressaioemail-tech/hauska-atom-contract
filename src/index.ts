@@ -86,4 +86,37 @@ export {
   OBLIGATION_SCHEMA,
   OBLIGATION_TYPES,
   OBLIGATION_STATUSES,
+  LICENSE_OBLIGATION_TYPES,
 } from "./obligation.js";
+
+export type {
+  AtomInputRef,
+  AtomInputRefRole,
+  ReasoningChain,
+} from "./reasoning-chain.js";
+export {
+  ATOM_INPUT_REF_ROLES,
+  ATOM_INPUT_REF_SCHEMA,
+  REASONING_CHAIN_SCHEMA,
+  REASONING_CHAIN_OBSERVED_SCHEMA,
+  REASONING_CHAIN_DERIVED_SCHEMA,
+  createReasoningChain,
+  validateReasoningChain,
+} from "./reasoning-chain.js";
+
+export type {
+  ActorRecordAtomInstance,
+  ActorLicensingTerms,
+  ActorType,
+  ActorTrustLevel,
+  OrganizationTenantKind,
+} from "./actor-record.js";
+export {
+  ACTOR_RECORD_SCHEMA,
+  ACTOR_LICENSING_TERMS_SCHEMA,
+  ACTOR_TYPES,
+  ACTOR_TRUST_LEVELS,
+  ORGANIZATION_TENANT_KINDS,
+  ICC_ACTOR_RECORD_FIXTURE,
+  createActorRecord,
+} from "./actor-record.js";
