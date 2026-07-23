@@ -1,0 +1,318 @@
+/**
+ * Property reasoning atom fixtures — master WDLL 3.2–3.6 Central-TX probes.
+ *
+ * Parcel ids are real Central-TX node anchors for grading notes.
+ */
+
+import { createWidthedConfidence } from "../read-contract/common.js";
+import {
+  createReasoningReadContract,
+  createReasoningThreeAxisConfidence,
+} from "../read-contract/reasoning-axes.js";
+
+import { PROPERTY_ATOM_TIER, PROPERTY_DEFAULT_ACCESS_POLICY } from "./common.js";
+import type { BuildableEnvelopeAtomInstance } from "./buildable-envelope.js";
+import { BUILDABLE_ENVELOPE_DERIVATION_METHOD } from "./buildable-envelope.js";
+import type { SetbackRuleAtomInstance } from "./setback-rule.js";
+import type { ZoningFactAtomInstance } from "./zoning-fact.js";
+
+const SAMPLE_ASSERTED = createWidthedConfidence({
+  estimate: 0.9,
+  n: 0,
+  intervalWidth: 0.2,
+  provenance: "asserted",
+});
+
+/** Placeholder calibrated snapshot — resolves via overlay at READ (I-E). */
+const PLACEHOLDER_CALIBRATED = createWidthedConfidence({
+  estimate: 0.75,
+  n: 0,
+  intervalWidth: 0.25,
+  provenance: "asserted",
+});
+
+/**
+ * Hays County (48209) — parcel 48209:156346, RS district from city GIS stamp.
+ * WDLL 3.3 zoning FACT probe.
+ */
+export const HAYS_ZONING_FACT_FIXTURE: ZoningFactAtomInstance = {
+  entityType: "zoning-fact",
+  atomDid: "zfact_a1b2c3d4e5f67890",
+  parcelNodeId: "48209:156346",
+  reasoningChain: { reasoningKind: "observed" },
+  district: "RS",
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "City of Kyle GIS zoning layer 2026-07-01",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+  readContract: createReasoningReadContract({
+    axes: createReasoningThreeAxisConfidence({
+      calibratedConfidence: PLACEHOLDER_CALIBRATED,
+      assertedConfidence: SAMPLE_ASSERTED,
+      consequence: {
+        kind: "property-risk",
+        stratum: "routine",
+        basis: "zoning-stamp-exact",
+        assertedAt: "2026-07-23T12:00:00.000Z",
+      },
+    }),
+    assembledAt: "2026-07-23T12:00:00.000Z",
+  }),
+};
+
+/**
+ * Bexar County (48029) — parcel 48029:410119, null zoning honest-absence.
+ * WDLL 3.3 negative probe — NOT a stamped I-2 invent.
+ */
+export const BEXAR_NULL_ZONING_FACT_FIXTURE: ZoningFactAtomInstance = {
+  entityType: "zoning-fact",
+  atomDid: "zfact_b2c3d4e5f6789012",
+  parcelNodeId: "48029:410119",
+  reasoningChain: { reasoningKind: "observed" },
+  absence: {
+    kind: "no-zoning-stamp",
+    reason: "no-zoning-polygon-covers-parcel-unincorporated",
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Bexar County Appraisal District + city GIS overlay 2026-07-01",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+  readContract: createReasoningReadContract({
+    axes: createReasoningThreeAxisConfidence({
+      calibratedConfidence: PLACEHOLDER_CALIBRATED,
+      assertedConfidence: createWidthedConfidence({
+        estimate: 0.95,
+        n: 0,
+        intervalWidth: 0.1,
+        provenance: "asserted",
+      }),
+      consequence: {
+        kind: "property-risk",
+        stratum: "routine",
+        basis: "honest-absence-no-zoning-stamp",
+        assertedAt: "2026-07-23T12:00:00.000Z",
+      },
+    }),
+    assembledAt: "2026-07-23T12:00:00.000Z",
+  }),
+};
+
+/** Comal County (48091) — exact-match setback with typed code atom ref. WDLL 3.4/3.5. */
+export const COMAL_SETBACK_RULE_FIXTURE: SetbackRuleAtomInstance = {
+  entityType: "setback-rule",
+  atomDid: "sbrule_c3d4e5f678901234",
+  parcelNodeId: "48091:123456",
+  reasoningChain: { reasoningKind: "observed" },
+  front: 25,
+  side: 6,
+  rear: 10,
+  sourceCodeAtomRef: {
+    atomDid: "did:hauska:atom:code-section:udc-comal-2024-s4-2",
+    role: "rule",
+    entityType: "code-section",
+    citationLabel: "Comal County UDC S4.2 setbacks",
+  },
+  fieldProvenance: {
+    front: {
+      atomDid: "did:hauska:atom:code-section:udc-comal-2024-s4-2",
+      confidence: createWidthedConfidence({
+        estimate: 0.9,
+        n: 0,
+        intervalWidth: 0.15,
+        provenance: "asserted",
+      }),
+    },
+    side: {
+      atomDid: "did:hauska:atom:code-section:udc-comal-2024-s4-2",
+      confidence: createWidthedConfidence({
+        estimate: 0.9,
+        n: 0,
+        intervalWidth: 0.15,
+        provenance: "asserted",
+      }),
+    },
+    rear: {
+      atomDid: "did:hauska:atom:code-section:udc-comal-2024-s4-2",
+      confidence: createWidthedConfidence({
+        estimate: 0.9,
+        n: 0,
+        intervalWidth: 0.15,
+        provenance: "asserted",
+      }),
+    },
+  },
+  matchBasis: "exact",
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Comal County UDC 2024 S4.2 transcribed + verified",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Travis County prefix-match fixture — WDLL 3.4 prefix grading. */
+export const TRAVIS_PREFIX_SETBACK_RULE_FIXTURE: SetbackRuleAtomInstance = {
+  entityType: "setback-rule",
+  atomDid: "sbrule_d4e5f67890123456",
+  parcelNodeId: "48453:789012",
+  reasoningChain: { reasoningKind: "observed" },
+  front: 25,
+  side: 5,
+  rear: 10,
+  sourceCodeAtomRef: {
+    atomDid: "did:hauska:atom:code-section:austin-land-dev-code-2023",
+    role: "rule",
+    entityType: "code-section",
+    citationLabel: "Austin LDC prefix match SA-C-3NA*",
+  },
+  matchBasis: "prefix",
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "City of Austin Land Development Code 2023 prefix SA-C-3NA",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Fallback match with honest-absence — Kyle R1-T / Bexar I-2 fallback grading. */
+export const FALLBACK_SETBACK_RULE_FIXTURE: SetbackRuleAtomInstance = {
+  entityType: "setback-rule",
+  atomDid: "sbrule_e5f6789012345678",
+  parcelNodeId: "48209:156346",
+  reasoningChain: { reasoningKind: "observed" },
+  front: 25,
+  side: 5,
+  rear: 10,
+  sourceCodeAtomRef: {
+    atomDid: "did:hauska:atom:code-section:kyle-udc-conservative-default",
+    role: "rule",
+    entityType: "code-section",
+    citationLabel: "Conservative default setback table",
+  },
+  matchBasis: "fallback",
+  absence: {
+    kind: "setback-fallback",
+    reason: "district-prefix-unmatched-using-conservative-default",
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Kyle UDC fallback table row (prefix unmatched)",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/**
+ * Derived envelope for 48209:156346 — WDLL 3.6.
+ * Inputs: zoning-fact + setback-rule + geometry + front-edge reference fields.
+ */
+export const HAYS_BUILDABLE_ENVELOPE_FIXTURE: BuildableEnvelopeAtomInstance = {
+  entityType: "buildable-envelope",
+  atomDid: "benvelope_f678901234567890",
+  parcelNodeId: "48209:156346",
+  reasoningChain: {
+    reasoningKind: "derived",
+    derivationMethod: BUILDABLE_ENVELOPE_DERIVATION_METHOD,
+    inputAtomRefs: [
+      {
+        atomDid: HAYS_ZONING_FACT_FIXTURE.atomDid,
+        role: "fact",
+        entityType: "zoning-fact",
+        citationLabel: "RS zoning district",
+      },
+      {
+        atomDid: FALLBACK_SETBACK_RULE_FIXTURE.atomDid,
+        role: "rule",
+        entityType: "setback-rule",
+        citationLabel: "Front/side/rear setbacks",
+      },
+      {
+        atomDid: "ref:geometry:48209-156346-footprint",
+        role: "reference-field",
+        citationLabel: "Parcel footprint geometry (TxGIO)",
+      },
+      {
+        atomDid: "ref:geometry:48209-156346-front-edge",
+        role: "reference-field",
+        citationLabel: "Front lot line (shape-tier provisional)",
+      },
+    ],
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Derived from zoning fact + setback rule + parcel geometry",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+  readContract: createReasoningReadContract({
+    axes: createReasoningThreeAxisConfidence({
+      calibratedConfidence: PLACEHOLDER_CALIBRATED,
+      assertedConfidence: SAMPLE_ASSERTED,
+      consequence: {
+        kind: "not-applicable",
+        reason: "envelope-geometry-derivation-has-no-life-safety-stratum",
+        assertedAt: "2026-07-23T12:00:00.000Z",
+      },
+    }),
+    assembledAt: "2026-07-23T12:00:00.000Z",
+  }),
+};
+
+/** Negative — bare string citation instead of AtomInputRef (WDLL 3.5 fail). */
+export const NEGATIVE_SETBACK_BARE_STRING_CITATION = {
+  entityType: "setback-rule" as const,
+  atomDid: "sbrule_bad00000000000001",
+  parcelNodeId: "48209:156346",
+  reasoningChain: { reasoningKind: "observed" as const },
+  front: 25,
+  side: 5,
+  rear: 10,
+  sourceCodeAtomRef: "did:hauska:atom:code-section:ibc-2024-1003",
+  matchBasis: "exact" as const,
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Invalid bare-string citation",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — derived without inputAtomRefs. */
+export const NEGATIVE_ENVELOPE_NO_INPUT_REFS = {
+  entityType: "buildable-envelope" as const,
+  atomDid: "benvelope_bad0000000000001",
+  parcelNodeId: "48209:156346",
+  reasoningChain: {
+    reasoningKind: "derived" as const,
+    derivationMethod: BUILDABLE_ENVELOPE_DERIVATION_METHOD,
+    inputAtomRefs: [] as [],
+  },
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Missing inputs",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — zoning with both district and absence. */
+export const NEGATIVE_ZONING_DISTRICT_AND_ABSENCE = {
+  entityType: "zoning-fact" as const,
+  atomDid: "zfact_bad00000000000001",
+  parcelNodeId: "48209:156346",
+  reasoningChain: { reasoningKind: "observed" as const },
+  district: "RS",
+  absence: { kind: "no-zoning-stamp" as const, reason: "conflict" },
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Invalid both district and absence",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — fallback matchBasis without honest-absence. */
+export const NEGATIVE_SETBACK_FALLBACK_NO_ABSENCE = {
+  entityType: "setback-rule" as const,
+  atomDid: "sbrule_bad00000000000002",
+  parcelNodeId: "48209:156346",
+  reasoningChain: { reasoningKind: "observed" as const },
+  front: 25,
+  side: 5,
+  rear: 10,
+  sourceCodeAtomRef: {
+    atomDid: "did:hauska:atom:code-section:default",
+    role: "rule" as const,
+  },
+  matchBasis: "fallback" as const,
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Fallback without absence",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: "data" as const,
+};

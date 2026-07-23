@@ -276,6 +276,45 @@ import {
 } from "@empressaio/atom-contract/og";
 ```
 
+## Property reasoning atom kinds (master WDLL 3.2–3.6)
+
+Parcel buildable-answer chain atoms ship on the `./property` subpath
+(v1.9.0): `zoning-fact`, `setback-rule`, `buildable-envelope`. All three
+are data-tier (`atomTier: "data"`) and default to `public-free`
+accessPolicy when undeclared on the registration.
+
+**Calibrated confidence at READ (I-E):** instances MAY carry a
+`ReasoningReadContract` asserted snapshot at write time, including a
+placeholder `calibratedConfidence` with `provenance: "asserted"`. At READ,
+the calibrated axis resolves through the calibration overlay — it is NOT
+composed-and-frozen on the instance. Do not add a `labeling x district`
+multiply field.
+
+```ts
+import {
+  ZONING_FACT_SCHEMA,
+  SETBACK_RULE_SCHEMA,
+  BUILDABLE_ENVELOPE_SCHEMA,
+  HAYS_ZONING_FACT_FIXTURE,
+  BEXAR_NULL_ZONING_FACT_FIXTURE,
+  HAYS_BUILDABLE_ENVELOPE_FIXTURE,
+  type ZoningFactAtomInstance,
+  type SetbackRuleAtomInstance,
+  type BuildableEnvelopeAtomInstance,
+} from "@empressaio/atom-contract/property";
+```
+
+| `entityType` | `reasoningKind` | Key fields |
+|---|---|---|
+| `zoning-fact` | `observed` | `district` OR `absence.no-zoning-stamp` |
+| `setback-rule` | `observed` | `front`/`side`/`rear`, typed `sourceCodeAtomRef`, `matchBasis` |
+| `buildable-envelope` | `derived` | `buildable-envelope-inset-v1`, input refs to fact + rule + geometry |
+
+ICC royalties on code citations accrue via core `ObligationAtomInstance`
+rows — no standalone `SourceAttribution` type.
+
+### Encumbrance render modes
+
 | `entityType` | Purpose | Recommended render modes |
 |---|---|---|
 | `recorded-instrument` | Parent instrument; wet PDF via `sourceDocumentCid` | `card`, `compact`, `expanded` |

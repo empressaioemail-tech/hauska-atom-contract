@@ -2,6 +2,54 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.9.0] - 2026-07-23
+
+Additive minor — property reasoning atom kinds (master WDLL 3.2–3.6).
+Consumers on `^1.8.0` stay green until they import `./property`.
+
+### Added
+
+- **`./property` subpath** — three data-tier atom kinds for the parcel
+  reasoning chain:
+  - **`zoning-fact`** — observed {@link ReasoningChain}; district value OR
+    honest-absence (`absence: { kind: "no-zoning-stamp", reason }`);
+    explicit `accessPolicy` (default `public-free`); `sourceCitation` +
+    `extractedAt`; optional {@link ReasoningReadContract} asserted snapshot
+    at write (calibrated axis resolves at READ via overlay — I-E).
+  - **`setback-rule`** — observed rule scalars (`front`/`side`/`rear`);
+    typed `sourceCodeAtomRef: AtomInputRef` (role `rule`|`fact`, NOT bare
+    string); optional `fieldProvenance` map consuming setback JSON
+    `atom_did` + per-field confidence; `matchBasis: exact|prefix|fallback`
+    with honest-absence required on fallback; ICC royalties via separate
+    {@link ObligationAtomInstance} rows (no SourceAttribution type).
+  - **`buildable-envelope`** — derived {@link ReasoningChain} with
+    `derivationMethod: "buildable-envelope-inset-v1"`; `inputAtomRefs` to
+    zoning-fact + setback-rule + geometry/front-edge reference-fields;
+    {@link PropertyConsequence} `not-applicable` for envelope; no
+    `labeling x district` multiply field.
+- Central-TX conformance fixtures with named parcel ids (`48209:156346`,
+  `48029:410119`, `48091:123456`, etc.).
+- Negative fixtures: bare-string setback citation fails; derived without
+  `inputAtomRefs` fails.
+- `PROPERTY_CONFORMANCE_TARGET_VERSION = "1.9.0"` in `./conformance`.
+
+### Explicitly NOT in 1.9.0
+
+- Standalone `SourceAttribution` module or parallel source-obligation type.
+- Gate inbound-meter runtime wiring (Phase 1d).
+- StoragePort / spine atom write path (Phase 3.1).
+
+### Consumer migration notes
+
+- Pin `@empressaio/atom-contract@^1.9.0` when adopting property atom kinds.
+- Import from `@empressaio/atom-contract/property` (re-exports 1.8.0
+  primitives: ReasoningChain, AtomInputRef, PropertyConsequence,
+  ReasoningReadContract, ActorRecord, ObligationAtomInstance).
+- **Calibrated confidence at READ:** instance snapshots MAY carry placeholder
+  `calibratedConfidence` with `provenance: "asserted"` at write time; at READ
+  the calibrated axis resolves through the calibration overlay (migration 0037),
+  not a frozen multiply.
+
 ## [1.8.0] - 2026-07-23
 
 Additive minor — reasoning-chain primitive, property consequence axes,
