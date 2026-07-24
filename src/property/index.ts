@@ -12,6 +12,7 @@ export * from "./common.js";
 export * from "./zoning-fact.js";
 export * from "./setback-rule.js";
 export * from "./buildable-envelope.js";
+export * from "./parcel-terrain-model.js";
 export * from "./fixtures.js";
 
 export type {

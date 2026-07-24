@@ -13,6 +13,11 @@ import {
 import { PROPERTY_ATOM_TIER, PROPERTY_DEFAULT_ACCESS_POLICY } from "./common.js";
 import type { BuildableEnvelopeAtomInstance } from "./buildable-envelope.js";
 import { BUILDABLE_ENVELOPE_DERIVATION_METHOD } from "./buildable-envelope.js";
+import type { ParcelTerrainModelAtomInstance } from "./parcel-terrain-model.js";
+import {
+  PARCEL_TERRAIN_DERIVATION_METHOD,
+  TERRAIN_DEFAULT_ACCESS_POLICY,
+} from "./parcel-terrain-model.js";
 import type { SetbackRuleAtomInstance } from "./setback-rule.js";
 import type { ZoningFactAtomInstance } from "./zoning-fact.js";
 
@@ -315,4 +320,144 @@ export const NEGATIVE_SETBACK_FALLBACK_NO_ABSENCE = {
   sourceCitation: "Fallback without absence",
   extractedAt: "2026-07-23T12:00:00.000Z",
   atomTier: "data" as const,
+};
+
+/**
+ * Terrain-export derived atom for Bastrop CAD property 48021:27303.
+ * WDLL terrain-IFC + CAD amendment — shared triangulation, format-keyed artifacts.
+ */
+export const BASTROP_TERRAIN_EXPORT_FIXTURE: ParcelTerrainModelAtomInstance = {
+  entityType: "parcel-terrain-model",
+  atomDid: "pterrain_c0ffee0011223344",
+  parcelNodeId: "48021:27303",
+  reasoningChain: {
+    reasoningKind: "derived",
+    derivationMethod: PARCEL_TERRAIN_DERIVATION_METHOD,
+    inputAtomRefs: [
+      {
+        atomDid: "ref:topo:usgs-3dep:48021-27303",
+        role: "reference-field",
+        citationLabel: "usgs-3dep-dem",
+      },
+      {
+        atomDid: "ref:geometry:48021-27303-footprint",
+        role: "reference-field",
+        citationLabel: "parcel-geometry-ring",
+      },
+    ],
+  },
+  artifacts: {
+    glb: {
+      format: "glb",
+      ref: "bafyterrain-glb-48021-27303-example",
+      byteCount: 240000,
+      vertexCount: 19740,
+      triangleCount: 38920,
+    },
+    ifc: {
+      format: "ifc",
+      ref: "bafyterrain-ifc-48021-27303-example",
+      byteCount: 1589254,
+      vertexCount: 19740,
+      triangleCount: 38920,
+      ifcSchemaVersion: "IFC4",
+      geometryPrimitive: "IfcTriangulatedFaceSet",
+    },
+    "dxf-3dface": {
+      format: "dxf-3dface",
+      ref: "bafyterrain-dxf3dface-48021-27303-example",
+      byteCount: 900000,
+      vertexCount: 19740,
+      triangleCount: 38920,
+    },
+    "dxf-contour": {
+      format: "dxf-contour",
+      ref: "bafyterrain-dxfcontour-48021-27303-example",
+      byteCount: 120000,
+      contourIntervalMeters: 1,
+      contourPolylineCount: 42,
+    },
+    "landxml-tin": {
+      format: "landxml-tin",
+      ref: "deferred",
+      deferred: true,
+      deferredReason: "LandXML TIN emitter not yet shipped — honest defer per WDLL",
+    },
+  },
+  coverage: {
+    coverageFraction: 1,
+    nodataCount: 0,
+    totalCells: 19740,
+    resolutionMetersRequested: 10,
+    resolutionMetersActual: null,
+    touchesNodata: false,
+  },
+  confidence: createWidthedConfidence({
+    estimate: 0.85,
+    n: 0,
+    intervalWidth: 1,
+    provenance: "asserted",
+  }),
+  accessPolicy: TERRAIN_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "USGS 3DEP",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+  readContract: createReasoningReadContract({
+    axes: createReasoningThreeAxisConfidence({
+      calibratedConfidence: PLACEHOLDER_CALIBRATED,
+      assertedConfidence: createWidthedConfidence({
+        estimate: 0.85,
+        n: 0,
+        intervalWidth: 1,
+        provenance: "asserted",
+      }),
+      consequence: {
+        kind: "not-applicable",
+        reason: "terrain-export-has-no-life-safety-stratum",
+        assertedAt: "2026-07-23T12:00:00.000Z",
+      },
+    }),
+    assembledAt: "2026-07-23T12:00:00.000Z",
+  }),
+};
+
+/** Negative — missing DEM reference-field. */
+export const NEGATIVE_TERRAIN_NO_DEM_REF = {
+  entityType: "parcel-terrain-model" as const,
+  atomDid: "pterrain_bad0000000000001",
+  parcelNodeId: "48021:27303",
+  reasoningChain: {
+    reasoningKind: "derived" as const,
+    derivationMethod: PARCEL_TERRAIN_DERIVATION_METHOD,
+    inputAtomRefs: [
+      {
+        atomDid: "ref:geometry:48021-27303-footprint",
+        role: "reference-field" as const,
+        citationLabel: "parcel-geometry-ring",
+      },
+    ],
+  },
+  artifacts: {
+    glb: {
+      format: "glb" as const,
+      ref: "bafy-example",
+      vertexCount: 1,
+      triangleCount: 1,
+    },
+  },
+  coverage: {
+    coverageFraction: 1,
+    nodataCount: 0,
+    totalCells: 1,
+  },
+  confidence: createWidthedConfidence({
+    estimate: 0.5,
+    n: 0,
+    intervalWidth: 1,
+    provenance: "asserted",
+  }),
+  accessPolicy: TERRAIN_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "USGS 3DEP",
+  extractedAt: "2026-07-23T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
 };

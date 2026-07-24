@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import { REASONING_CHAIN_SCHEMA } from "../../reasoning-chain.js";
 import { BUILDABLE_ENVELOPE_SCHEMA } from "../buildable-envelope.js";
 import {
+  BASTROP_TERRAIN_EXPORT_FIXTURE,
   BEXAR_NULL_ZONING_FACT_FIXTURE,
   COMAL_SETBACK_RULE_FIXTURE,
   FALLBACK_SETBACK_RULE_FIXTURE,
@@ -15,9 +16,14 @@ import {
   NEGATIVE_ENVELOPE_NO_INPUT_REFS,
   NEGATIVE_SETBACK_BARE_STRING_CITATION,
   NEGATIVE_SETBACK_FALLBACK_NO_ABSENCE,
+  NEGATIVE_TERRAIN_NO_DEM_REF,
   NEGATIVE_ZONING_DISTRICT_AND_ABSENCE,
   TRAVIS_PREFIX_SETBACK_RULE_FIXTURE,
 } from "../fixtures.js";
+import {
+  PARCEL_TERRAIN_MODEL_SCHEMA,
+  TERRAIN_DEFAULT_ACCESS_POLICY,
+} from "../parcel-terrain-model.js";
 import { SETBACK_RULE_SCHEMA } from "../setback-rule.js";
 import { ZONING_FACT_SCHEMA } from "../zoning-fact.js";
 
@@ -122,6 +128,45 @@ describe("property — buildable-envelope (WDLL 3.6)", () => {
     expect(REASONING_CHAIN_SCHEMA.safeParse(NEGATIVE_ENVELOPE_NO_INPUT_REFS.reasoningChain).success).toBe(
       false,
     );
+  });
+});
+
+describe("property — parcel-terrain-model (terrain-export WDLL)", () => {
+  it("validates Bastrop 48021:27303 multi-format fixture", () => {
+    expect(
+      PARCEL_TERRAIN_MODEL_SCHEMA.safeParse(BASTROP_TERRAIN_EXPORT_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_TERRAIN_EXPORT_FIXTURE.parcelNodeId).toBe("48021:27303");
+    expect(BASTROP_TERRAIN_EXPORT_FIXTURE.accessPolicy).toBe(
+      TERRAIN_DEFAULT_ACCESS_POLICY,
+    );
+    expect(BASTROP_TERRAIN_EXPORT_FIXTURE.accessPolicy).toBe("public-paid");
+    expect(BASTROP_TERRAIN_EXPORT_FIXTURE.artifacts.ifc?.ifcSchemaVersion).toBe(
+      "IFC4",
+    );
+    expect(BASTROP_TERRAIN_EXPORT_FIXTURE.artifacts.ifc?.geometryPrimitive).toBe(
+      "IfcTriangulatedFaceSet",
+    );
+    expect(BASTROP_TERRAIN_EXPORT_FIXTURE.artifacts.glb?.triangleCount).toBe(
+      BASTROP_TERRAIN_EXPORT_FIXTURE.artifacts.ifc?.triangleCount,
+    );
+    expect(BASTROP_TERRAIN_EXPORT_FIXTURE.artifacts["dxf-contour"]?.contourIntervalMeters).toBe(
+      1,
+    );
+    expect(BASTROP_TERRAIN_EXPORT_FIXTURE.artifacts["landxml-tin"]?.deferred).toBe(
+      true,
+    );
+  });
+
+  it("requires DEM reference-field input", () => {
+    expect(
+      PARCEL_TERRAIN_MODEL_SCHEMA.safeParse(NEGATIVE_TERRAIN_NO_DEM_REF).success,
+    ).toBe(false);
+  });
+
+  it("carries asserted USGS confidence provenance", () => {
+    expect(BASTROP_TERRAIN_EXPORT_FIXTURE.confidence.provenance).toBe("asserted");
+    expect(BASTROP_TERRAIN_EXPORT_FIXTURE.sourceCitation).toBe("USGS 3DEP");
   });
 });
 

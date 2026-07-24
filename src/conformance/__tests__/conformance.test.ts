@@ -30,8 +30,8 @@ describe("conformance — target version", () => {
     expect(REASONING_CONFORMANCE_TARGET_VERSION).toBe("1.8.0");
   });
 
-  it("pins property conformance target at 1.9.0", () => {
-    expect(PROPERTY_CONFORMANCE_TARGET_VERSION).toBe("1.9.0");
+  it("pins property conformance target at 1.10.0", () => {
+    expect(PROPERTY_CONFORMANCE_TARGET_VERSION).toBe("1.10.0");
   });
 });
 
