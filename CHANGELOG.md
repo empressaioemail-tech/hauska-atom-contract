@@ -2,6 +2,29 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.10.0] - 2026-07-23
+
+Additive minor — parcel terrain-export derived atom (IFC + CAD formats).
+Consumers on `^1.9.0` stay green until they import the new kind.
+
+### Added
+
+- **`parcel-terrain-model`** on `./property` — derived {@link ReasoningChain}
+  with `derivationMethod: "parcel-terrain-mesh-ifc-v1"`; DEM/topo as
+  `reference-field` input (`citationLabel: usgs-3dep-dem`); format-keyed
+  `artifacts` map (`glb` | `ifc` | `dxf-3dface` | `dxf-contour` |
+  `landxml-tin`); coverage + asserted {@link WidthedConfidence}; default
+  `accessPolicy: public-paid`. One atom, not four — callers select format.
+- Fixture `BASTROP_TERRAIN_EXPORT_FIXTURE` for parcel `48021:27303` with
+  shared triangulation counts across face formats; LandXML marked
+  honest-deferred.
+- `PROPERTY_CONFORMANCE_TARGET_VERSION = "1.10.0"`.
+
+### Explicitly NOT in 1.10.0
+
+- Spine authoring / MCP metering (engine + gate program phases).
+- LandXML TIN emitter runtime (may ship later; contract allows deferred).
+
 ## [1.9.0] - 2026-07-23
 
 Additive minor — property reasoning atom kinds (master WDLL 3.2–3.6).
