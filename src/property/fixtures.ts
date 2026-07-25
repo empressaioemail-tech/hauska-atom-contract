@@ -20,6 +20,8 @@ import {
 } from "./parcel-terrain-model.js";
 import type { SetbackRuleAtomInstance } from "./setback-rule.js";
 import type { ZoningFactAtomInstance } from "./zoning-fact.js";
+import type { RoadNodeAtomInstance } from "./road-node.js";
+import { roadNodeIdFromParts } from "./road-node.js";
 
 const SAMPLE_ASSERTED = createWidthedConfidence({
   estimate: 0.9,
@@ -460,4 +462,81 @@ export const NEGATIVE_TERRAIN_NO_DEM_REF = {
   sourceCitation: "USGS 3DEP",
   extractedAt: "2026-07-23T12:00:00.000Z",
   atomTier: PROPERTY_ATOM_TIER,
+};
+
+/**
+ * Bastrop County (48021) — Spring Street OSM way near 714 Spring St parcel.
+ * R1 road-node WDLL 3 probe (named Bastrop road, centerline + assumed ROW).
+ */
+export const BASTROP_SPRING_STREET_ROAD_FIXTURE: RoadNodeAtomInstance = {
+  entityType: "road-node",
+  atomDid: "rnode_a1b2c3d4e5f67890",
+  roadNodeId: roadNodeIdFromParts("48021", 123456789),
+  displayName: "Spring Street",
+  countyFips: "48021",
+  osmWayId: 123456789,
+  classification: "residential",
+  centerline: {
+    type: "LineString",
+    coordinates: [
+      [-97.3188, 30.1102],
+      [-97.3182, 30.1105],
+      [-97.3176, 30.1108],
+    ],
+  },
+  row: {
+    assumedWidthFt: 50,
+    provenance: {
+      kind: "approximate-assumed-per-class",
+      assumedWidthTableKey: "residential",
+      osmHighwayTag: "residential",
+      note: "v1 assumed ROW — not survey/CAD",
+    },
+    leftEdge: {
+      type: "LineString",
+      coordinates: [
+        [-97.31882, 30.11018],
+        [-97.31822, 30.11048],
+        [-97.31762, 30.11078],
+      ],
+    },
+    rightEdge: {
+      type: "LineString",
+      coordinates: [
+        [-97.31878, 30.11022],
+        [-97.31818, 30.11052],
+        [-97.31758, 30.11082],
+      ],
+    },
+  },
+  attachPoints: [
+    {
+      kind: "infra-slot",
+      refKey: "centerline-mid",
+      position: [-97.3182, 30.1105],
+      note: "Digital-twin attach point — no infra atoms in R1 scope",
+    },
+  ],
+  reasoningChain: { reasoningKind: "observed" },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "OpenStreetMap way/123456789 highway=residential name=Spring Street",
+  extractedAt: "2026-07-25T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+  readContract: createReasoningReadContract({
+    axes: createReasoningThreeAxisConfidence({
+      calibratedConfidence: PLACEHOLDER_CALIBRATED,
+      assertedConfidence: createWidthedConfidence({
+        estimate: 0.65,
+        n: 0,
+        intervalWidth: 0.3,
+        provenance: "asserted",
+      }),
+      consequence: {
+        kind: "not-applicable",
+        reason: "road-node-v1-approximate-row-has-no-life-safety-stratum",
+        assertedAt: "2026-07-25T12:00:00.000Z",
+      },
+    }),
+    assembledAt: "2026-07-25T12:00:00.000Z",
+  }),
 };

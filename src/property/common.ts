@@ -31,6 +31,9 @@ import {
 /** Central-TX parcel node id: `{county_fips}:{prop_id}`. */
 export const PARCEL_NODE_ID_PATTERN = /^\d{5}:[A-Za-z0-9._-]+$/;
 
+/** Road spine node id: `{county_fips}:road:{osm_way_id}` (27c WDLL 3 / R1). */
+export const ROAD_NODE_ID_PATTERN = /^\d{5}:road:\d+$/;
+
 export const PROPERTY_ATOM_TIER: AtomTier = "data";
 
 export const PROPERTY_DEFAULT_ACCESS_POLICY: AccessPolicy = "public-free";
