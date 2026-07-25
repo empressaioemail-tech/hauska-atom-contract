@@ -9,6 +9,7 @@ import { BUILDABLE_ENVELOPE_SCHEMA } from "../buildable-envelope.js";
 import {
   BASTROP_TERRAIN_EXPORT_FIXTURE,
   BEXAR_NULL_ZONING_FACT_FIXTURE,
+  BASTROP_SPRING_STREET_ROAD_FIXTURE,
   COMAL_SETBACK_RULE_FIXTURE,
   FALLBACK_SETBACK_RULE_FIXTURE,
   HAYS_BUILDABLE_ENVELOPE_FIXTURE,
@@ -24,6 +25,7 @@ import {
   PARCEL_TERRAIN_MODEL_SCHEMA,
   TERRAIN_DEFAULT_ACCESS_POLICY,
 } from "../parcel-terrain-model.js";
+import { ROAD_NODE_SCHEMA } from "../road-node.js";
 import { SETBACK_RULE_SCHEMA } from "../setback-rule.js";
 import { ZONING_FACT_SCHEMA } from "../zoning-fact.js";
 
@@ -167,6 +169,20 @@ describe("property — parcel-terrain-model (terrain-export WDLL)", () => {
   it("carries asserted USGS confidence provenance", () => {
     expect(BASTROP_TERRAIN_EXPORT_FIXTURE.confidence.provenance).toBe("asserted");
     expect(BASTROP_TERRAIN_EXPORT_FIXTURE.sourceCitation).toBe("USGS 3DEP");
+  });
+});
+
+describe("property — road-node (27c WDLL 3 / R1)", () => {
+  it("validates Bastrop Spring Street fixture 48021:road:123456789", () => {
+    expect(ROAD_NODE_SCHEMA.safeParse(BASTROP_SPRING_STREET_ROAD_FIXTURE).success).toBe(
+      true,
+    );
+    expect(BASTROP_SPRING_STREET_ROAD_FIXTURE.roadNodeId).toBe("48021:road:123456789");
+    expect(BASTROP_SPRING_STREET_ROAD_FIXTURE.displayName).toBe("Spring Street");
+    expect(BASTROP_SPRING_STREET_ROAD_FIXTURE.row.provenance.kind).toBe(
+      "approximate-assumed-per-class",
+    );
+    expect(BASTROP_SPRING_STREET_ROAD_FIXTURE.attachPoints.length).toBeGreaterThan(0);
   });
 });
 

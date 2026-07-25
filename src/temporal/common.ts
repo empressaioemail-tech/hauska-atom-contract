@@ -77,6 +77,7 @@ export function isEventClaimType(claimType: string): claimType is EventClaimType
  */
 export type NodeTypePrefix =
   | "parcel_"
+  | "road_"
   | "jurisdiction_"
   | "code-section_"
   | "security_"
@@ -97,6 +98,7 @@ export type NodeTypePrefix =
 
 export const NODE_TYPE_PREFIX_VALUES: ReadonlyArray<NodeTypePrefix> = [
   "parcel_",
+  "road_",
   "jurisdiction_",
   "code-section_",
   "security_",
@@ -118,6 +120,7 @@ export const NODE_TYPE_PREFIX_VALUES: ReadonlyArray<NodeTypePrefix> = [
 
 export const NODE_TYPE_PREFIX_SCHEMA = z.enum([
   "parcel_",
+  "road_",
   "jurisdiction_",
   "code-section_",
   "security_",

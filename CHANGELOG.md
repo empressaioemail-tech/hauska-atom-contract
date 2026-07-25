@@ -2,6 +2,19 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.11.0] - 2026-07-25
+
+Additive minor — road spine node atom (27c WDLL 3 / depth-engine R1).
+
+### Added
+
+- **`road-node`** on `./property` — first-class road spine node with stable
+  `{county_fips}:road:{osm_way_id}` identity, OSM centerline, assumed-per-class
+  ROW edges, classification, approximate ROW provenance, and digital-twin-ready
+  `attachPoints` (infra slots only; no non-road atoms in scope).
+- `ROAD_NODE_ID_PATTERN`, `roadNodeIdFromParts`, `BASTROP_SPRING_STREET_ROAD_FIXTURE`.
+- `road_` registered in temporal `NodeTypePrefix`.
+
 ## [1.10.0] - 2026-07-23
 
 Additive minor — parcel terrain-export derived atom (IFC + CAD formats).
