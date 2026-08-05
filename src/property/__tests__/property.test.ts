@@ -6,7 +6,13 @@ import { describe, expect, it } from "vitest";
 
 import { REASONING_CHAIN_SCHEMA } from "../../reasoning-chain.js";
 import { BUILDABLE_ENVELOPE_SCHEMA } from "../buildable-envelope.js";
+import { BUILDING_FOOTPRINT_SCHEMA } from "../building-footprint.js";
 import {
+  BASTROP_CITY_EASEMENT_FIXTURE,
+  BASTROP_COUNTY_EASEMENT_ABSENCE_FIXTURE,
+  BASTROP_COUNTY_FOOTPRINT_ABSENCE_FIXTURE,
+  BASTROP_ML_FOOTPRINT_FIXTURE,
+  BASTROP_PARCEL_FOOTPRINT_ABSENCE_FIXTURE,
   BASTROP_TERRAIN_EXPORT_FIXTURE,
   BEXAR_NULL_ZONING_FACT_FIXTURE,
   BASTROP_SPRING_STREET_ROAD_FIXTURE,
@@ -14,19 +20,24 @@ import {
   FALLBACK_SETBACK_RULE_FIXTURE,
   HAYS_BUILDABLE_ENVELOPE_FIXTURE,
   HAYS_ZONING_FACT_FIXTURE,
+  NEGATIVE_EASEMENT_NON_PUBLIC_POLICY,
   NEGATIVE_ENVELOPE_NO_INPUT_REFS,
+  NEGATIVE_FOOTPRINT_ABSENT_NO_VERIFIED,
+  NEGATIVE_FOOTPRINT_ML_NO_ODC_BY,
   NEGATIVE_SETBACK_BARE_STRING_CITATION,
   NEGATIVE_SETBACK_FALLBACK_NO_ABSENCE,
   NEGATIVE_TERRAIN_NO_DEM_REF,
   NEGATIVE_ZONING_DISTRICT_AND_ABSENCE,
   TRAVIS_PREFIX_SETBACK_RULE_FIXTURE,
 } from "../fixtures.js";
+import { countyCoverageParcelNodeId } from "../common.js";
 import {
   PARCEL_TERRAIN_MODEL_SCHEMA,
   TERRAIN_DEFAULT_ACCESS_POLICY,
 } from "../parcel-terrain-model.js";
 import { ROAD_NODE_SCHEMA } from "../road-node.js";
 import { SETBACK_RULE_SCHEMA } from "../setback-rule.js";
+import { UTILITY_EASEMENT_SCHEMA } from "../utility-easement.js";
 import { ZONING_FACT_SCHEMA } from "../zoning-fact.js";
 
 describe("property — zoning-fact (WDLL 3.3)", () => {
@@ -183,6 +194,76 @@ describe("property — road-node (27c WDLL 3 / R1)", () => {
       "approximate-assumed-per-class",
     );
     expect(BASTROP_SPRING_STREET_ROAD_FIXTURE.attachPoints.length).toBeGreaterThan(0);
+  });
+});
+
+describe("property — building-footprint (ADR-029 / T3)", () => {
+  it("validates Bastrop ML-derived footprint 48021:27303 with ODC-By citation", () => {
+    expect(BUILDING_FOOTPRINT_SCHEMA.safeParse(BASTROP_ML_FOOTPRINT_FIXTURE).success).toBe(
+      true,
+    );
+    expect(BASTROP_ML_FOOTPRINT_FIXTURE.sourceTier).toBe("ml-derived");
+    expect(BASTROP_ML_FOOTPRINT_FIXTURE.accessPolicy).toBe("public-free");
+    expect(BASTROP_ML_FOOTPRINT_FIXTURE.sourceCitation).toMatch(/ODC-By/i);
+  });
+
+  it("validates county-coverage verified absence row", () => {
+    expect(
+      BUILDING_FOOTPRINT_SCHEMA.safeParse(BASTROP_COUNTY_FOOTPRINT_ABSENCE_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_COUNTY_FOOTPRINT_ABSENCE_FIXTURE.parcelNodeId).toBe(
+      countyCoverageParcelNodeId("48021"),
+    );
+    expect(BASTROP_COUNTY_FOOTPRINT_ABSENCE_FIXTURE.verifiedAbsence?.evaluated).toBe(true);
+    expect(
+      BASTROP_COUNTY_FOOTPRINT_ABSENCE_FIXTURE.verifiedAbsence?.provenanceScope.length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("validates per-parcel absence when source exists but no feature", () => {
+    expect(
+      BUILDING_FOOTPRINT_SCHEMA.safeParse(BASTROP_PARCEL_FOOTPRINT_ABSENCE_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_PARCEL_FOOTPRINT_ABSENCE_FIXTURE.absence?.kind).toBe(
+      "no-footprint-feature",
+    );
+    expect(BASTROP_PARCEL_FOOTPRINT_ABSENCE_FIXTURE.footprintGeometry).toBeUndefined();
+  });
+
+  it("rejects ml-derived without ODC-By in sourceCitation", () => {
+    expect(
+      BUILDING_FOOTPRINT_SCHEMA.safeParse(NEGATIVE_FOOTPRINT_ML_NO_ODC_BY).success,
+    ).toBe(false);
+  });
+
+  it("rejects sourceTier absent without verifiedAbsence", () => {
+    expect(
+      BUILDING_FOOTPRINT_SCHEMA.safeParse(NEGATIVE_FOOTPRINT_ABSENT_NO_VERIFIED).success,
+    ).toBe(false);
+  });
+});
+
+describe("property — utility-easement (ADR-029 / T3)", () => {
+  it("validates City of Bastrop GIS easement fixture", () => {
+    expect(UTILITY_EASEMENT_SCHEMA.safeParse(BASTROP_CITY_EASEMENT_FIXTURE).success).toBe(
+      true,
+    );
+    expect(BASTROP_CITY_EASEMENT_FIXTURE.easementClass).toBe("utility");
+    expect(BASTROP_CITY_EASEMENT_FIXTURE.accessPolicy).toBe("public-free");
+    expect(BASTROP_CITY_EASEMENT_FIXTURE.easementGeometry?.type).toBe("LineString");
+  });
+
+  it("validates county-coverage easement verified absence", () => {
+    expect(
+      UTILITY_EASEMENT_SCHEMA.safeParse(BASTROP_COUNTY_EASEMENT_ABSENCE_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_COUNTY_EASEMENT_ABSENCE_FIXTURE.sourceTier).toBe("absent");
+  });
+
+  it("rejects non-public accessPolicy on utility-easement", () => {
+    expect(
+      UTILITY_EASEMENT_SCHEMA.safeParse(NEGATIVE_EASEMENT_NON_PUBLIC_POLICY).success,
+    ).toBe(false);
   });
 });
 

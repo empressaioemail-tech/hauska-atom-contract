@@ -13,6 +13,7 @@ import {
 import { PROPERTY_ATOM_TIER, PROPERTY_DEFAULT_ACCESS_POLICY } from "./common.js";
 import type { BuildableEnvelopeAtomInstance } from "./buildable-envelope.js";
 import { BUILDABLE_ENVELOPE_DERIVATION_METHOD } from "./buildable-envelope.js";
+import type { BuildingFootprintAtomInstance } from "./building-footprint.js";
 import type { ParcelTerrainModelAtomInstance } from "./parcel-terrain-model.js";
 import {
   PARCEL_TERRAIN_DERIVATION_METHOD,
@@ -22,6 +23,8 @@ import type { SetbackRuleAtomInstance } from "./setback-rule.js";
 import type { ZoningFactAtomInstance } from "./zoning-fact.js";
 import type { RoadNodeAtomInstance } from "./road-node.js";
 import { roadNodeIdFromParts } from "./road-node.js";
+import type { UtilityEasementAtomInstance } from "./utility-easement.js";
+import { countyCoverageParcelNodeId } from "./common.js";
 
 const SAMPLE_ASSERTED = createWidthedConfidence({
   estimate: 0.9,
@@ -539,4 +542,217 @@ export const BASTROP_SPRING_STREET_ROAD_FIXTURE: RoadNodeAtomInstance = {
     }),
     assembledAt: "2026-07-25T12:00:00.000Z",
   }),
+};
+
+/**
+ * Bastrop County (48021) — ML-derived building footprint on parcel 48021:27303.
+ * ADR-029 T3 probe — ODC-By attribution mandatory for ml-derived tier.
+ */
+export const BASTROP_ML_FOOTPRINT_FIXTURE: BuildingFootprintAtomInstance = {
+  entityType: "building-footprint",
+  atomDid: "bfoot_a1b2c3d4e5f67890",
+  parcelNodeId: "48021:27303",
+  footprintId: "primary",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "ml-derived",
+  footprintGeometry: {
+    type: "Polygon",
+    coordinates: [
+      [
+        [-97.3189, 30.1101],
+        [-97.3185, 30.1101],
+        [-97.3185, 30.1105],
+        [-97.3189, 30.1105],
+        [-97.3189, 30.1101],
+      ],
+    ],
+  },
+  structureRole: "primary",
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation:
+    "Microsoft Building Footprints 2026-07-01 (ODC-By 1.0) via T3-ml-join-v1",
+  extractedAt: "2026-08-05T12:00:00.000Z",
+  sourceVintage: "2026-07-01",
+  verificationStatus: "machine",
+  sourceAdapter: "T3-ml-join-v1",
+  evaluatedAt: "2026-08-05T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/**
+ * Bastrop County county-coverage footprint absence — hybrid absence ruling 1.
+ * One row referenced at serve time when no county footprint source is published.
+ */
+export const BASTROP_COUNTY_FOOTPRINT_ABSENCE_FIXTURE: BuildingFootprintAtomInstance = {
+  entityType: "building-footprint",
+  atomDid: "bfoot_b2c3d4e5f6789012",
+  parcelNodeId: countyCoverageParcelNodeId("48021"),
+  footprintId: "county-coverage",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "absent",
+  verifiedAbsence: {
+    evaluated: true,
+    provenanceScope: [
+      "bastropcad.org/bulk-download",
+      "microsoft-building-footprints",
+      "overture-maps-buildings",
+    ],
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "T3 footprint source registry probe 48021 2026-08-05",
+  extractedAt: "2026-08-05T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "T3-source-registry-probe",
+  evaluatedAt: "2026-08-05T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Per-parcel absence when ML source exists but spatial join finds no feature. */
+export const BASTROP_PARCEL_FOOTPRINT_ABSENCE_FIXTURE: BuildingFootprintAtomInstance = {
+  entityType: "building-footprint",
+  atomDid: "bfoot_c3d4e5f678901234",
+  parcelNodeId: "48021:99999",
+  footprintId: "primary",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "ml-derived",
+  absence: {
+    kind: "no-footprint-feature",
+    reason: "ml-spatial-join-below-50pct-overlap-threshold",
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation:
+    "Microsoft Building Footprints 2026-07-01 (ODC-By 1.0) via T3-ml-join-v1",
+  extractedAt: "2026-08-05T12:00:00.000Z",
+  sourceVintage: "2026-07-01",
+  verificationStatus: "machine",
+  sourceAdapter: "T3-ml-join-v1",
+  evaluatedAt: "2026-08-05T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/**
+ * City of Bastrop Easements_/43 — utility easement on parcel 48021:27303.
+ * Phase 2b municipal GIS rail (148 features in city limits).
+ */
+export const BASTROP_CITY_EASEMENT_FIXTURE: UtilityEasementAtomInstance = {
+  entityType: "utility-easement",
+  atomDid: "ueasm_d4e5f67890123456",
+  parcelNodeId: "48021:27303",
+  easementId: "Easements_/43:1287",
+  reasoningChain: { reasoningKind: "observed" },
+  easementClass: "utility",
+  sourceTier: "plat-gis-authoritative",
+  easementGeometry: {
+    type: "LineString",
+    coordinates: [
+      [-97.3190, 30.1100],
+      [-97.3186, 30.1104],
+    ],
+  },
+  corridorWidthFt: 20,
+  holderLabel: "City of Bastrop Utilities",
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "City of Bastrop GIS Easements_/43 feature 1287 2026-08-05",
+  extractedAt: "2026-08-05T12:00:00.000Z",
+  sourceVintage: "2026-08-05",
+  verificationStatus: "machine",
+  sourceAdapter: "T3-bastrop-easements-v1",
+  evaluatedAt: "2026-08-05T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** County-coverage easement absence for Bastrop County. */
+export const BASTROP_COUNTY_EASEMENT_ABSENCE_FIXTURE: UtilityEasementAtomInstance = {
+  entityType: "utility-easement",
+  atomDid: "ueasm_e5f6789012345678",
+  parcelNodeId: countyCoverageParcelNodeId("48021"),
+  easementId: "county-coverage",
+  reasoningChain: { reasoningKind: "observed" },
+  easementClass: "unknown",
+  sourceTier: "absent",
+  verifiedAbsence: {
+    evaluated: true,
+    provenanceScope: [
+      "bastrop-county-gis-easements",
+      "city-of-bastrop-Easements_/43",
+    ],
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "T3 easement source registry probe 48021 2026-08-05",
+  extractedAt: "2026-08-05T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "T3-source-registry-probe",
+  evaluatedAt: "2026-08-05T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Negative — ml-derived without ODC-By in sourceCitation. */
+export const NEGATIVE_FOOTPRINT_ML_NO_ODC_BY = {
+  entityType: "building-footprint" as const,
+  atomDid: "bfoot_bad00000000000001",
+  parcelNodeId: "48021:27303",
+  footprintId: "primary",
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "ml-derived" as const,
+  footprintGeometry: {
+    type: "Polygon" as const,
+    coordinates: [
+      [
+        [-97.3189, 30.1101],
+        [-97.3185, 30.1101],
+        [-97.3185, 30.1105],
+        [-97.3189, 30.1105],
+        [-97.3189, 30.1101],
+      ],
+    ],
+  },
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Microsoft Building Footprints without license tag",
+  extractedAt: "2026-08-05T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "T3-ml-join-v1",
+  evaluatedAt: "2026-08-05T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — sourceTier absent without verifiedAbsence. */
+export const NEGATIVE_FOOTPRINT_ABSENT_NO_VERIFIED = {
+  entityType: "building-footprint" as const,
+  atomDid: "bfoot_bad00000000000002",
+  parcelNodeId: countyCoverageParcelNodeId("48021"),
+  footprintId: "county-coverage",
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "absent" as const,
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Missing verified absence",
+  extractedAt: "2026-08-05T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "T3-source-registry-probe",
+  evaluatedAt: "2026-08-05T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — utility-easement with non-public accessPolicy. */
+export const NEGATIVE_EASEMENT_NON_PUBLIC_POLICY = {
+  entityType: "utility-easement" as const,
+  atomDid: "ueasm_bad00000000000001",
+  parcelNodeId: "48021:27303",
+  easementId: "Easements_/43:999",
+  reasoningChain: { reasoningKind: "observed" as const },
+  easementClass: "utility" as const,
+  sourceTier: "plat-gis-authoritative" as const,
+  easementGeometry: {
+    type: "LineString" as const,
+    coordinates: [
+      [-97.3190, 30.1100],
+      [-97.3186, 30.1104],
+    ],
+  },
+  accessPolicy: "public-paid" as const,
+  sourceCitation: "Invalid paid tier on public GIS easement",
+  extractedAt: "2026-08-05T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "T3-bastrop-easements-v1",
+  evaluatedAt: "2026-08-05T12:00:00.000Z",
+  atomTier: "data" as const,
 };

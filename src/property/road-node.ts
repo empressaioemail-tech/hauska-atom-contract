@@ -7,6 +7,7 @@ import { REASONING_CHAIN_OBSERVED_SCHEMA } from "../reasoning-chain.js";
 import type { ReasoningReadContract } from "../read-contract/reasoning-axes.js";
 
 import {
+  GEO_COORD_SCHEMA,
   PROPERTY_ACCESS_POLICY_SCHEMA,
   PROPERTY_ATOM_TIER,
   PROPERTY_QUALITY_GATE_FIELDS,
@@ -43,11 +44,6 @@ export const ROAD_CLASSIFICATION_SCHEMA = z.enum([
   "gravel",
   "unclassified",
 ]);
-
-/** WGS84 [lng, lat] vertex. */
-export type GeoCoord = readonly [number, number];
-
-export const GEO_COORD_SCHEMA = z.tuple([z.number(), z.number()]);
 
 export const ROAD_CENTERLINE_SCHEMA = z.object({
   type: z.literal("LineString"),

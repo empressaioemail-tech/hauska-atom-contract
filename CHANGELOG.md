@@ -2,6 +2,30 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.12.0] - 2026-08-05
+
+Additive minor — building footprint and utility easement site-layer atoms (ADR-029 / T3).
+
+### Added
+
+- **`building-footprint`** on `./property` — observed improvement geometry atom
+  (`reasoningKind: observed`); `sourceTier: cad-authoritative | ml-derived | absent`;
+  GeoJSON `Polygon`/`MultiPolygon`; hybrid honest absence (county-coverage
+  `verifiedAbsence` row + per-parcel `no-footprint-feature`); ml-derived tier
+  mandatory `public-free` + ODC-By in `sourceCitation` (master ruling 2026-08-05).
+- **`utility-easement`** on `./property` — observed GIS easement geometry;
+  `easementClass`, `sourceTier: plat-gis-authoritative | county-gis |
+  record-extracted | absent`; uniform `public-free`; optional `linkedInstrumentDid`
+  bridge to ADR-020.
+- Shared site-layer helpers: `SITE_LAYER_VERIFIED_ABSENCE_SCHEMA`,
+  `countyCoverageParcelNodeId`, GeoJSON geometry schemas, Bastrop T3 fixtures.
+- `PROPERTY_CONFORMANCE_TARGET_VERSION = "1.12.0"`.
+
+### Explicitly NOT in 1.12.0
+
+- ADR-021 `utility-easement` resolver basis enum (deferred post-registration pilot).
+- ADR-012 renderer `focus` mode obligation (deferred post-pilot).
+
 ## [1.11.0] - 2026-07-25
 
 Additive minor — road spine node atom (27c WDLL 3 / depth-engine R1).
