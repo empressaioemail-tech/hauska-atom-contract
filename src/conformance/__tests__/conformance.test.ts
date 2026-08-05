@@ -31,7 +31,7 @@ describe("conformance — target version", () => {
   });
 
   it("pins property conformance target at 1.10.0", () => {
-    expect(PROPERTY_CONFORMANCE_TARGET_VERSION).toBe("1.10.0");
+    expect(PROPERTY_CONFORMANCE_TARGET_VERSION).toBe("1.12.0");
   });
 });
 

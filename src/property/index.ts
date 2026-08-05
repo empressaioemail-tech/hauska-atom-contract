@@ -14,6 +14,8 @@ export * from "./setback-rule.js";
 export * from "./buildable-envelope.js";
 export * from "./parcel-terrain-model.js";
 export * from "./road-node.js";
+export * from "./building-footprint.js";
+export * from "./utility-easement.js";
 export * from "./fixtures.js";
 
 export type {

@@ -279,8 +279,9 @@ import {
 ## Property reasoning atom kinds (master WDLL 3.2–3.6)
 
 Parcel buildable-answer chain atoms ship on the `./property` subpath
-(v1.9.0): `zoning-fact`, `setback-rule`, `buildable-envelope`. All three
-are data-tier (`atomTier: "data"`) and default to `public-free`
+(v1.9.0+): `zoning-fact`, `setback-rule`, `buildable-envelope`,
+`parcel-terrain-model`, `road-node`, `building-footprint`, `utility-easement`.
+All are data-tier (`atomTier: "data"`) and default to `public-free`
 accessPolicy when undeclared on the registration.
 
 **Calibrated confidence at READ (I-E):** instances MAY carry a
@@ -309,6 +310,10 @@ import {
 | `zoning-fact` | `observed` | `district` OR `absence.no-zoning-stamp` |
 | `setback-rule` | `observed` | `front`/`side`/`rear`, typed `sourceCodeAtomRef`, `matchBasis` |
 | `buildable-envelope` | `derived` | `buildable-envelope-inset-v1`, input refs to fact + rule + geometry |
+| `parcel-terrain-model` | `derived` | `parcel-terrain-mesh-ifc-v1`, format-keyed artifacts |
+| `road-node` | `observed` | `{fips}:road:{osm_way_id}`, centerline + assumed ROW |
+| `building-footprint` | `observed` | `footprintGeometry` OR `absence`/`verifiedAbsence`; `sourceTier` |
+| `utility-easement` | `observed` | `easementGeometry`, `easementClass`, `public-free` always |
 
 ICC royalties on code citations accrue via core `ObligationAtomInstance`
 rows — no standalone `SourceAttribution` type.
