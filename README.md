@@ -279,7 +279,7 @@ import {
 ## Property reasoning atom kinds (master WDLL 3.2–3.6)
 
 Parcel buildable-answer chain atoms ship on the `./property` subpath
-(v1.9.0+): `zoning-fact`, `setback-rule`, `buildable-envelope`,
+(v1.9.0+): `parcel-node`, `zoning-fact`, `setback-rule`, `buildable-envelope`,
 `parcel-terrain-model`, `road-node`, `building-footprint`, `utility-easement`.
 All are data-tier (`atomTier: "data"`) and default to `public-free`
 accessPolicy when undeclared on the registration.
@@ -307,6 +307,7 @@ import {
 
 | `entityType` | `reasoningKind` | Key fields |
 |---|---|---|
+| `parcel-node` | `observed` | `keyKind`, `geometryStoreRef` pointer (never the ring) OR `absence`/`verifiedAbsence` |
 | `zoning-fact` | `observed` | `district` OR `absence.no-zoning-stamp` |
 | `setback-rule` | `observed` | `front`/`side`/`rear`, typed `sourceCodeAtomRef`, `matchBasis` |
 | `buildable-envelope` | `derived` | `buildable-envelope-inset-v1`, input refs to fact + rule + geometry |
@@ -314,6 +315,11 @@ import {
 | `road-node` | `observed` | `{fips}:road:{osm_way_id}`, centerline + assumed ROW |
 | `building-footprint` | `observed` | `footprintGeometry` OR `absence`/`verifiedAbsence`; `sourceTier` |
 | `utility-easement` | `observed` | `easementGeometry`, `easementClass`, `public-free` always |
+
+`parcel-node` is the Rail 1 anchor every other property rail keys on. It records
+parcel identity and ring PROVENANCE; the ring itself stays in `txgio_parcel`, the
+one geometry truth frame (Geometry Law rule 1). `geometryStoreRef` is a strict
+pointer, so an inlined ring fails to parse.
 
 ICC royalties on code citations accrue via core `ObligationAtomInstance`
 rows — no standalone `SourceAttribution` type.

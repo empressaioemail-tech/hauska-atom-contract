@@ -212,6 +212,105 @@ export type BuildingFootprintAbsence = z.infer<
   typeof BUILDING_FOOTPRINT_ABSENCE_SCHEMA
 >;
 
+// ============================================================================
+// parcel-node (Rail 1 — parcel identity and geometry provenance)
+// ============================================================================
+
+/**
+ * Which external key the second token of `parcelNodeId` carries.
+ *
+ * Eight Central-TX counties fail a straight `prop_id` join and route through a
+ * geo_id / address crosswalk (`90_operations/OPS-1_texas_source_registry.md`).
+ * Recording the key KIND on the anchor is identity metadata — it is not the
+ * join-quality RATE, which stays a manifest/roster metric and is deliberately
+ * not atomized.
+ */
+export type ParcelKeyKind = "prop_id" | "geo_id_crosswalk";
+
+export const PARCEL_KEY_KIND_SCHEMA = z.enum(["prop_id", "geo_id_crosswalk"]);
+
+/**
+ * Where the parcel ring came from.
+ *
+ * `absent` is the typed-absence tier (mirrors `building-footprint` /
+ * `utility-easement`): the county was probed and no ring source published.
+ */
+export type ParcelGeometrySourceTier =
+  | "txgio-stratmap"
+  | "county-arcgis-override"
+  | "absent";
+
+export const PARCEL_GEOMETRY_SOURCE_TIER_SCHEMA = z.enum([
+  "txgio-stratmap",
+  "county-arcgis-override",
+  "absent",
+]);
+
+/**
+ * Pointer to the single geometry truth frame — NEVER the ring bytes.
+ *
+ * Geometry Law rule 1 (`_decisions/2026-08-07_envelope_saga_close_and_geometry_law`):
+ * one ring per parcel, `txgio_parcel` is the truth frame. Ten engine files read
+ * that store directly; duplicating the ring into an atom would create a second
+ * source of geometry truth and re-open rule 3's master defect class. This
+ * reference resolves to the ring; it does not restate it.
+ */
+export const PARCEL_GEOMETRY_STORE_REF_SCHEMA = z
+  .object({
+    store: z.literal("txgio_parcel"),
+    countyFips: z.string().regex(/^\d{5}$/, "countyFips must be 5 digits"),
+    propId: z.string().min(1),
+  })
+  .strict();
+
+export type ParcelGeometryStoreRef = z.infer<
+  typeof PARCEL_GEOMETRY_STORE_REF_SCHEMA
+>;
+
+/**
+ * Per-parcel typed absence for `parcel-node`.
+ *
+ * - `no-parcel-geometry` — county IS loaded, parcel key resolves nothing.
+ *   Fail-closed and distinct from not-yet-loaded, which is county-level
+ *   `verifiedAbsence` on the `{fips}:_county_coverage` anchor.
+ * - `geometry-incomplete` — the store row carries a MultiPolygon whose extra
+ *   rings the serving path would silently truncate. Emit the finding; do not
+ *   pass a half-parcel off as the parcel.
+ * - `parcel-key-unresolved` — crosswalk county where the key kind could not be
+ *   established; a guessed join is worse than an honest gap.
+ */
+export const PARCEL_NODE_ABSENCE_KINDS = [
+  "no-parcel-geometry",
+  "geometry-incomplete",
+  "parcel-key-unresolved",
+] as const;
+
+export type ParcelNodeAbsenceKind = (typeof PARCEL_NODE_ABSENCE_KINDS)[number];
+
+export const PARCEL_NODE_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.enum(PARCEL_NODE_ABSENCE_KINDS),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type ParcelNodeAbsence = z.infer<typeof PARCEL_NODE_ABSENCE_SCHEMA>;
+
+/**
+ * One external key with its own provenance. A parcel anchor may carry several
+ * (prop_id from the TxGIO row, geo_id from the CAD roll); each states where it
+ * came from so a consumer never has to guess which key a join used.
+ */
+export const PARCEL_EXTERNAL_KEY_SCHEMA = z
+  .object({
+    keyKind: PARCEL_KEY_KIND_SCHEMA,
+    keyValue: z.string().min(1),
+    sourceCitation: z.string().min(1),
+  })
+  .strict();
+
+export type ParcelExternalKey = z.infer<typeof PARCEL_EXTERNAL_KEY_SCHEMA>;
+
 export type UtilityEasementSourceTier =
   | "plat-gis-authoritative"
   | "county-gis"
