@@ -2,6 +2,55 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.13.0] - 2026-08-08
+
+Additive minor — `parcel-node`, the Rail 1 parcel identity and geometry-provenance
+anchor. MCP has advertised this entity type on the property chain since the chain
+shipped, with no producer behind it; this lands the shape so the engine can write it.
+
+### Added
+
+- **`parcel-node`** on `./property` — observed parcel ANCHOR atom
+  (`reasoningKind: observed`, uniform `public-free`). Carries parcel identity
+  (`parcelNodeId`, `countyFips`, `keyKind`, per-key-provenance `externalKeys`),
+  ring provenance (`geometrySourceTier: txgio-stratmap | county-arcgis-override |
+  absent`, `sourceVintage`, `divergenceObservationCount`), and load state
+  (`geometryLoaded`).
+- **Geometry by reference, never by value.** `geometryStoreRef` is a typed pointer
+  `{ store: "txgio_parcel", countyFips, propId }` into the single geometry truth
+  frame (Geometry Law rule 1, `_decisions/2026-08-07_envelope_saga_close_and_geometry_law`).
+  The schema is `.strict()` on that pointer, so an inlined ring is a parse error —
+  the atom cannot become a second source of geometry truth.
+- **First-class typed absence**, matching the `building-footprint` /
+  `utility-easement` pattern: county-level `verifiedAbsence` (mandatory non-empty
+  `provenanceScope`, fail-closed when `geometrySourceTier: absent`) on the
+  `{fips}:_county_coverage` anchor, plus per-parcel `absence` kinds
+  `no-parcel-geometry`, `geometry-incomplete` (MultiPolygon truncation finding),
+  and `parcel-key-unresolved`. Absence and a resolved pointer are mutually
+  exclusive; `geometryLoaded` must agree with the pointer.
+- `PARCEL_KEY_KIND_SCHEMA` (`prop_id | geo_id_crosswalk`) — records which key the
+  second `parcelNodeId` token carries for crosswalk counties. Identity metadata,
+  not the join-quality rate (which stays a manifest/roster metric, not atomized).
+- `parcelNodeAtomDid`, `PARCEL_NODE_ATOM_DID_PATTERN` — preserves the already
+  published MCP form `did:hauska:parcel-node:{parcelNodeId}`; the schema rejects
+  an `atomDid` that does not embed its own `parcelNodeId`.
+- Fixtures: Bastrop loaded parcel, Travis crosswalk-key parcel, county-coverage
+  verified absence, per-parcel absence, MultiPolygon-incomplete finding, and six
+  negative fixtures.
+- `PROPERTY_CONFORMANCE_TARGET_VERSION = "1.13.0"`.
+
+### Explicitly NOT in 1.13.0
+
+- Parcel ring geometry as atom payload — rejected; `txgio_parcel` stays the one
+  ring per parcel.
+- Any change to `parcelNodeId` shape or the MCP `parcel_node_id` parameter —
+  re-keying was rejected (2,269 call sites, published tool parameter, DIDs embed
+  the key).
+- A new relationship layer — `atom_links` already ships.
+- `cad-parcel-roll`, `land-use-fact`, `parcel-owner-facet`, `flood-hazard-fact`,
+  `soil-survey-fact` — later rails in the same spec.
+- `buildable-envelope.absence` — still queued.
+
 ## [1.12.0] - 2026-08-05
 
 Additive minor — building footprint and utility easement site-layer atoms (ADR-029 / T3).

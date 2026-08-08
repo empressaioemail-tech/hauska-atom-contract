@@ -20,10 +20,20 @@ import {
   FALLBACK_SETBACK_RULE_FIXTURE,
   HAYS_BUILDABLE_ENVELOPE_FIXTURE,
   HAYS_ZONING_FACT_FIXTURE,
+  BASTROP_PARCEL_NODE_FIXTURE,
+  BASTROP_PARCEL_NODE_ABSENCE_FIXTURE,
+  BASTROP_PARCEL_NODE_INCOMPLETE_FIXTURE,
+  COUNTY_COVERAGE_PARCEL_NODE_ABSENCE_FIXTURE,
+  TRAVIS_CROSSWALK_PARCEL_NODE_FIXTURE,
   NEGATIVE_EASEMENT_NON_PUBLIC_POLICY,
   NEGATIVE_ENVELOPE_NO_INPUT_REFS,
   NEGATIVE_FOOTPRINT_ABSENT_NO_VERIFIED,
   NEGATIVE_FOOTPRINT_ML_NO_ODC_BY,
+  NEGATIVE_PARCEL_NODE_ABSENT_NO_VERIFIED,
+  NEGATIVE_PARCEL_NODE_INLINE_GEOMETRY,
+  NEGATIVE_PARCEL_NODE_NON_PUBLIC_POLICY,
+  NEGATIVE_PARCEL_NODE_REF_AND_ABSENCE,
+  NEGATIVE_PARCEL_NODE_REF_MISMATCH,
   NEGATIVE_SETBACK_BARE_STRING_CITATION,
   NEGATIVE_SETBACK_FALLBACK_NO_ABSENCE,
   NEGATIVE_TERRAIN_NO_DEM_REF,
@@ -35,10 +45,152 @@ import {
   PARCEL_TERRAIN_MODEL_SCHEMA,
   TERRAIN_DEFAULT_ACCESS_POLICY,
 } from "../parcel-terrain-model.js";
+import {
+  PARCEL_NODE_SCHEMA,
+  parcelNodeAtomDid,
+  createParcelNode,
+} from "../parcel-node.js";
 import { ROAD_NODE_SCHEMA } from "../road-node.js";
 import { SETBACK_RULE_SCHEMA } from "../setback-rule.js";
 import { UTILITY_EASEMENT_SCHEMA } from "../utility-easement.js";
 import { ZONING_FACT_SCHEMA } from "../zoning-fact.js";
+
+describe("property — parcel-node (Rail 1 anchor)", () => {
+  it("validates Bastrop 48021:27303 with a resolved geometry pointer", () => {
+    expect(PARCEL_NODE_SCHEMA.safeParse(BASTROP_PARCEL_NODE_FIXTURE).success).toBe(
+      true,
+    );
+    expect(BASTROP_PARCEL_NODE_FIXTURE.parcelNodeId).toBe("48021:27303");
+    expect(BASTROP_PARCEL_NODE_FIXTURE.keyKind).toBe("prop_id");
+    expect(BASTROP_PARCEL_NODE_FIXTURE.geometryStoreRef?.store).toBe(
+      "txgio_parcel",
+    );
+    expect(BASTROP_PARCEL_NODE_FIXTURE.geometryLoaded).toBe(true);
+    expect(BASTROP_PARCEL_NODE_FIXTURE.accessPolicy).toBe("public-free");
+    expect(BASTROP_PARCEL_NODE_FIXTURE.atomTier).toBe("data");
+  });
+
+  it("carries no ring body — geometry stays in txgio_parcel (Geometry Law rule 1)", () => {
+    const keys = Object.keys(BASTROP_PARCEL_NODE_FIXTURE);
+    expect(keys).not.toContain("geometry");
+    expect(keys).not.toContain("parcelGeometry");
+    expect(keys).not.toContain("ring");
+    expect(JSON.stringify(BASTROP_PARCEL_NODE_FIXTURE)).not.toMatch(
+      /"coordinates"/,
+    );
+  });
+
+  it("rejects an inlined ring on the store pointer", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse(NEGATIVE_PARCEL_NODE_INLINE_GEOMETRY).success,
+    ).toBe(false);
+  });
+
+  it("records crosswalk key kind rather than faking a prop_id join", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse(TRAVIS_CROSSWALK_PARCEL_NODE_FIXTURE).success,
+    ).toBe(true);
+    expect(TRAVIS_CROSSWALK_PARCEL_NODE_FIXTURE.keyKind).toBe("geo_id_crosswalk");
+    expect(
+      TRAVIS_CROSSWALK_PARCEL_NODE_FIXTURE.divergenceObservationCount,
+    ).toBe(2);
+  });
+
+  it("validates county-coverage verified absence (satisfied-absent)", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse(COUNTY_COVERAGE_PARCEL_NODE_ABSENCE_FIXTURE)
+        .success,
+    ).toBe(true);
+    expect(COUNTY_COVERAGE_PARCEL_NODE_ABSENCE_FIXTURE.parcelNodeId).toBe(
+      countyCoverageParcelNodeId("48301"),
+    );
+    expect(
+      COUNTY_COVERAGE_PARCEL_NODE_ABSENCE_FIXTURE.verifiedAbsence?.evaluated,
+    ).toBe(true);
+    expect(
+      COUNTY_COVERAGE_PARCEL_NODE_ABSENCE_FIXTURE.verifiedAbsence?.provenanceScope
+        .length,
+    ).toBeGreaterThan(0);
+    expect(COUNTY_COVERAGE_PARCEL_NODE_ABSENCE_FIXTURE.geometryLoaded).toBe(false);
+  });
+
+  it("validates per-parcel absence in a loaded county", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse(BASTROP_PARCEL_NODE_ABSENCE_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_PARCEL_NODE_ABSENCE_FIXTURE.absence?.kind).toBe(
+      "no-parcel-geometry",
+    );
+    expect(BASTROP_PARCEL_NODE_ABSENCE_FIXTURE.geometryStoreRef).toBeUndefined();
+  });
+
+  it("validates the MultiPolygon truncation finding", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse(BASTROP_PARCEL_NODE_INCOMPLETE_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_PARCEL_NODE_INCOMPLETE_FIXTURE.absence?.kind).toBe(
+      "geometry-incomplete",
+    );
+  });
+
+  it("fails closed: absent tier without verifiedAbsence", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse(NEGATIVE_PARCEL_NODE_ABSENT_NO_VERIFIED)
+        .success,
+    ).toBe(false);
+  });
+
+  it("rejects a resolved pointer and a typed absence together", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse(NEGATIVE_PARCEL_NODE_REF_AND_ABSENCE).success,
+    ).toBe(false);
+  });
+
+  it("rejects a pointer naming a different parcel", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse(NEGATIVE_PARCEL_NODE_REF_MISMATCH).success,
+    ).toBe(false);
+  });
+
+  it("rejects a paywalled parcel identity", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse(NEGATIVE_PARCEL_NODE_NON_PUBLIC_POLICY).success,
+    ).toBe(false);
+  });
+
+  it("keeps the published MCP DID convention", () => {
+    expect(parcelNodeAtomDid("48021:27303")).toBe(
+      "did:hauska:parcel-node:48021:27303",
+    );
+    expect(BASTROP_PARCEL_NODE_FIXTURE.atomDid).toBe(
+      parcelNodeAtomDid(BASTROP_PARCEL_NODE_FIXTURE.parcelNodeId),
+    );
+  });
+
+  it("rejects an atomDid that does not embed its parcelNodeId", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse({
+        ...BASTROP_PARCEL_NODE_FIXTURE,
+        atomDid: "did:hauska:parcel-node:48021:27999",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("rejects a parcelNodeId outside the county it claims", () => {
+    expect(
+      PARCEL_NODE_SCHEMA.safeParse({
+        ...BASTROP_PARCEL_NODE_FIXTURE,
+        countyFips: "48453",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("createParcelNode round-trips a valid anchor", () => {
+    const atom = createParcelNode(BASTROP_PARCEL_NODE_FIXTURE);
+    expect(atom.entityType).toBe("parcel-node");
+    expect(atom.parcelNodeId).toBe("48021:27303");
+  });
+});
 
 describe("property — zoning-fact (WDLL 3.3)", () => {
   it("validates Hays County RS district fixture 48209:156346", () => {

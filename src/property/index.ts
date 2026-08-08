@@ -9,6 +9,7 @@
  */
 
 export * from "./common.js";
+export * from "./parcel-node.js";
 export * from "./zoning-fact.js";
 export * from "./setback-rule.js";
 export * from "./buildable-envelope.js";

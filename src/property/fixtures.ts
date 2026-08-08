@@ -24,6 +24,8 @@ import type { ZoningFactAtomInstance } from "./zoning-fact.js";
 import type { RoadNodeAtomInstance } from "./road-node.js";
 import { roadNodeIdFromParts } from "./road-node.js";
 import type { UtilityEasementAtomInstance } from "./utility-easement.js";
+import type { ParcelNodeAtomInstance } from "./parcel-node.js";
+import { parcelNodeAtomDid } from "./parcel-node.js";
 import { countyCoverageParcelNodeId } from "./common.js";
 
 const SAMPLE_ASSERTED = createWidthedConfidence({
@@ -684,6 +686,295 @@ export const BASTROP_COUNTY_EASEMENT_ABSENCE_FIXTURE: UtilityEasementAtomInstanc
   sourceAdapter: "T3-source-registry-probe",
   evaluatedAt: "2026-08-05T12:00:00.000Z",
   atomTier: PROPERTY_ATOM_TIER,
+};
+
+// ============================================================================
+// parcel-node fixtures (Rail 1)
+// ============================================================================
+
+/**
+ * Bastrop County (48021) parcel 27303 — loaded TxGIO ring, straight prop_id key.
+ * The atom points at `txgio_parcel`; it does not restate the ring.
+ */
+export const BASTROP_PARCEL_NODE_FIXTURE: ParcelNodeAtomInstance = {
+  entityType: "parcel-node",
+  atomDid: parcelNodeAtomDid("48021:27303"),
+  parcelNodeId: "48021:27303",
+  countyFips: "48021",
+  keyKind: "prop_id",
+  externalKeys: [
+    {
+      keyKind: "prop_id",
+      keyValue: "27303",
+      sourceCitation: "TxGIO StratMap 2026 parcel row prop_id 27303",
+    },
+  ],
+  reasoningChain: { reasoningKind: "observed" },
+  geometrySourceTier: "txgio-stratmap",
+  geometryStoreRef: {
+    store: "txgio_parcel",
+    countyFips: "48021",
+    propId: "27303",
+  },
+  geometryLoaded: true,
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "TxGIO StratMap Texas Parcels 2026 county 48021",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-01-01",
+  verificationStatus: "machine",
+  sourceAdapter: "txgio-stratmap-bulk-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/**
+ * Travis County (48453) — crosswalk key kind. `prop_id` is unreliable in this
+ * county (OPS-1 join-quality HOLD), so the anchor records that the second token
+ * is a crosswalk key rather than pretending a clean prop_id join happened.
+ */
+export const TRAVIS_CROSSWALK_PARCEL_NODE_FIXTURE: ParcelNodeAtomInstance = {
+  entityType: "parcel-node",
+  atomDid: parcelNodeAtomDid("48453:0207310401"),
+  parcelNodeId: "48453:0207310401",
+  countyFips: "48453",
+  keyKind: "geo_id_crosswalk",
+  externalKeys: [
+    {
+      keyKind: "geo_id_crosswalk",
+      keyValue: "0207310401",
+      sourceCitation: "TCAD geo_id crosswalk 2026 roll",
+    },
+  ],
+  reasoningChain: { reasoningKind: "observed" },
+  geometrySourceTier: "county-arcgis-override",
+  geometryStoreRef: {
+    store: "txgio_parcel",
+    countyFips: "48453",
+    propId: "0207310401",
+  },
+  geometryLoaded: true,
+  divergenceObservationCount: 2,
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Travis County ArcGIS parcel service 2026-08 override",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-08-01",
+  verificationStatus: "machine",
+  sourceAdapter: "county-arcgis-parcel-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/**
+ * County-level typed absence — the ring source registry was probed for this
+ * county and nothing is published. Satisfied-absent, not not-yet.
+ */
+export const COUNTY_COVERAGE_PARCEL_NODE_ABSENCE_FIXTURE: ParcelNodeAtomInstance = {
+  entityType: "parcel-node",
+  atomDid: parcelNodeAtomDid(countyCoverageParcelNodeId("48301")),
+  parcelNodeId: countyCoverageParcelNodeId("48301"),
+  countyFips: "48301",
+  keyKind: "prop_id",
+  reasoningChain: { reasoningKind: "observed" },
+  geometrySourceTier: "absent",
+  geometryLoaded: false,
+  verifiedAbsence: {
+    evaluated: true,
+    provenanceScope: [
+      "txgio-stratmap-bulk",
+      "county-arcgis-override",
+    ],
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Rail 1 parcel source registry probe 48301 2026-08-08",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "parcel-source-registry-probe-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/**
+ * Per-parcel absence in a LOADED county — the key resolves nothing. Fail-closed
+ * and distinct from the county-level not-yet case above.
+ */
+export const BASTROP_PARCEL_NODE_ABSENCE_FIXTURE: ParcelNodeAtomInstance = {
+  entityType: "parcel-node",
+  atomDid: parcelNodeAtomDid("48021:99999"),
+  parcelNodeId: "48021:99999",
+  countyFips: "48021",
+  keyKind: "prop_id",
+  reasoningChain: { reasoningKind: "observed" },
+  geometrySourceTier: "txgio-stratmap",
+  geometryLoaded: false,
+  absence: {
+    kind: "no-parcel-geometry",
+    reason: "county 48021 loaded 2026-01-01; prop_id 99999 has no ring row",
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "TxGIO StratMap Texas Parcels 2026 county 48021",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-01-01",
+  verificationStatus: "machine",
+  sourceAdapter: "txgio-stratmap-bulk-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/**
+ * MultiPolygon truncation finding — the store row carries rings the serving
+ * path would silently drop. Report it; never serve a half-parcel as the parcel.
+ */
+export const BASTROP_PARCEL_NODE_INCOMPLETE_FIXTURE: ParcelNodeAtomInstance = {
+  entityType: "parcel-node",
+  atomDid: parcelNodeAtomDid("48021:27304"),
+  parcelNodeId: "48021:27304",
+  countyFips: "48021",
+  keyKind: "prop_id",
+  reasoningChain: { reasoningKind: "observed" },
+  geometrySourceTier: "txgio-stratmap",
+  geometryLoaded: false,
+  absence: {
+    kind: "geometry-incomplete",
+    reason: "MultiPolygon with 3 rings; serving path resolves first ring only",
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "TxGIO StratMap Texas Parcels 2026 county 48021",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-01-01",
+  verificationStatus: "machine",
+  sourceAdapter: "txgio-stratmap-bulk-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Negative — sourceTier absent without verifiedAbsence (must fail closed). */
+export const NEGATIVE_PARCEL_NODE_ABSENT_NO_VERIFIED = {
+  entityType: "parcel-node" as const,
+  atomDid: parcelNodeAtomDid(countyCoverageParcelNodeId("48301")),
+  parcelNodeId: countyCoverageParcelNodeId("48301"),
+  countyFips: "48301",
+  keyKind: "prop_id" as const,
+  reasoningChain: { reasoningKind: "observed" as const },
+  geometrySourceTier: "absent" as const,
+  geometryLoaded: false,
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Missing verified absence",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "parcel-source-registry-probe-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — geometry pointer AND typed absence on the same atom. */
+export const NEGATIVE_PARCEL_NODE_REF_AND_ABSENCE = {
+  entityType: "parcel-node" as const,
+  atomDid: parcelNodeAtomDid("48021:27303"),
+  parcelNodeId: "48021:27303",
+  countyFips: "48021",
+  keyKind: "prop_id" as const,
+  reasoningChain: { reasoningKind: "observed" as const },
+  geometrySourceTier: "txgio-stratmap" as const,
+  geometryStoreRef: {
+    store: "txgio_parcel" as const,
+    countyFips: "48021",
+    propId: "27303",
+  },
+  geometryLoaded: true,
+  absence: {
+    kind: "no-parcel-geometry" as const,
+    reason: "contradicts the resolved pointer",
+  },
+  accessPolicy: "public-free" as const,
+  sourceCitation: "TxGIO StratMap Texas Parcels 2026 county 48021",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "txgio-stratmap-bulk-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — the ring body inlined on the atom (Geometry Law rule 1 guard). */
+export const NEGATIVE_PARCEL_NODE_INLINE_GEOMETRY = {
+  entityType: "parcel-node" as const,
+  atomDid: parcelNodeAtomDid("48021:27303"),
+  parcelNodeId: "48021:27303",
+  countyFips: "48021",
+  keyKind: "prop_id" as const,
+  reasoningChain: { reasoningKind: "observed" as const },
+  geometrySourceTier: "txgio-stratmap" as const,
+  geometryStoreRef: {
+    store: "txgio_parcel" as const,
+    countyFips: "48021",
+    propId: "27303",
+    geometry: {
+      type: "Polygon" as const,
+      coordinates: [
+        [
+          [-97.3189, 30.1101],
+          [-97.3185, 30.1101],
+          [-97.3185, 30.1105],
+          [-97.3189, 30.1101],
+        ],
+      ],
+    },
+  },
+  geometryLoaded: true,
+  accessPolicy: "public-free" as const,
+  sourceCitation: "TxGIO StratMap Texas Parcels 2026 county 48021",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "txgio-stratmap-bulk-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — pointer names a different parcel than the atom claims. */
+export const NEGATIVE_PARCEL_NODE_REF_MISMATCH = {
+  entityType: "parcel-node" as const,
+  atomDid: parcelNodeAtomDid("48021:27303"),
+  parcelNodeId: "48021:27303",
+  countyFips: "48021",
+  keyKind: "prop_id" as const,
+  reasoningChain: { reasoningKind: "observed" as const },
+  geometrySourceTier: "txgio-stratmap" as const,
+  geometryStoreRef: {
+    store: "txgio_parcel" as const,
+    countyFips: "48021",
+    propId: "27999",
+  },
+  geometryLoaded: true,
+  accessPolicy: "public-free" as const,
+  sourceCitation: "TxGIO StratMap Texas Parcels 2026 county 48021",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "txgio-stratmap-bulk-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — parcel identity behind a paywall. */
+export const NEGATIVE_PARCEL_NODE_NON_PUBLIC_POLICY = {
+  entityType: "parcel-node" as const,
+  atomDid: parcelNodeAtomDid("48021:27303"),
+  parcelNodeId: "48021:27303",
+  countyFips: "48021",
+  keyKind: "prop_id" as const,
+  reasoningChain: { reasoningKind: "observed" as const },
+  geometrySourceTier: "txgio-stratmap" as const,
+  geometryStoreRef: {
+    store: "txgio_parcel" as const,
+    countyFips: "48021",
+    propId: "27303",
+  },
+  geometryLoaded: true,
+  accessPolicy: "public-paid" as const,
+  sourceCitation: "TxGIO StratMap Texas Parcels 2026 county 48021",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "txgio-stratmap-bulk-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
 };
 
 /** Negative — ml-derived without ODC-By in sourceCitation. */
