@@ -13,6 +13,10 @@ import {
 import { PROPERTY_ATOM_TIER, PROPERTY_DEFAULT_ACCESS_POLICY } from "./common.js";
 import type { BuildableEnvelopeAtomInstance } from "./buildable-envelope.js";
 import { BUILDABLE_ENVELOPE_DERIVATION_METHOD } from "./buildable-envelope.js";
+import {
+  BUILDABLE_ENVELOPE_ABSENCE_KINDS,
+  type BuildableEnvelopeAbsenceKind,
+} from "./common.js";
 import type { BuildingFootprintAtomInstance } from "./building-footprint.js";
 import type { ParcelTerrainModelAtomInstance } from "./parcel-terrain-model.js";
 import {
@@ -263,6 +267,119 @@ export const HAYS_BUILDABLE_ENVELOPE_FIXTURE: BuildableEnvelopeAtomInstance = {
     }),
     assembledAt: "2026-07-23T12:00:00.000Z",
   }),
+};
+
+/** Default provenance scope for honest envelope declines (evaluation sources). */
+export const ENVELOPE_DECLINE_PROVENANCE_SCOPE = [
+  "depth-warm-verify",
+  "txgio-parcel",
+  "zoning-fact",
+] as const;
+
+/**
+ * Build a contract-shaped buildable-envelope decline for one live absence kind.
+ * Decline envelopes cite zoning-fact only — setback/geometry may not exist.
+ */
+export function buildEnvelopeDeclineFixture(
+  kind: BuildableEnvelopeAbsenceKind,
+  reason = `fixture decline: ${kind}`,
+): BuildableEnvelopeAtomInstance {
+  // Stable hex per kind index so atomDid stays unique and deterministic.
+  const idx = BUILDABLE_ENVELOPE_ABSENCE_KINDS.indexOf(kind);
+  const hex = (0xf000000000000000n + BigInt(idx + 1))
+    .toString(16)
+    .slice(0, 16);
+  return {
+    entityType: "buildable-envelope",
+    atomDid: `benvelope_${hex}`,
+    parcelNodeId: "48021:27303",
+    reasoningChain: {
+      reasoningKind: "derived",
+      derivationMethod: BUILDABLE_ENVELOPE_DERIVATION_METHOD,
+      inputAtomRefs: [
+        {
+          atomDid: "zfact_a1234567890abcde",
+          role: "fact",
+          entityType: "zoning-fact",
+          citationLabel: "Zoning fact for declined envelope",
+        },
+      ],
+    },
+    absence: { kind, reason },
+    verifiedAbsence: {
+      evaluated: true,
+      provenanceScope: [...ENVELOPE_DECLINE_PROVENANCE_SCOPE],
+    },
+    accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+    sourceCitation: "depth-warm-verify-decline",
+    extractedAt: "2026-08-09T00:00:00.000Z",
+    atomTier: PROPERTY_ATOM_TIER,
+  };
+}
+
+/** Representative live decline — superseded prop_id (R27 poster case). */
+export const BASTROP_ENVELOPE_SUPERSEDED_DECLINE_FIXTURE =
+  buildEnvelopeDeclineFixture(
+    "superseded-prop-id",
+    "prop_id absent from county cadastral",
+  );
+
+/** Cascad unzoned cohort decline. */
+export const BASTROP_ENVELOPE_UNZONED_DECLINE_FIXTURE = buildEnvelopeDeclineFixture(
+  "unzoned-no-district-basis",
+  "unzoned jurisdiction — no district basis for setbacks or envelope",
+);
+
+/** Negative — absence without verifiedAbsence (must fail closed). */
+export const NEGATIVE_ENVELOPE_ABSENCE_NO_VERIFIED = {
+  entityType: "buildable-envelope" as const,
+  atomDid: "benvelope_bad0000000000002",
+  parcelNodeId: "48021:27303",
+  reasoningChain: {
+    reasoningKind: "derived" as const,
+    derivationMethod: BUILDABLE_ENVELOPE_DERIVATION_METHOD,
+    inputAtomRefs: [
+      {
+        atomDid: "zfact_a1234567890abcde",
+        role: "fact" as const,
+        entityType: "zoning-fact",
+      },
+    ],
+  },
+  absence: {
+    kind: "no-setback-row" as const,
+    reason: "missing verifiedAbsence",
+  },
+  accessPolicy: "public-free" as const,
+  sourceCitation: "depth-warm-verify-decline",
+  extractedAt: "2026-08-09T00:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — verifiedAbsence without absence kind. */
+export const NEGATIVE_ENVELOPE_VERIFIED_WITHOUT_ABSENCE = {
+  entityType: "buildable-envelope" as const,
+  atomDid: "benvelope_bad0000000000003",
+  parcelNodeId: "48021:27303",
+  reasoningChain: {
+    reasoningKind: "derived" as const,
+    derivationMethod: BUILDABLE_ENVELOPE_DERIVATION_METHOD,
+    inputAtomRefs: [
+      {
+        atomDid: "zfact_a1234567890abcde",
+        role: "fact" as const,
+        entityType: "zoning-fact",
+      },
+    ],
+  },
+  verifiedAbsence: {
+    evaluated: true as const,
+    provenanceScope: ["depth-warm-verify"],
+  },
+  accessPolicy: "public-free" as const,
+  sourceCitation: "depth-warm-verify-decline",
+  extractedAt: "2026-08-09T00:00:00.000Z",
+  atomTier: "data" as const,
 };
 
 /** Negative — bare string citation instead of AtomInputRef (WDLL 3.5 fail). */

@@ -67,6 +67,80 @@ export const SETBACK_ABSENCE_SCHEMA = z.object({
 
 export type SetbackAbsence = z.infer<typeof SETBACK_ABSENCE_SCHEMA>;
 
+// ============================================================================
+// buildable-envelope typed absence (1.15.0) — lifted from live producers
+// ============================================================================
+
+/**
+ * Named decline codes actually written onto `buildable-envelope` atoms.
+ *
+ * Ground truth is Bastrop store population (2026-08-08 grade audit §8.1)
+ * plus the two residual buckets from `bucketVerifyFailReasons` that can be
+ * minted even when a cohort snapshot shows zero rows. Do NOT invent codes
+ * here — expand only when a live producer lands a new string.
+ *
+ * Grouping: each live code is its own kind. Compressing would erase
+ * agent-routing and cert-grade branches (cascade codes grade differently;
+ * edge-label early declines differ from verify-bucket orientation; R32 is
+ * a distinct inset path). The free-text `reason` carries path detail; the
+ * kind is the durable finding identity.
+ */
+export const BUILDABLE_ENVELOPE_ABSENCE_KINDS = [
+  // Cascade (unzoned-county bake) — cert-grade branches on these two.
+  "unzoned-no-district-basis",
+  "no-district-on-record",
+  // Warm early refusals (depth-warm city batch / edgeLabeling).
+  "no-setback-row",
+  "no-road-adjacency",
+  "front-orientation-unresolved",
+  "superseded-prop-id",
+  // Warm verify-fail buckets (`bucketVerifyFailReasons`).
+  "front-orientation",
+  "road-classification-mismatch",
+  "r32-per-edge-inset",
+  "null-inset",
+  "faces-answer",
+  "geometry",
+  "setback-edge-distance",
+  "other-verify-fail",
+] as const;
+
+export type BuildableEnvelopeAbsenceKind =
+  (typeof BUILDABLE_ENVELOPE_ABSENCE_KINDS)[number];
+
+export const BUILDABLE_ENVELOPE_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.enum(BUILDABLE_ENVELOPE_ABSENCE_KINDS),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type BuildableEnvelopeAbsence = z.infer<
+  typeof BUILDABLE_ENVELOPE_ABSENCE_SCHEMA
+>;
+
+/** Residual kind when a producer hands an unknown decline string. */
+export const BUILDABLE_ENVELOPE_ABSENCE_FALLBACK_KIND =
+  "other-verify-fail" as const;
+
+/**
+ * Map a live engine decline-code string onto a contract absence kind.
+ * Unknown codes collapse to {@link BUILDABLE_ENVELOPE_ABSENCE_FALLBACK_KIND}
+ * so writers never invent enum members off-band.
+ */
+export function toBuildableEnvelopeAbsenceKind(
+  declineCode: string,
+): BuildableEnvelopeAbsenceKind {
+  if (
+    (BUILDABLE_ENVELOPE_ABSENCE_KINDS as ReadonlyArray<string>).includes(
+      declineCode,
+    )
+  ) {
+    return declineCode as BuildableEnvelopeAbsenceKind;
+  }
+  return BUILDABLE_ENVELOPE_ABSENCE_FALLBACK_KIND;
+}
+
 export type SetbackMatchBasis = "exact" | "prefix" | "fallback";
 
 export const SETBACK_MATCH_BASIS_VALUES: ReadonlyArray<SetbackMatchBasis> = [

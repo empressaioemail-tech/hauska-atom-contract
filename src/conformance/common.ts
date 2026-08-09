@@ -31,7 +31,7 @@ export type ReasoningConformanceTargetVersion =
 /**
  * Pin property atom kind adopters to this semver (master WDLL 3.2–3.6).
  */
-export const PROPERTY_CONFORMANCE_TARGET_VERSION = "1.14.0" as const;
+export const PROPERTY_CONFORMANCE_TARGET_VERSION = "1.15.0" as const;
 
 export type PropertyConformanceTargetVersion =
   typeof PROPERTY_CONFORMANCE_TARGET_VERSION;

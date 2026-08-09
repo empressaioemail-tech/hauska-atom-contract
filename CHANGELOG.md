@@ -2,6 +2,36 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.15.0] - 2026-08-09
+
+Additive minor — first-class typed absence for `buildable-envelope`, closing the
+last property-family gap where honest declines lived only as engine-extension
+fields (`warmVerifyDecline` / `warmVerifyDeclineCode`).
+
+### Added
+
+- **`buildable-envelope.absence`** — `{ kind, reason }` where `kind` is one of
+  the fourteen live decline codes lifted from Bastrop store population +
+  `bucketVerifyFailReasons` residual buckets. No invented taxonomy.
+- **`buildable-envelope.verifiedAbsence`** — mandatory whenever `absence` is
+  present (`evaluated: true` + non-empty `provenanceScope`), same fail-closed
+  dialect as site-layer families. Decline envelopes require only a
+  zoning-fact input ref; positive envelopes still require the full
+  zoning-fact + setback-rule + geometry + front-edge chain.
+- `BUILDABLE_ENVELOPE_ABSENCE_KINDS`, `BUILDABLE_ENVELOPE_ABSENCE_SCHEMA`,
+  `toBuildableEnvelopeAbsenceKind` (unknown producer strings collapse to
+  `other-verify-fail`).
+- Fixtures and round-trip tests for every live kind; negative probes for
+  absence-without-verifiedAbsence and verifiedAbsence-without-absence.
+- `PROPERTY_CONFORMANCE_TARGET_VERSION = "1.15.0"`.
+
+### Explicitly NOT in 1.15.0
+
+- Data migration of existing store rows that carry only
+  `warmVerifyDecline*` — readers stay dual-path; rewrite is a separate lane.
+- Changes to envelope geometry / outcome fields (engine extensions unchanged).
+- Any new decline codes beyond the lifted live set.
+
 ## [1.14.0] - 2026-08-08
 
 Additive minor — three county-shape property rails with first-class typed absence:
@@ -80,7 +110,7 @@ shipped, with no producer behind it; this lands the shape so the engine can writ
 - A new relationship layer — `atom_links` already ships.
 - `cad-parcel-roll`, `land-use-fact`, `parcel-owner-facet`, `flood-hazard-fact`,
   `soil-survey-fact` — later rails in the same spec.
-- `buildable-envelope.absence` — still queued.
+- `buildable-envelope.absence` — shipped in 1.15.0.
 
 ## [1.12.0] - 2026-08-05
 

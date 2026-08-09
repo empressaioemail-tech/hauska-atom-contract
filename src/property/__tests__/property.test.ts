@@ -6,6 +6,10 @@ import { describe, expect, it } from "vitest";
 
 import { REASONING_CHAIN_SCHEMA } from "../../reasoning-chain.js";
 import { BUILDABLE_ENVELOPE_SCHEMA } from "../buildable-envelope.js";
+import {
+  BUILDABLE_ENVELOPE_ABSENCE_KINDS,
+  toBuildableEnvelopeAbsenceKind,
+} from "../common.js";
 import { BUILDING_FOOTPRINT_SCHEMA } from "../building-footprint.js";
 import {
   BASTROP_CITY_EASEMENT_FIXTURE,
@@ -19,6 +23,9 @@ import {
   COMAL_SETBACK_RULE_FIXTURE,
   FALLBACK_SETBACK_RULE_FIXTURE,
   HAYS_BUILDABLE_ENVELOPE_FIXTURE,
+  BASTROP_ENVELOPE_SUPERSEDED_DECLINE_FIXTURE,
+  BASTROP_ENVELOPE_UNZONED_DECLINE_FIXTURE,
+  buildEnvelopeDeclineFixture,
   HAYS_ZONING_FACT_FIXTURE,
   BASTROP_PARCEL_NODE_FIXTURE,
   BASTROP_PARCEL_NODE_ABSENCE_FIXTURE,
@@ -27,6 +34,8 @@ import {
   TRAVIS_CROSSWALK_PARCEL_NODE_FIXTURE,
   NEGATIVE_EASEMENT_NON_PUBLIC_POLICY,
   NEGATIVE_ENVELOPE_NO_INPUT_REFS,
+  NEGATIVE_ENVELOPE_ABSENCE_NO_VERIFIED,
+  NEGATIVE_ENVELOPE_VERIFIED_WITHOUT_ABSENCE,
   NEGATIVE_FOOTPRINT_ABSENT_NO_VERIFIED,
   NEGATIVE_FOOTPRINT_ML_NO_ODC_BY,
   NEGATIVE_PARCEL_NODE_ABSENT_NO_VERIFIED,
@@ -310,6 +319,74 @@ describe("property — buildable-envelope (WDLL 3.6)", () => {
       BUILDABLE_ENVELOPE_SCHEMA.safeParse(NEGATIVE_ENVELOPE_NO_INPUT_REFS).success,
     ).toBe(false);
     expect(REASONING_CHAIN_SCHEMA.safeParse(NEGATIVE_ENVELOPE_NO_INPUT_REFS.reasoningChain).success).toBe(
+      false,
+    );
+  });
+
+  it("validates live decline fixtures with absence + verifiedAbsence", () => {
+    expect(
+      BUILDABLE_ENVELOPE_SCHEMA.safeParse(BASTROP_ENVELOPE_SUPERSEDED_DECLINE_FIXTURE)
+        .success,
+    ).toBe(true);
+    expect(BASTROP_ENVELOPE_SUPERSEDED_DECLINE_FIXTURE.absence?.kind).toBe(
+      "superseded-prop-id",
+    );
+    expect(
+      BASTROP_ENVELOPE_SUPERSEDED_DECLINE_FIXTURE.verifiedAbsence?.provenanceScope
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      BUILDABLE_ENVELOPE_SCHEMA.safeParse(BASTROP_ENVELOPE_UNZONED_DECLINE_FIXTURE)
+        .success,
+    ).toBe(true);
+  });
+
+  it("round-trips every live decline code through the contract absence shape", () => {
+    expect(BUILDABLE_ENVELOPE_ABSENCE_KINDS).toHaveLength(14);
+    for (const kind of BUILDABLE_ENVELOPE_ABSENCE_KINDS) {
+      const fixture = buildEnvelopeDeclineFixture(kind);
+      const parsed = BUILDABLE_ENVELOPE_SCHEMA.safeParse(fixture);
+      expect(parsed.success, `kind ${kind} must parse`).toBe(true);
+      if (parsed.success) {
+        expect(parsed.data.absence?.kind).toBe(kind);
+        expect(parsed.data.verifiedAbsence?.evaluated).toBe(true);
+      }
+      expect(toBuildableEnvelopeAbsenceKind(kind)).toBe(kind);
+    }
+    expect(toBuildableEnvelopeAbsenceKind("not-a-real-code")).toBe(
+      "other-verify-fail",
+    );
+  });
+
+  it("fails closed: absence without verifiedAbsence", () => {
+    expect(
+      BUILDABLE_ENVELOPE_SCHEMA.safeParse(NEGATIVE_ENVELOPE_ABSENCE_NO_VERIFIED)
+        .success,
+    ).toBe(false);
+  });
+
+  it("fails closed: verifiedAbsence without absence kind", () => {
+    expect(
+      BUILDABLE_ENVELOPE_SCHEMA.safeParse(NEGATIVE_ENVELOPE_VERIFIED_WITHOUT_ABSENCE)
+        .success,
+    ).toBe(false);
+  });
+
+  it("keeps positive envelope requiring full input chain (no silent weaken)", () => {
+    const declineShapeWithNoSetback = {
+      ...HAYS_BUILDABLE_ENVELOPE_FIXTURE,
+      reasoningChain: {
+        ...HAYS_BUILDABLE_ENVELOPE_FIXTURE.reasoningChain,
+        inputAtomRefs: [
+          {
+            atomDid: HAYS_ZONING_FACT_FIXTURE.atomDid,
+            role: "fact" as const,
+            entityType: "zoning-fact",
+          },
+        ],
+      },
+    };
+    expect(BUILDABLE_ENVELOPE_SCHEMA.safeParse(declineShapeWithNoSetback).success).toBe(
       false,
     );
   });
