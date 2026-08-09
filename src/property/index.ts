@@ -17,6 +17,9 @@ export * from "./parcel-terrain-model.js";
 export * from "./road-node.js";
 export * from "./building-footprint.js";
 export * from "./utility-easement.js";
+export * from "./flood-hazard-fact.js";
+export * from "./cad-parcel-roll.js";
+export * from "./land-use-fact.js";
 export * from "./fixtures.js";
 
 export type {

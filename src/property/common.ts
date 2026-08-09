@@ -359,3 +359,71 @@ export const EASEMENT_RECORDING_REF_SCHEMA = z
   .strict();
 
 export type EasementRecordingRef = z.infer<typeof EASEMENT_RECORDING_REF_SCHEMA>;
+
+// ============================================================================
+// flood-hazard-fact (Rail — FEMA NFHL)
+// ============================================================================
+
+export type FloodHazardSourceTier = "fema-nfhl" | "absent";
+
+export const FLOOD_HAZARD_SOURCE_TIER_SCHEMA = z.enum(["fema-nfhl", "absent"]);
+
+export const FLOOD_HAZARD_ABSENCE_KIND = "no-flood-coverage" as const;
+
+export const FLOOD_HAZARD_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.literal(FLOOD_HAZARD_ABSENCE_KIND),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type FloodHazardAbsence = z.infer<typeof FLOOD_HAZARD_ABSENCE_SCHEMA>;
+
+// ============================================================================
+// cad-parcel-roll / land-use-fact (Rail — county appraisal roll)
+// ============================================================================
+
+/** Shared CAD roll tier — Cotality is extinguished; never add a cotality tier. */
+export type CadRollSourceTier = "cad-authoritative" | "absent";
+
+export const CAD_ROLL_SOURCE_TIER_SCHEMA = z.enum([
+  "cad-authoritative",
+  "absent",
+]);
+
+export const CAD_PARCEL_ROLL_ABSENCE_KINDS = [
+  "no-cad-row",
+  "join-hold",
+] as const;
+
+export type CadParcelRollAbsenceKind =
+  (typeof CAD_PARCEL_ROLL_ABSENCE_KINDS)[number];
+
+export const CAD_PARCEL_ROLL_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.enum(CAD_PARCEL_ROLL_ABSENCE_KINDS),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type CadParcelRollAbsence = z.infer<typeof CAD_PARCEL_ROLL_ABSENCE_SCHEMA>;
+
+export const LAND_USE_ABSENCE_KINDS = [
+  "no-land-use-code",
+  "no-cad-row",
+  "join-hold",
+] as const;
+
+export type LandUseAbsenceKind = (typeof LAND_USE_ABSENCE_KINDS)[number];
+
+export const LAND_USE_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.enum(LAND_USE_ABSENCE_KINDS),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type LandUseAbsence = z.infer<typeof LAND_USE_ABSENCE_SCHEMA>;
+
+/** CAD numeric export may carry acres as a string; accept either form. */
+export const LAND_ACRES_SCHEMA = z.union([z.string().min(1), z.number()]);

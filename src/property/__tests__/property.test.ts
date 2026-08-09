@@ -39,6 +39,22 @@ import {
   NEGATIVE_TERRAIN_NO_DEM_REF,
   NEGATIVE_ZONING_DISTRICT_AND_ABSENCE,
   TRAVIS_PREFIX_SETBACK_RULE_FIXTURE,
+  BASTROP_FLOOD_SFHA_FIXTURE,
+  HAYS_FLOOD_OUTSIDE_SFHA_FIXTURE,
+  BASTROP_FLOOD_NO_COVERAGE_FIXTURE,
+  COUNTY_FLOOD_VERIFIED_ABSENCE_FIXTURE,
+  NEGATIVE_FLOOD_SFHA_AND_ABSENCE,
+  NEGATIVE_FLOOD_ABSENT_NO_VERIFIED,
+  NEGATIVE_FLOOD_ABSENT_WITH_CLAIM,
+  BASTROP_CAD_ROLL_FIXTURE,
+  BASTROP_CAD_ROLL_JOIN_HOLD_FIXTURE,
+  COUNTY_CAD_ROLL_ABSENCE_FIXTURE,
+  NEGATIVE_CAD_ROLL_OWNER_ON_JOIN_HOLD,
+  NEGATIVE_CAD_ROLL_EMPTY_PRESENT,
+  BASTROP_LAND_USE_FIXTURE,
+  BASTROP_LAND_USE_NO_CODE_FIXTURE,
+  NEGATIVE_LAND_USE_EMPTY_PRESENT,
+  NEGATIVE_LAND_USE_COTALITY_TIER,
 } from "../fixtures.js";
 import { countyCoverageParcelNodeId } from "../common.js";
 import {
@@ -54,6 +70,9 @@ import { ROAD_NODE_SCHEMA } from "../road-node.js";
 import { SETBACK_RULE_SCHEMA } from "../setback-rule.js";
 import { UTILITY_EASEMENT_SCHEMA } from "../utility-easement.js";
 import { ZONING_FACT_SCHEMA } from "../zoning-fact.js";
+import { FLOOD_HAZARD_FACT_SCHEMA, createFloodHazardFact } from "../flood-hazard-fact.js";
+import { CAD_PARCEL_ROLL_SCHEMA, createCadParcelRoll } from "../cad-parcel-roll.js";
+import { LAND_USE_FACT_SCHEMA, createLandUseFact } from "../land-use-fact.js";
 
 describe("property — parcel-node (Rail 1 anchor)", () => {
   it("validates Bastrop 48021:27303 with a resolved geometry pointer", () => {
@@ -416,6 +435,133 @@ describe("property — utility-easement (ADR-029 / T3)", () => {
     expect(
       UTILITY_EASEMENT_SCHEMA.safeParse(NEGATIVE_EASEMENT_NON_PUBLIC_POLICY).success,
     ).toBe(false);
+  });
+});
+
+describe("property — flood-hazard-fact", () => {
+  it("validates Bastrop SFHA true Zone AE present finding", () => {
+    expect(FLOOD_HAZARD_FACT_SCHEMA.safeParse(BASTROP_FLOOD_SFHA_FIXTURE).success).toBe(
+      true,
+    );
+    expect(BASTROP_FLOOD_SFHA_FIXTURE.inSpecialFloodHazardArea).toBe(true);
+    expect(BASTROP_FLOOD_SFHA_FIXTURE.floodZone).toBe("AE");
+  });
+
+  it("validates outside-SFHA as present with SFHA false (not absence)", () => {
+    expect(
+      FLOOD_HAZARD_FACT_SCHEMA.safeParse(HAYS_FLOOD_OUTSIDE_SFHA_FIXTURE).success,
+    ).toBe(true);
+    expect(HAYS_FLOOD_OUTSIDE_SFHA_FIXTURE.inSpecialFloodHazardArea).toBe(false);
+    expect(HAYS_FLOOD_OUTSIDE_SFHA_FIXTURE.absence).toBeUndefined();
+  });
+
+  it("validates per-parcel no-flood-coverage absence", () => {
+    expect(
+      FLOOD_HAZARD_FACT_SCHEMA.safeParse(BASTROP_FLOOD_NO_COVERAGE_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_FLOOD_NO_COVERAGE_FIXTURE.absence?.kind).toBe("no-flood-coverage");
+  });
+
+  it("validates county verified absence fail-closed", () => {
+    expect(
+      FLOOD_HAZARD_FACT_SCHEMA.safeParse(COUNTY_FLOOD_VERIFIED_ABSENCE_FIXTURE).success,
+    ).toBe(true);
+    expect(COUNTY_FLOOD_VERIFIED_ABSENCE_FIXTURE.sourceTier).toBe("absent");
+  });
+
+  it("rejects SFHA finding and absence together", () => {
+    expect(
+      FLOOD_HAZARD_FACT_SCHEMA.safeParse(NEGATIVE_FLOOD_SFHA_AND_ABSENCE).success,
+    ).toBe(false);
+  });
+
+  it("rejects absent tier without verifiedAbsence", () => {
+    expect(
+      FLOOD_HAZARD_FACT_SCHEMA.safeParse(NEGATIVE_FLOOD_ABSENT_NO_VERIFIED).success,
+    ).toBe(false);
+  });
+
+  it("rejects absent tier with flood zone claim fields", () => {
+    expect(
+      FLOOD_HAZARD_FACT_SCHEMA.safeParse(NEGATIVE_FLOOD_ABSENT_WITH_CLAIM).success,
+    ).toBe(false);
+  });
+
+  it("createFloodHazardFact round-trips a valid atom", () => {
+    const atom = createFloodHazardFact(BASTROP_FLOOD_SFHA_FIXTURE);
+    expect(atom.entityType).toBe("flood-hazard-fact");
+  });
+});
+
+describe("property — cad-parcel-roll", () => {
+  it("validates Bastrop full CAD roll row with owner match", () => {
+    expect(CAD_PARCEL_ROLL_SCHEMA.safeParse(BASTROP_CAD_ROLL_FIXTURE).success).toBe(
+      true,
+    );
+    expect(BASTROP_CAD_ROLL_FIXTURE.joinPassedOwnerMatchGate).toBe(true);
+    expect(BASTROP_CAD_ROLL_FIXTURE.propertyUseCode).toBe("A1");
+  });
+
+  it("validates join-hold absence without owner fields", () => {
+    expect(
+      CAD_PARCEL_ROLL_SCHEMA.safeParse(BASTROP_CAD_ROLL_JOIN_HOLD_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_CAD_ROLL_JOIN_HOLD_FIXTURE.absence?.kind).toBe("join-hold");
+    expect(BASTROP_CAD_ROLL_JOIN_HOLD_FIXTURE.ownerName).toBeUndefined();
+  });
+
+  it("validates county verified absence", () => {
+    expect(
+      CAD_PARCEL_ROLL_SCHEMA.safeParse(COUNTY_CAD_ROLL_ABSENCE_FIXTURE).success,
+    ).toBe(true);
+  });
+
+  it("rejects owner fields when joinPassedOwnerMatchGate is false", () => {
+    expect(
+      CAD_PARCEL_ROLL_SCHEMA.safeParse(NEGATIVE_CAD_ROLL_OWNER_ON_JOIN_HOLD).success,
+    ).toBe(false);
+  });
+
+  it("rejects empty present row without absence", () => {
+    expect(
+      CAD_PARCEL_ROLL_SCHEMA.safeParse(NEGATIVE_CAD_ROLL_EMPTY_PRESENT).success,
+    ).toBe(false);
+  });
+
+  it("createCadParcelRoll round-trips a valid atom", () => {
+    const atom = createCadParcelRoll(BASTROP_CAD_ROLL_FIXTURE);
+    expect(atom.entityType).toBe("cad-parcel-roll");
+  });
+});
+
+describe("property — land-use-fact", () => {
+  it("validates Bastrop A1 land use from CAD property_use_code", () => {
+    expect(LAND_USE_FACT_SCHEMA.safeParse(BASTROP_LAND_USE_FIXTURE).success).toBe(true);
+    expect(BASTROP_LAND_USE_FIXTURE.landUseCode).toBe("A1");
+  });
+
+  it("validates no-land-use-code honest absence", () => {
+    expect(
+      LAND_USE_FACT_SCHEMA.safeParse(BASTROP_LAND_USE_NO_CODE_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_LAND_USE_NO_CODE_FIXTURE.absence?.kind).toBe("no-land-use-code");
+  });
+
+  it("rejects present tier without landUseCode or absence", () => {
+    expect(
+      LAND_USE_FACT_SCHEMA.safeParse(NEGATIVE_LAND_USE_EMPTY_PRESENT).success,
+    ).toBe(false);
+  });
+
+  it("rejects cotality sourceTier — never wired", () => {
+    expect(
+      LAND_USE_FACT_SCHEMA.safeParse(NEGATIVE_LAND_USE_COTALITY_TIER).success,
+    ).toBe(false);
+  });
+
+  it("createLandUseFact round-trips a valid atom", () => {
+    const atom = createLandUseFact(BASTROP_LAND_USE_FIXTURE);
+    expect(atom.entityType).toBe("land-use-fact");
   });
 });
 
