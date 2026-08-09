@@ -10,6 +10,8 @@ import {
   buildValidSignedEventChain,
 } from "../../conformance/fixtures.js";
 import { ATOM_CONFORMANCE_TARGET_VERSION } from "../../conformance/common.js";
+import { BUILDABLE_ENVELOPE_SCHEMA } from "../../property/buildable-envelope.js";
+import { BASTROP_ENVELOPE_SUPERSEDED_DECLINE_FIXTURE } from "../../property/fixtures.js";
 
 import {
   createDownloadableAtom,
@@ -121,5 +123,56 @@ describe("export — createDownloadableAtom", () => {
     });
 
     expect(result.ok).toBe(false);
+  });
+
+  it("serves a new-shaped buildable-envelope decline through downloadable export", () => {
+    const parsed = BUILDABLE_ENVELOPE_SCHEMA.safeParse(
+      BASTROP_ENVELOPE_SUPERSEDED_DECLINE_FIXTURE,
+    );
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) throw new Error("decline fixture must be contract-valid");
+
+    const decline = parsed.data;
+    const absenceKind = decline.absence?.kind;
+    expect(absenceKind).toBe("superseded-prop-id");
+
+    const result = createDownloadableAtom({
+      tier: "data",
+      identity: {
+        entityType: decline.entityType,
+        entityId: decline.parcelNodeId,
+        contentId: decline.atomDid,
+      },
+      accessPolicy: decline.accessPolicy,
+      contextSummary: {
+        ...SAMPLE_CONTEXT,
+        prose: `Honest envelope decline: ${absenceKind} — ${decline.absence?.reason}`,
+        typed: {
+          absenceKind,
+          provenanceScope: decline.verifiedAbsence?.provenanceScope ?? [],
+        },
+        keyMetrics: [
+          { label: "Absence kind", value: String(absenceKind) },
+        ],
+      },
+      readContract: SAMPLE_READ_CONTRACT,
+      citations: [
+        {
+          citationDid: `did:hauska:citation:envelope-decline:${decline.parcelNodeId}`,
+          label: decline.sourceCitation,
+          sourceCitation: decline.sourceCitation,
+        },
+      ],
+      signedEventChain: SAMPLE_DATA_CONFORMANCE_EVENTS,
+      exportedAt: "2026-08-09T12:00:00.000Z",
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("expected decline export success");
+    expect(result.export.identity.entityType).toBe("buildable-envelope");
+    expect(result.export.contextSummary.typed).toMatchObject({
+      absenceKind: "superseded-prop-id",
+    });
+    expect(isDownloadableAtom(result.export)).toBe(true);
   });
 });

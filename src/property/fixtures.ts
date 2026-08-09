@@ -324,7 +324,7 @@ export const BASTROP_ENVELOPE_SUPERSEDED_DECLINE_FIXTURE =
     "prop_id absent from county cadastral",
   );
 
-/** Cascad unzoned cohort decline. */
+/** Cascade unzoned cohort decline. */
 export const BASTROP_ENVELOPE_UNZONED_DECLINE_FIXTURE = buildEnvelopeDeclineFixture(
   "unzoned-no-district-basis",
   "unzoned jurisdiction — no district basis for setbacks or envelope",
