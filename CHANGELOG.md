@@ -2,6 +2,37 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.14.0] - 2026-08-08
+
+Additive minor — three county-shape property rails with first-class typed absence:
+`flood-hazard-fact`, `cad-parcel-roll`, and `land-use-fact`.
+
+### Added
+
+- **`flood-hazard-fact`** on `./property` — FEMA NFHL SFHA finding or honest
+  absence (`no-flood-coverage`). Present tier requires `inSpecialFloodHazardArea`;
+  outside-mapped parcels are present with SFHA false, not absence. `sourceTier:
+  fema-nfhl | absent`; county-level `verifiedAbsence` fail-closed when absent.
+- **`cad-parcel-roll`** on `./property` — county appraisal roll row or honest
+  absence (`no-cad-row`, `join-hold`). Owner fields gated on
+  `joinPassedOwnerMatchGate`; wrong owner worse than missing. `sourceTier:
+  cad-authoritative | absent`; `sourceFile` required on present tier.
+- **`land-use-fact`** on `./property` — CAD `property_use_code` or honest
+  absence (`no-land-use-code`, `no-cad-row`, `join-hold`). Writers read county
+  CAD only; Cotality land_use_code is dead.
+- Shared helpers: `CAD_ROLL_SOURCE_TIER_SCHEMA`, `FLOOD_HAZARD_*`,
+  `LAND_USE_ABSENCE_SCHEMA`, `LAND_ACRES_SCHEMA`.
+- Fixtures and negative probes for each rail.
+- `PROPERTY_CONFORMANCE_TARGET_VERSION = "1.14.0"`.
+
+### Explicitly NOT in 1.14.0
+
+- `parcel-owner-facet` (owner facet) — specify-only; not published.
+- `mud`, `rrc`, `pipeline`, `soil-survey-fact` — specify-only; not published.
+- Parcel ring atoms or geometry on property atoms — Geometry Law unchanged.
+- New relationship layer — `atom_links` already ships.
+- Cotality sourcing tier — extinguished; never wired.
+
 ## [1.13.0] - 2026-08-08
 
 Additive minor — `parcel-node`, the Rail 1 parcel identity and geometry-provenance

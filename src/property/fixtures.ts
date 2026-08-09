@@ -27,6 +27,9 @@ import type { UtilityEasementAtomInstance } from "./utility-easement.js";
 import type { ParcelNodeAtomInstance } from "./parcel-node.js";
 import { parcelNodeAtomDid } from "./parcel-node.js";
 import { countyCoverageParcelNodeId } from "./common.js";
+import type { FloodHazardFactAtomInstance } from "./flood-hazard-fact.js";
+import type { CadParcelRollAtomInstance } from "./cad-parcel-roll.js";
+import type { LandUseFactAtomInstance } from "./land-use-fact.js";
 
 const SAMPLE_ASSERTED = createWidthedConfidence({
   estimate: 0.9,
@@ -1045,5 +1048,366 @@ export const NEGATIVE_EASEMENT_NON_PUBLIC_POLICY = {
   verificationStatus: "machine" as const,
   sourceAdapter: "T3-bastrop-easements-v1",
   evaluatedAt: "2026-08-05T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+// ============================================================================
+// flood-hazard-fact fixtures
+// ============================================================================
+
+/** Bastrop 48021:27303 — SFHA true, Zone AE present finding. */
+export const BASTROP_FLOOD_SFHA_FIXTURE: FloodHazardFactAtomInstance = {
+  entityType: "flood-hazard-fact",
+  atomDid: "fhfact_a1b2c3d4e5f67890",
+  parcelNodeId: "48021:27303",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "fema-nfhl",
+  inSpecialFloodHazardArea: true,
+  floodZone: "AE",
+  zoneSubtype: null,
+  baseFloodElevation: 412.5,
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "FEMA NFHL 2026-06 county 48021",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-06-01",
+  verificationStatus: "machine",
+  sourceAdapter: "fema-nfhl-spatial-join-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Hays 48209:156346 — outside mapped SFHA (Zone X by omission), present not absent. */
+export const HAYS_FLOOD_OUTSIDE_SFHA_FIXTURE: FloodHazardFactAtomInstance = {
+  entityType: "flood-hazard-fact",
+  atomDid: "fhfact_b2c3d4e5f6789012",
+  parcelNodeId: "48209:156346",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "fema-nfhl",
+  inSpecialFloodHazardArea: false,
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "FEMA NFHL 2026-06 county 48209",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-06-01",
+  verificationStatus: "machine",
+  sourceAdapter: "fema-nfhl-spatial-join-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Per-parcel no geocode / off-coverage absence. */
+export const BASTROP_FLOOD_NO_COVERAGE_FIXTURE: FloodHazardFactAtomInstance = {
+  entityType: "flood-hazard-fact",
+  atomDid: "fhfact_c3d4e5f678901234",
+  parcelNodeId: "48021:99999",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "fema-nfhl",
+  absence: {
+    kind: "no-flood-coverage",
+    reason: "parcel centroid outside NFHL county tile coverage",
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "FEMA NFHL 2026-06 county 48021",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-06-01",
+  verificationStatus: "machine",
+  sourceAdapter: "fema-nfhl-spatial-join-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** County-level verified absence — NFHL not published for county. */
+export const COUNTY_FLOOD_VERIFIED_ABSENCE_FIXTURE: FloodHazardFactAtomInstance = {
+  entityType: "flood-hazard-fact",
+  atomDid: "fhfact_d4e5f67890123456",
+  parcelNodeId: countyCoverageParcelNodeId("48301"),
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "absent",
+  verifiedAbsence: {
+    evaluated: true,
+    provenanceScope: ["fema-nfhl-ms", "county-gis-flood"],
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Flood source registry probe 48301 2026-08-08",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "flood-source-registry-probe-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Negative — SFHA finding and absence together. */
+export const NEGATIVE_FLOOD_SFHA_AND_ABSENCE = {
+  entityType: "flood-hazard-fact" as const,
+  atomDid: "fhfact_bad00000000000001",
+  parcelNodeId: "48021:27303",
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "fema-nfhl" as const,
+  inSpecialFloodHazardArea: true,
+  floodZone: "AE",
+  absence: { kind: "no-flood-coverage" as const, reason: "conflict" },
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Invalid both finding and absence",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "fema-nfhl-spatial-join-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — absent tier without verifiedAbsence. */
+export const NEGATIVE_FLOOD_ABSENT_NO_VERIFIED = {
+  entityType: "flood-hazard-fact" as const,
+  atomDid: "fhfact_bad00000000000002",
+  parcelNodeId: countyCoverageParcelNodeId("48301"),
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "absent" as const,
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Missing verified absence",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "flood-source-registry-probe-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — absent tier carrying flood zone claims. */
+export const NEGATIVE_FLOOD_ABSENT_WITH_CLAIM = {
+  entityType: "flood-hazard-fact" as const,
+  atomDid: "fhfact_bad00000000000003",
+  parcelNodeId: countyCoverageParcelNodeId("48301"),
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "absent" as const,
+  inSpecialFloodHazardArea: false,
+  verifiedAbsence: {
+    evaluated: true as const,
+    provenanceScope: ["fema-nfhl-ms"],
+  },
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Absent tier with claim fields",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "flood-source-registry-probe-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+// ============================================================================
+// cad-parcel-roll fixtures
+// ============================================================================
+
+/** Bastrop 48021:27303 — full CAD roll row with owner match. */
+export const BASTROP_CAD_ROLL_FIXTURE: CadParcelRollAtomInstance = {
+  entityType: "cad-parcel-roll",
+  atomDid: "cadroll_a1b2c3d4e5f67890",
+  parcelNodeId: "48021:27303",
+  taxYear: 2026,
+  countyFips: "48021",
+  propId: "27303",
+  keyKind: "prop_id",
+  joinPassedOwnerMatchGate: true,
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "cad-authoritative",
+  ownerName: "EXAMPLE HOLDINGS LLC",
+  ownerMailingAddress: "123 Main St, Austin TX 78701",
+  situsAddress: "714 Spring St",
+  situsCity: "Bastrop",
+  situsZip: "78602",
+  legalDescription: "LOT 12 BLK 3 SPRING ST ADDN",
+  landValue: 85000,
+  improvementValue: 215000,
+  marketValue: 300000,
+  assessedValue: 300000,
+  yearBuilt: 1985,
+  livingAreaSqft: 1840,
+  landAcres: "0.1823",
+  propertyUseCode: "A1",
+  sourceFile: "bastropcad_2026_property.txt",
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Bastrop CAD 2026 property roll",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-01-15",
+  verificationStatus: "machine",
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Join hold — no owner fields allowed. */
+export const BASTROP_CAD_ROLL_JOIN_HOLD_FIXTURE: CadParcelRollAtomInstance = {
+  entityType: "cad-parcel-roll",
+  atomDid: "cadroll_b2c3d4e5f6789012",
+  parcelNodeId: "48021:88888",
+  taxYear: 2026,
+  countyFips: "48021",
+  propId: "88888",
+  keyKind: "prop_id",
+  joinPassedOwnerMatchGate: false,
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "cad-authoritative",
+  absence: {
+    kind: "join-hold",
+    reason: "owner crosswalk below match threshold — owner withheld",
+  },
+  sourceFile: "bastropcad_2026_property.txt",
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Bastrop CAD 2026 property roll",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-01-15",
+  verificationStatus: "machine",
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** County-level verified absence — no CAD roll published. */
+export const COUNTY_CAD_ROLL_ABSENCE_FIXTURE: CadParcelRollAtomInstance = {
+  entityType: "cad-parcel-roll",
+  atomDid: "cadroll_c3d4e5f678901234",
+  parcelNodeId: countyCoverageParcelNodeId("48301"),
+  taxYear: 2026,
+  countyFips: "48301",
+  propId: "_county_coverage",
+  keyKind: "prop_id",
+  joinPassedOwnerMatchGate: false,
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "absent",
+  verifiedAbsence: {
+    evaluated: true,
+    provenanceScope: ["county-cad-bulk", "tx-comptroller-roll"],
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "CAD source registry probe 48301 2026-08-08",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "cad-source-registry-probe-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Negative — join hold with owner fields (wrong owner worse than missing). */
+export const NEGATIVE_CAD_ROLL_OWNER_ON_JOIN_HOLD = {
+  entityType: "cad-parcel-roll" as const,
+  atomDid: "cadroll_bad00000000000001",
+  parcelNodeId: "48021:88888",
+  taxYear: 2026,
+  countyFips: "48021",
+  propId: "88888",
+  keyKind: "prop_id" as const,
+  joinPassedOwnerMatchGate: false,
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "cad-authoritative" as const,
+  ownerName: "SHOULD NOT APPEAR",
+  situsAddress: "714 Spring St",
+  sourceFile: "bastropcad_2026_property.txt",
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Owner on failed join",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — present tier with empty row (no claims, no absence). */
+export const NEGATIVE_CAD_ROLL_EMPTY_PRESENT = {
+  entityType: "cad-parcel-roll" as const,
+  atomDid: "cadroll_bad00000000000002",
+  parcelNodeId: "48021:27303",
+  taxYear: 2026,
+  countyFips: "48021",
+  propId: "27303",
+  keyKind: "prop_id" as const,
+  joinPassedOwnerMatchGate: true,
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "cad-authoritative" as const,
+  sourceFile: "bastropcad_2026_property.txt",
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Empty present row",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+// ============================================================================
+// land-use-fact fixtures
+// ============================================================================
+
+/** Bastrop 48021:27303 — A1 residential from CAD property_use_code. */
+export const BASTROP_LAND_USE_FIXTURE: LandUseFactAtomInstance = {
+  entityType: "land-use-fact",
+  atomDid: "lufact_a1b2c3d4e5f67890",
+  parcelNodeId: "48021:27303",
+  taxYear: 2026,
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "cad-authoritative",
+  landUseCode: "A1",
+  landUseLabel: "Single Family Residential",
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Bastrop CAD 2026 property_use_code",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-01-15",
+  verificationStatus: "machine",
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Honest absence — CAD row exists but no land use code. */
+export const BASTROP_LAND_USE_NO_CODE_FIXTURE: LandUseFactAtomInstance = {
+  entityType: "land-use-fact",
+  atomDid: "lufact_b2c3d4e5f6789012",
+  parcelNodeId: "48021:77777",
+  taxYear: 2026,
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "cad-authoritative",
+  absence: {
+    kind: "no-land-use-code",
+    reason: "cad_property row present; property_use_code null",
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Bastrop CAD 2026 property_use_code",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  sourceVintage: "2026-01-15",
+  verificationStatus: "machine",
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Negative — present tier without landUseCode or absence. */
+export const NEGATIVE_LAND_USE_EMPTY_PRESENT = {
+  entityType: "land-use-fact" as const,
+  atomDid: "lufact_bad00000000000001",
+  parcelNodeId: "48021:27303",
+  taxYear: 2026,
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "cad-authoritative" as const,
+  landUseLabel: "label without code",
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Missing landUseCode",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — cotality tier must not exist (schema rejects unknown enum). */
+export const NEGATIVE_LAND_USE_COTALITY_TIER = {
+  entityType: "land-use-fact" as const,
+  atomDid: "lufact_bad00000000000002",
+  parcelNodeId: "48021:27303",
+  taxYear: 2026,
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "cotality" as const,
+  landUseCode: "R1",
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Cotality tier forbidden",
+  extractedAt: "2026-08-08T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "cotality-dead",
+  evaluatedAt: "2026-08-08T12:00:00.000Z",
   atomTier: "data" as const,
 };
