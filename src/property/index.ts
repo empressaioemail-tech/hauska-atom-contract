@@ -20,6 +20,7 @@ export * from "./utility-easement.js";
 export * from "./flood-hazard-fact.js";
 export * from "./cad-parcel-roll.js";
 export * from "./land-use-fact.js";
+export * from "./owner-fact.js";
 export * from "./fixtures.js";
 
 export type {
