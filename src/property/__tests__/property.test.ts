@@ -774,7 +774,12 @@ describe("property — rail-corridor-fact", () => {
   });
 
   it("createRailCorridorFact round-trips a valid atom", () => {
-    const atom = createRailCorridorFact(BASTROP_RAIL_NEAR_FIXTURE);
+    const atom = createRailCorridorFact({
+      ...BASTROP_RAIL_NEAR_FIXTURE,
+      atGradeCrossings: BASTROP_RAIL_NEAR_FIXTURE.atGradeCrossings
+        ? [...BASTROP_RAIL_NEAR_FIXTURE.atGradeCrossings]
+        : undefined,
+    });
     expect(atom.entityType).toBe("rail-corridor-fact");
   });
 });
