@@ -68,6 +68,11 @@ import {
   BASTROP_LAND_USE_NO_CODE_FIXTURE,
   NEGATIVE_LAND_USE_EMPTY_PRESENT,
   NEGATIVE_LAND_USE_COTALITY_TIER,
+  BASTROP_RAIL_NEAR_FIXTURE,
+  BASTROP_RAIL_OUTSIDE_BUFFER_FIXTURE,
+  BASTROP_RAIL_NO_GEOMETRY_FIXTURE,
+  NEGATIVE_RAIL_CORRIDOR_NEAR_AND_ABSENCE,
+  NEGATIVE_RAIL_CORRIDOR_NEAR_INCOMPLETE,
 } from "../fixtures.js";
 import { countyCoverageParcelNodeId } from "../common.js";
 import {
@@ -84,6 +89,10 @@ import { SETBACK_RULE_SCHEMA } from "../setback-rule.js";
 import { UTILITY_EASEMENT_SCHEMA } from "../utility-easement.js";
 import { ZONING_FACT_SCHEMA } from "../zoning-fact.js";
 import { FLOOD_HAZARD_FACT_SCHEMA, createFloodHazardFact } from "../flood-hazard-fact.js";
+import {
+  RAIL_CORRIDOR_FACT_SCHEMA,
+  createRailCorridorFact,
+} from "../rail-corridor-fact.js";
 import { CAD_PARCEL_ROLL_SCHEMA, createCadParcelRoll } from "../cad-parcel-roll.js";
 import { LAND_USE_FACT_SCHEMA, createLandUseFact } from "../land-use-fact.js";
 import { OWNER_FACT_SCHEMA, createOwnerFact } from "../owner-fact.js";
@@ -722,6 +731,56 @@ describe("property — owner-fact (the paid facet)", () => {
         absence: undefined,
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("property — rail-corridor-fact", () => {
+  it("validates near-corridor present with status/class and crossings", () => {
+    expect(
+      RAIL_CORRIDOR_FACT_SCHEMA.safeParse(BASTROP_RAIL_NEAR_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_RAIL_NEAR_FIXTURE.corridorStatus).toBe("active");
+    expect(BASTROP_RAIL_NEAR_FIXTURE.bufferMeters).toBe(152.4);
+  });
+
+  it("validates outside-buffer as present nearRailCorridor false (not absence)", () => {
+    expect(
+      RAIL_CORRIDOR_FACT_SCHEMA.safeParse(BASTROP_RAIL_OUTSIDE_BUFFER_FIXTURE)
+        .success,
+    ).toBe(true);
+    expect(BASTROP_RAIL_OUTSIDE_BUFFER_FIXTURE.nearRailCorridor).toBe(false);
+    expect(BASTROP_RAIL_OUTSIDE_BUFFER_FIXTURE.absence).toBeUndefined();
+  });
+
+  it("validates no-parcel-geometry absence", () => {
+    expect(
+      RAIL_CORRIDOR_FACT_SCHEMA.safeParse(BASTROP_RAIL_NO_GEOMETRY_FIXTURE)
+        .success,
+    ).toBe(true);
+  });
+
+  it("rejects near finding and absence together", () => {
+    expect(
+      RAIL_CORRIDOR_FACT_SCHEMA.safeParse(NEGATIVE_RAIL_CORRIDOR_NEAR_AND_ABSENCE)
+        .success,
+    ).toBe(false);
+  });
+
+  it("rejects nearRailCorridor true without nearestCorridorDistanceMeters", () => {
+    expect(
+      RAIL_CORRIDOR_FACT_SCHEMA.safeParse(NEGATIVE_RAIL_CORRIDOR_NEAR_INCOMPLETE)
+        .success,
+    ).toBe(false);
+  });
+
+  it("createRailCorridorFact round-trips a valid atom", () => {
+    const atom = createRailCorridorFact({
+      ...BASTROP_RAIL_NEAR_FIXTURE,
+      atGradeCrossings: BASTROP_RAIL_NEAR_FIXTURE.atGradeCrossings
+        ? [...BASTROP_RAIL_NEAR_FIXTURE.atGradeCrossings]
+        : undefined,
+    });
+    expect(atom.entityType).toBe("rail-corridor-fact");
   });
 });
 

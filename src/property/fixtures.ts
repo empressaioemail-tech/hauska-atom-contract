@@ -39,6 +39,8 @@ import type { FloodHazardFactAtomInstance } from "./flood-hazard-fact.js";
 import type { CadParcelRollAtomInstance } from "./cad-parcel-roll.js";
 import type { LandUseFactAtomInstance } from "./land-use-fact.js";
 import type { OwnerFactAtomInstance } from "./owner-fact.js";
+import type { RailCorridorFactAtomInstance } from "./rail-corridor-fact.js";
+import { RAIL_CORRIDOR_DEFAULT_BUFFER_METERS } from "./common.js";
 
 const SAMPLE_ASSERTED = createWidthedConfidence({
   estimate: 0.9,
@@ -1621,4 +1623,79 @@ export const NEGATIVE_LAND_USE_COTALITY_TIER = {
   sourceAdapter: "cotality-dead",
   evaluatedAt: "2026-08-08T12:00:00.000Z",
   atomTier: "data" as const,
+};
+
+/** Bastrop parcel near UP mainline — buffer-intersect present. */
+export const BASTROP_RAIL_NEAR_FIXTURE: RailCorridorFactAtomInstance = {
+  entityType: "rail-corridor-fact",
+  atomDid: "railfact_c3d4e5f678901234",
+  parcelNodeId: "48021:27303",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "ntad-narn",
+  bufferMeters: RAIL_CORRIDOR_DEFAULT_BUFFER_METERS,
+  nearRailCorridor: true,
+  corridorStatus: "active",
+  corridorClass: "mainline",
+  nearestCorridorDistanceMeters: 42.5,
+  atGradeCrossings: [{ crossingId: "416320C", distanceMeters: 88.2 }],
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "NTAD NARN Lines 2026-07 + NTAD Grade Crossings county 48021",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  sourceVintage: "2026-07-21",
+  verificationStatus: "machine",
+  sourceAdapter: "ntad-narn-proximity-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Rural Bastrop parcel outside corridor buffer — present not absent. */
+export const BASTROP_RAIL_OUTSIDE_BUFFER_FIXTURE: RailCorridorFactAtomInstance = {
+  entityType: "rail-corridor-fact",
+  atomDid: "railfact_d4e5f67890123456",
+  parcelNodeId: "48021:99999",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "ntad-narn",
+  bufferMeters: RAIL_CORRIDOR_DEFAULT_BUFFER_METERS,
+  nearRailCorridor: false,
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "NTAD NARN Lines 2026-07 county 48021",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  sourceVintage: "2026-07-21",
+  verificationStatus: "machine",
+  sourceAdapter: "ntad-narn-proximity-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+export const BASTROP_RAIL_NO_GEOMETRY_FIXTURE: RailCorridorFactAtomInstance = {
+  entityType: "rail-corridor-fact",
+  atomDid: "railfact_e5f6789012345678",
+  parcelNodeId: "48021:88888",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "ntad-narn",
+  bufferMeters: RAIL_CORRIDOR_DEFAULT_BUFFER_METERS,
+  absence: {
+    kind: "no-parcel-geometry",
+    reason: "txgio_parcel row missing geometry for 48021:88888",
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "NTAD NARN Lines 2026-07 county 48021",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "ntad-narn-proximity-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+export const NEGATIVE_RAIL_CORRIDOR_NEAR_AND_ABSENCE = {
+  ...BASTROP_RAIL_NEAR_FIXTURE,
+  absence: {
+    kind: "no-parcel-geometry" as const,
+    reason: "conflict",
+  },
+};
+
+export const NEGATIVE_RAIL_CORRIDOR_NEAR_INCOMPLETE = {
+  ...BASTROP_RAIL_NEAR_FIXTURE,
+  nearestCorridorDistanceMeters: undefined,
 };
