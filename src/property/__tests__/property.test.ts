@@ -68,6 +68,11 @@ import {
   BASTROP_LAND_USE_NO_CODE_FIXTURE,
   NEGATIVE_LAND_USE_EMPTY_PRESENT,
   NEGATIVE_LAND_USE_COTALITY_TIER,
+  BASTROP_WELL_ON_PARCEL_FIXTURE,
+  BASTROP_WELL_NEAR_PARCEL_FIXTURE,
+  BASTROP_WELL_ABSENCE_FIXTURE,
+  NEGATIVE_WELL_NEAR_NO_DISTANCE,
+  NEGATIVE_WELL_PUBLIC_PAID,
 } from "../fixtures.js";
 import { countyCoverageParcelNodeId } from "../common.js";
 import {
@@ -87,6 +92,7 @@ import { FLOOD_HAZARD_FACT_SCHEMA, createFloodHazardFact } from "../flood-hazard
 import { CAD_PARCEL_ROLL_SCHEMA, createCadParcelRoll } from "../cad-parcel-roll.js";
 import { LAND_USE_FACT_SCHEMA, createLandUseFact } from "../land-use-fact.js";
 import { OWNER_FACT_SCHEMA, createOwnerFact } from "../owner-fact.js";
+import { WELL_FACT_SCHEMA, createWellFact } from "../well-fact.js";
 
 describe("property — parcel-node (Rail 1 anchor)", () => {
   it("validates Bastrop 48021:27303 with a resolved geometry pointer", () => {
@@ -730,5 +736,45 @@ describe("property — SourceAttribution absence", () => {
     const mod = await import("../index.js");
     expect(Object.keys(mod)).not.toContain("SourceAttribution");
     expect(Object.keys(mod)).not.toContain("SourceLicensingTerms");
+  });
+});
+
+describe("property — well-fact (RRC operations lens)", () => {
+  it("validates on-parcel producing oil well", () => {
+    expect(WELL_FACT_SCHEMA.safeParse(BASTROP_WELL_ON_PARCEL_FIXTURE).success).toBe(
+      true,
+    );
+    expect(BASTROP_WELL_ON_PARCEL_FIXTURE.parcelRelation).toBe("on-parcel");
+  });
+
+  it("validates near-parcel plugged injection well with distance", () => {
+    expect(
+      WELL_FACT_SCHEMA.safeParse(BASTROP_WELL_NEAR_PARCEL_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_WELL_NEAR_PARCEL_FIXTURE.wellStatus).toBe("plugged-abandoned");
+  });
+
+  it("validates no-well-on-or-near honest absence with legible radius", () => {
+    expect(WELL_FACT_SCHEMA.safeParse(BASTROP_WELL_ABSENCE_FIXTURE).success).toBe(
+      true,
+    );
+    expect(BASTROP_WELL_ABSENCE_FIXTURE.proximityRadiusMeters).toBe(152);
+  });
+
+  it("rejects near-parcel without proximityDistanceMeters", () => {
+    expect(
+      WELL_FACT_SCHEMA.safeParse(NEGATIVE_WELL_NEAR_NO_DISTANCE).success,
+    ).toBe(false);
+  });
+
+  it("rejects public-paid — well-fact is public-free", () => {
+    expect(WELL_FACT_SCHEMA.safeParse(NEGATIVE_WELL_PUBLIC_PAID).success).toBe(
+      false,
+    );
+  });
+
+  it("createWellFact round-trips a valid atom", () => {
+    const atom = createWellFact(BASTROP_WELL_ON_PARCEL_FIXTURE);
+    expect(atom.entityType).toBe("well-fact");
   });
 });

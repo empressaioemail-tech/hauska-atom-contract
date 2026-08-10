@@ -507,6 +507,57 @@ export const LAND_USE_ABSENCE_SCHEMA = z
 
 export type LandUseAbsence = z.infer<typeof LAND_USE_ABSENCE_SCHEMA>;
 
+// ============================================================================
+// well-fact (Rail — RRC public GIS surface wells, operations lens)
+// ============================================================================
+
+export type WellFactSourceTier = "texas-rrc-gis" | "absent";
+
+export const WELL_FACT_SOURCE_TIER_SCHEMA = z.enum(["texas-rrc-gis", "absent"]);
+
+export const WELL_STATUS_VALUES = [
+  "producing",
+  "permitted",
+  "dry",
+  "plugged-abandoned",
+] as const;
+
+export type WellStatus = (typeof WELL_STATUS_VALUES)[number];
+
+export const WELL_STATUS_SCHEMA = z.enum(WELL_STATUS_VALUES);
+
+export const WELL_TYPE_VALUES = ["oil", "gas", "injection", "disposal"] as const;
+
+export type WellType = (typeof WELL_TYPE_VALUES)[number];
+
+export const WELL_TYPE_SCHEMA = z.enum(WELL_TYPE_VALUES);
+
+export const WELL_PARCEL_RELATION_VALUES = ["on-parcel", "near-parcel"] as const;
+
+export type WellParcelRelation = (typeof WELL_PARCEL_RELATION_VALUES)[number];
+
+export const WELL_PARCEL_RELATION_SCHEMA = z.enum(WELL_PARCEL_RELATION_VALUES);
+
+export const WELL_SURFACE_LOCATION_SCHEMA = z
+  .object({
+    lng: z.number().finite(),
+    lat: z.number().finite(),
+  })
+  .strict();
+
+export type WellSurfaceLocation = z.infer<typeof WELL_SURFACE_LOCATION_SCHEMA>;
+
+export const WELL_FACT_ABSENCE_KIND = "no-well-on-or-near" as const;
+
+export const WELL_FACT_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.literal(WELL_FACT_ABSENCE_KIND),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type WellFactAbsence = z.infer<typeof WELL_FACT_ABSENCE_SCHEMA>;
+
 /**
  * Owner absence kinds. `owner-withheld` is the one that does NOT exist for the
  * other CAD facets: a CAD may publish a parcel row while suppressing owner
