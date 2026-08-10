@@ -38,6 +38,14 @@ export const PROPERTY_ATOM_TIER: AtomTier = "data";
 
 export const PROPERTY_DEFAULT_ACCESS_POLICY: AccessPolicy = "public-free";
 
+/**
+ * The paid property tier. Only `owner-fact` uses it today: owner identity was
+ * ruled `public-paid` at the atom level, and its schema pins this value so the
+ * policy cannot be dropped by a writer. Every other property atom pins
+ * `PROPERTY_DEFAULT_ACCESS_POLICY`.
+ */
+export const PROPERTY_PAID_ACCESS_POLICY: AccessPolicy = "public-paid";
+
 export const PROPERTY_ACCESS_POLICY_SCHEMA = ACCESS_POLICY_SCHEMA;
 
 /** Quality gate fields required on every property reasoning atom. */
@@ -498,6 +506,32 @@ export const LAND_USE_ABSENCE_SCHEMA = z
   .strict();
 
 export type LandUseAbsence = z.infer<typeof LAND_USE_ABSENCE_SCHEMA>;
+
+/**
+ * Owner absence kinds. `owner-withheld` is the one that does NOT exist for the
+ * other CAD facets: a CAD may publish a parcel row while suppressing owner
+ * identity (confidentiality elections for judges, peace officers, and victims
+ * of family violence are statutory in Texas). That is a lawful, expected
+ * absence and must be representable as such — never as a missing row and never
+ * as an empty owner name.
+ */
+export const OWNER_FACT_ABSENCE_KINDS = [
+  "no-owner-name",
+  "owner-withheld",
+  "no-cad-row",
+  "join-hold",
+] as const;
+
+export type OwnerFactAbsenceKind = (typeof OWNER_FACT_ABSENCE_KINDS)[number];
+
+export const OWNER_FACT_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.enum(OWNER_FACT_ABSENCE_KINDS),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type OwnerFactAbsence = z.infer<typeof OWNER_FACT_ABSENCE_SCHEMA>;
 
 /** CAD numeric export may carry acres as a string; accept either form. */
 export const LAND_ACRES_SCHEMA = z.union([z.string().min(1), z.number()]);

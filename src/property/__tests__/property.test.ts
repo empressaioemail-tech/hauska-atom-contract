@@ -61,6 +61,10 @@ import {
   NEGATIVE_CAD_ROLL_OWNER_ON_JOIN_HOLD,
   NEGATIVE_CAD_ROLL_EMPTY_PRESENT,
   BASTROP_LAND_USE_FIXTURE,
+  BASTROP_OWNER_FACT_FIXTURE,
+  BASTROP_OWNER_WITHHELD_FIXTURE,
+  NEGATIVE_OWNER_FACT_BARE_MAILING,
+  NEGATIVE_OWNER_FACT_PUBLIC_FREE,
   BASTROP_LAND_USE_NO_CODE_FIXTURE,
   NEGATIVE_LAND_USE_EMPTY_PRESENT,
   NEGATIVE_LAND_USE_COTALITY_TIER,
@@ -82,6 +86,7 @@ import { ZONING_FACT_SCHEMA } from "../zoning-fact.js";
 import { FLOOD_HAZARD_FACT_SCHEMA, createFloodHazardFact } from "../flood-hazard-fact.js";
 import { CAD_PARCEL_ROLL_SCHEMA, createCadParcelRoll } from "../cad-parcel-roll.js";
 import { LAND_USE_FACT_SCHEMA, createLandUseFact } from "../land-use-fact.js";
+import { OWNER_FACT_SCHEMA, createOwnerFact } from "../owner-fact.js";
 
 describe("property — parcel-node (Rail 1 anchor)", () => {
   it("validates Bastrop 48021:27303 with a resolved geometry pointer", () => {
@@ -639,6 +644,84 @@ describe("property — land-use-fact", () => {
   it("createLandUseFact round-trips a valid atom", () => {
     const atom = createLandUseFact(BASTROP_LAND_USE_FIXTURE);
     expect(atom.entityType).toBe("land-use-fact");
+  });
+});
+
+describe("property — owner-fact (the paid facet)", () => {
+  it("createOwnerFact round-trips a valid present atom", () => {
+    const atom = createOwnerFact(BASTROP_OWNER_FACT_FIXTURE);
+    expect(atom.entityType).toBe("owner-fact");
+    expect(atom.ownerName).toBe("SAMPLE OWNER LLC");
+    expect(atom.accessPolicy).toBe("public-paid");
+  });
+
+  it("REJECTS public-free — owner identity cannot ship on the free tier", () => {
+    expect(
+      OWNER_FACT_SCHEMA.safeParse(NEGATIVE_OWNER_FACT_PUBLIC_FREE).success,
+    ).toBe(false);
+  });
+
+  it("REJECTS a mailing address with no owner name (dangling PII fragment)", () => {
+    expect(
+      OWNER_FACT_SCHEMA.safeParse(NEGATIVE_OWNER_FACT_BARE_MAILING).success,
+    ).toBe(false);
+  });
+
+  it("accepts a statutory owner-withheld absence as an ESTABLISHED absence", () => {
+    const atom = createOwnerFact(BASTROP_OWNER_WITHHELD_FIXTURE);
+    expect(atom.absence?.kind).toBe("owner-withheld");
+    expect(atom.ownerName).toBeUndefined();
+  });
+
+  it("REJECTS owner claim fields coexisting with an absence", () => {
+    expect(
+      OWNER_FACT_SCHEMA.safeParse({
+        ...BASTROP_OWNER_WITHHELD_FIXTURE,
+        ownerName: "SHOULD NOT BE HERE",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("REJECTS a present tier carrying no owner name and no absence", () => {
+    const { ownerName: _omitted, ...rest } = BASTROP_OWNER_FACT_FIXTURE;
+    expect(OWNER_FACT_SCHEMA.safeParse(rest).success).toBe(false);
+  });
+
+  it("carries exemption FLAGS, never raw exemption codes", () => {
+    const atom = createOwnerFact(BASTROP_OWNER_FACT_FIXTURE);
+    expect(atom.exemptionFlags).toEqual({
+      homestead: false,
+      seniorOrDisability: false,
+      agricultural: false,
+      veteran: false,
+    });
+    // A raw `exemptionCodes` field must not be representable on this atom.
+    expect(Object.keys(atom)).not.toContain("exemptionCodes");
+    expect(
+      OWNER_FACT_SCHEMA.safeParse({
+        ...BASTROP_OWNER_FACT_FIXTURE,
+        exemptionFlags: { homestead: "HS" },
+      }).success,
+    ).toBe(false);
+  });
+
+  it("REJECTS a cotality source tier (Cotality is extinguished)", () => {
+    expect(
+      OWNER_FACT_SCHEMA.safeParse({
+        ...BASTROP_OWNER_FACT_FIXTURE,
+        sourceTier: "cotality",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("requires verifiedAbsence on the absent tier", () => {
+    expect(
+      OWNER_FACT_SCHEMA.safeParse({
+        ...BASTROP_OWNER_WITHHELD_FIXTURE,
+        sourceTier: "absent",
+        absence: undefined,
+      }).success,
+    ).toBe(false);
   });
 });
 

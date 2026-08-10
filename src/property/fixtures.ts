@@ -10,7 +10,11 @@ import {
   createReasoningThreeAxisConfidence,
 } from "../read-contract/reasoning-axes.js";
 
-import { PROPERTY_ATOM_TIER, PROPERTY_DEFAULT_ACCESS_POLICY } from "./common.js";
+import {
+  PROPERTY_ATOM_TIER,
+  PROPERTY_DEFAULT_ACCESS_POLICY,
+  PROPERTY_PAID_ACCESS_POLICY,
+} from "./common.js";
 import type { BuildableEnvelopeAtomInstance } from "./buildable-envelope.js";
 import { BUILDABLE_ENVELOPE_DERIVATION_METHOD } from "./buildable-envelope.js";
 import {
@@ -34,6 +38,7 @@ import { countyCoverageParcelNodeId } from "./common.js";
 import type { FloodHazardFactAtomInstance } from "./flood-hazard-fact.js";
 import type { CadParcelRollAtomInstance } from "./cad-parcel-roll.js";
 import type { LandUseFactAtomInstance } from "./land-use-fact.js";
+import type { OwnerFactAtomInstance } from "./owner-fact.js";
 
 const SAMPLE_ASSERTED = createWidthedConfidence({
   estimate: 0.9,
@@ -1508,6 +1513,95 @@ export const NEGATIVE_LAND_USE_EMPTY_PRESENT = {
   verificationStatus: "machine" as const,
   sourceAdapter: "cad-property-ingest-v1",
   evaluatedAt: "2026-08-08T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Owner fact — present, the paid facet. */
+export const BASTROP_OWNER_FACT_FIXTURE: OwnerFactAtomInstance = {
+  entityType: "owner-fact",
+  atomDid: "ownfact_a1b2c3d4e5f67890",
+  parcelNodeId: "48021:27303",
+  taxYear: 2026,
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "cad-authoritative",
+  ownerName: "SAMPLE OWNER LLC",
+  ownerMailingAddress: "PO BOX 1234, BASTROP, TX 78602",
+  exemptionFlags: {
+    homestead: false,
+    seniorOrDisability: false,
+    agricultural: false,
+    veteran: false,
+  },
+  accessPolicy: PROPERTY_PAID_ACCESS_POLICY,
+  sourceCitation: "Bastrop CAD 2026 owner_name + owner_mailing_address",
+  extractedAt: "2026-08-09T12:00:00.000Z",
+  sourceVintage: "2026-01-15",
+  verificationStatus: "machine",
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-09T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/**
+ * Owner fact — statutory confidentiality election. The CAD row exists and the
+ * parcel is real; owner identity is lawfully withheld. This must read as an
+ * established absence, never as a missing row.
+ */
+export const BASTROP_OWNER_WITHHELD_FIXTURE: OwnerFactAtomInstance = {
+  entityType: "owner-fact",
+  atomDid: "ownfact_b2c3d4e5f6789012",
+  parcelNodeId: "48021:77777",
+  taxYear: 2026,
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "cad-authoritative",
+  absence: {
+    kind: "owner-withheld",
+    reason:
+      "cad_property row present; owner identity suppressed under Tex. Tax Code confidentiality election",
+  },
+  accessPolicy: PROPERTY_PAID_ACCESS_POLICY,
+  sourceCitation: "Bastrop CAD 2026 owner_name",
+  extractedAt: "2026-08-09T12:00:00.000Z",
+  sourceVintage: "2026-01-15",
+  verificationStatus: "machine",
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-09T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Negative — owner-fact must never ship public-free. */
+export const NEGATIVE_OWNER_FACT_PUBLIC_FREE = {
+  entityType: "owner-fact" as const,
+  atomDid: "ownfact_bad0000000000001",
+  parcelNodeId: "48021:27303",
+  taxYear: 2026,
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "cad-authoritative" as const,
+  ownerName: "SAMPLE OWNER LLC",
+  accessPolicy: "public-free" as const,
+  sourceCitation: "Owner must be paid",
+  extractedAt: "2026-08-09T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-09T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+/** Negative — mailing address without an owner name is a dangling PII fragment. */
+export const NEGATIVE_OWNER_FACT_BARE_MAILING = {
+  entityType: "owner-fact" as const,
+  atomDid: "ownfact_bad0000000000002",
+  parcelNodeId: "48021:27303",
+  taxYear: 2026,
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "cad-authoritative" as const,
+  ownerMailingAddress: "PO BOX 1234, BASTROP, TX 78602",
+  accessPolicy: "public-paid" as const,
+  sourceCitation: "Bare mailing address",
+  extractedAt: "2026-08-09T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "cad-property-ingest-v1",
+  evaluatedAt: "2026-08-09T12:00:00.000Z",
   atomTier: "data" as const,
 };
 
