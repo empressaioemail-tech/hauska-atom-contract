@@ -78,6 +78,8 @@ import {
   BASTROP_WELL_ABSENCE_FIXTURE,
   NEGATIVE_WELL_NEAR_NO_DISTANCE,
   NEGATIVE_WELL_PUBLIC_PAID,
+  BASTROP_SPECIAL_DISTRICT_OUTSIDE_FIXTURE,
+  BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE,
 } from "../fixtures.js";
 import { countyCoverageParcelNodeId } from "../common.js";
 import {
@@ -101,6 +103,10 @@ import {
 import { CAD_PARCEL_ROLL_SCHEMA, createCadParcelRoll } from "../cad-parcel-roll.js";
 import { LAND_USE_FACT_SCHEMA, createLandUseFact } from "../land-use-fact.js";
 import { OWNER_FACT_SCHEMA, createOwnerFact } from "../owner-fact.js";
+import {
+  SPECIAL_DISTRICT_FACT_SCHEMA,
+  createSpecialDistrictFact,
+} from "../special-district-fact.js";
 import { WELL_FACT_SCHEMA, createWellFact } from "../well-fact.js";
 
 describe("property — parcel-node (Rail 1 anchor)", () => {
@@ -835,5 +841,45 @@ describe("property — well-fact (RRC operations lens)", () => {
   it("createWellFact round-trips a valid atom", () => {
     const atom = createWellFact(BASTROP_WELL_ON_PARCEL_FIXTURE);
     expect(atom.entityType).toBe("well-fact");
+  });
+});
+
+describe("property — special-district-fact", () => {
+  it("createSpecialDistrictFact round-trips a present PIP membership", () => {
+    const atom = createSpecialDistrictFact(BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE);
+    expect(atom.entityType).toBe("special-district-fact");
+    expect(atom.membershipBasis).toBe("point-in-polygon");
+  });
+
+  it("accepts scoped outside-source absence without district fields", () => {
+    const atom = createSpecialDistrictFact(BASTROP_SPECIAL_DISTRICT_OUTSIDE_FIXTURE);
+    expect(atom.absence?.kind).toBe("outside-tceq-source-boundaries");
+    expect(atom.districtId).toBeUndefined();
+  });
+
+  it("REJECTS proximity membership basis", () => {
+    expect(
+      SPECIAL_DISTRICT_FACT_SCHEMA.safeParse({
+        ...BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE,
+        membershipBasis: "proximity",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("REJECTS district fields coexisting with absence", () => {
+    expect(
+      SPECIAL_DISTRICT_FACT_SCHEMA.safeParse({
+        ...BASTROP_SPECIAL_DISTRICT_OUTSIDE_FIXTURE,
+        districtId: "123",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("property — SourceAttribution absence", () => {
+  it("grep-equivalent: no SourceAttribution export in property module", async () => {
+    const mod = await import("../index.js");
+    expect(Object.keys(mod)).not.toContain("SourceAttribution");
+    expect(Object.keys(mod)).not.toContain("SourceLicensingTerms");
   });
 });

@@ -23,6 +23,7 @@ export * from "./land-use-fact.js";
 export * from "./owner-fact.js";
 export * from "./rail-corridor-fact.js";
 export * from "./well-fact.js";
+export * from "./special-district-fact.js";
 export * from "./fixtures.js";
 
 export type {

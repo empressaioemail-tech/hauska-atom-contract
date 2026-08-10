@@ -645,3 +645,57 @@ export type OwnerFactAbsence = z.infer<typeof OWNER_FACT_ABSENCE_SCHEMA>;
 
 /** CAD numeric export may carry acres as a string; accept either form. */
 export const LAND_ACRES_SCHEMA = z.union([z.string().min(1), z.number()]);
+
+// ============================================================================
+// special-district-fact (Rail — TCEQ water-district boundaries + Comptroller enrich)
+// ============================================================================
+
+export type SpecialDistrictSourceTier = "tceq-water-districts" | "absent";
+
+export const SPECIAL_DISTRICT_SOURCE_TIER_SCHEMA = z.enum([
+  "tceq-water-districts",
+  "absent",
+]);
+
+/**
+ * Scoped absence when a parcel centroid misses every polygon in the TCEQ layer.
+ * This is NOT a statewide "no special district" claim — Comptroller omissions,
+ * ESD/PID, and other types outside this source may still apply.
+ */
+export const SPECIAL_DISTRICT_ABSENCE_KIND =
+  "outside-tceq-source-boundaries" as const;
+
+export const SPECIAL_DISTRICT_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.literal(SPECIAL_DISTRICT_ABSENCE_KIND),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type SpecialDistrictAbsence = z.infer<
+  typeof SPECIAL_DISTRICT_ABSENCE_SCHEMA
+>;
+
+export const SPECIAL_DISTRICT_MEMBERSHIP_BASIS = ["point-in-polygon"] as const;
+
+export type SpecialDistrictMembershipBasis =
+  (typeof SPECIAL_DISTRICT_MEMBERSHIP_BASIS)[number];
+
+export const SPECIAL_DISTRICT_MEMBERSHIP_BASIS_SCHEMA = z.enum(
+  SPECIAL_DISTRICT_MEMBERSHIP_BASIS,
+);
+
+/** Optional Comptroller SPDPID tax-rate enrichment — absence of rate is honest. */
+export const SPECIAL_DISTRICT_TAX_RATE_SCHEMA = z
+  .object({
+    totalRatePc: z.number().optional(),
+    effectiveAvtRatePc: z.number().optional(),
+    reportYear: z.number().int().optional(),
+    registrySpdPublId: z.string().min(1).optional(),
+    source: z.literal("comptroller-spdpid"),
+  })
+  .strict();
+
+export type SpecialDistrictTaxRate = z.infer<
+  typeof SPECIAL_DISTRICT_TAX_RATE_SCHEMA
+>;
