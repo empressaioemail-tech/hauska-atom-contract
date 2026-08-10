@@ -62,14 +62,24 @@ import {
   NEGATIVE_CAD_ROLL_EMPTY_PRESENT,
   BASTROP_LAND_USE_FIXTURE,
   BASTROP_OWNER_FACT_FIXTURE,
-  BASTROP_SPECIAL_DISTRICT_OUTSIDE_FIXTURE,
-  BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE,
   BASTROP_OWNER_WITHHELD_FIXTURE,
   NEGATIVE_OWNER_FACT_BARE_MAILING,
   NEGATIVE_OWNER_FACT_PUBLIC_FREE,
   BASTROP_LAND_USE_NO_CODE_FIXTURE,
   NEGATIVE_LAND_USE_EMPTY_PRESENT,
   NEGATIVE_LAND_USE_COTALITY_TIER,
+  BASTROP_RAIL_NEAR_FIXTURE,
+  BASTROP_RAIL_OUTSIDE_BUFFER_FIXTURE,
+  BASTROP_RAIL_NO_GEOMETRY_FIXTURE,
+  NEGATIVE_RAIL_CORRIDOR_NEAR_AND_ABSENCE,
+  NEGATIVE_RAIL_CORRIDOR_NEAR_INCOMPLETE,
+  BASTROP_WELL_ON_PARCEL_FIXTURE,
+  BASTROP_WELL_NEAR_PARCEL_FIXTURE,
+  BASTROP_WELL_ABSENCE_FIXTURE,
+  NEGATIVE_WELL_NEAR_NO_DISTANCE,
+  NEGATIVE_WELL_PUBLIC_PAID,
+  BASTROP_SPECIAL_DISTRICT_OUTSIDE_FIXTURE,
+  BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE,
 } from "../fixtures.js";
 import { countyCoverageParcelNodeId } from "../common.js";
 import {
@@ -86,6 +96,10 @@ import { SETBACK_RULE_SCHEMA } from "../setback-rule.js";
 import { UTILITY_EASEMENT_SCHEMA } from "../utility-easement.js";
 import { ZONING_FACT_SCHEMA } from "../zoning-fact.js";
 import { FLOOD_HAZARD_FACT_SCHEMA, createFloodHazardFact } from "../flood-hazard-fact.js";
+import {
+  RAIL_CORRIDOR_FACT_SCHEMA,
+  createRailCorridorFact,
+} from "../rail-corridor-fact.js";
 import { CAD_PARCEL_ROLL_SCHEMA, createCadParcelRoll } from "../cad-parcel-roll.js";
 import { LAND_USE_FACT_SCHEMA, createLandUseFact } from "../land-use-fact.js";
 import { OWNER_FACT_SCHEMA, createOwnerFact } from "../owner-fact.js";
@@ -93,6 +107,7 @@ import {
   SPECIAL_DISTRICT_FACT_SCHEMA,
   createSpecialDistrictFact,
 } from "../special-district-fact.js";
+import { WELL_FACT_SCHEMA, createWellFact } from "../well-fact.js";
 
 describe("property — parcel-node (Rail 1 anchor)", () => {
   it("validates Bastrop 48021:27303 with a resolved geometry pointer", () => {
@@ -728,6 +743,104 @@ describe("property — owner-fact (the paid facet)", () => {
         absence: undefined,
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("property — rail-corridor-fact", () => {
+  it("validates near-corridor present with status/class and crossings", () => {
+    expect(
+      RAIL_CORRIDOR_FACT_SCHEMA.safeParse(BASTROP_RAIL_NEAR_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_RAIL_NEAR_FIXTURE.corridorStatus).toBe("active");
+    expect(BASTROP_RAIL_NEAR_FIXTURE.bufferMeters).toBe(152.4);
+  });
+
+  it("validates outside-buffer as present nearRailCorridor false (not absence)", () => {
+    expect(
+      RAIL_CORRIDOR_FACT_SCHEMA.safeParse(BASTROP_RAIL_OUTSIDE_BUFFER_FIXTURE)
+        .success,
+    ).toBe(true);
+    expect(BASTROP_RAIL_OUTSIDE_BUFFER_FIXTURE.nearRailCorridor).toBe(false);
+    expect(BASTROP_RAIL_OUTSIDE_BUFFER_FIXTURE.absence).toBeUndefined();
+  });
+
+  it("validates no-parcel-geometry absence", () => {
+    expect(
+      RAIL_CORRIDOR_FACT_SCHEMA.safeParse(BASTROP_RAIL_NO_GEOMETRY_FIXTURE)
+        .success,
+    ).toBe(true);
+  });
+
+  it("rejects near finding and absence together", () => {
+    expect(
+      RAIL_CORRIDOR_FACT_SCHEMA.safeParse(NEGATIVE_RAIL_CORRIDOR_NEAR_AND_ABSENCE)
+        .success,
+    ).toBe(false);
+  });
+
+  it("rejects nearRailCorridor true without nearestCorridorDistanceMeters", () => {
+    expect(
+      RAIL_CORRIDOR_FACT_SCHEMA.safeParse(NEGATIVE_RAIL_CORRIDOR_NEAR_INCOMPLETE)
+        .success,
+    ).toBe(false);
+  });
+
+  it("createRailCorridorFact round-trips a valid atom", () => {
+    const atom = createRailCorridorFact({
+      ...BASTROP_RAIL_NEAR_FIXTURE,
+      atGradeCrossings: BASTROP_RAIL_NEAR_FIXTURE.atGradeCrossings
+        ? [...BASTROP_RAIL_NEAR_FIXTURE.atGradeCrossings]
+        : undefined,
+    });
+    expect(atom.entityType).toBe("rail-corridor-fact");
+  });
+});
+
+describe("property — SourceAttribution absence", () => {
+  it("grep-equivalent: no SourceAttribution export in property module", async () => {
+    const mod = await import("../index.js");
+    expect(Object.keys(mod)).not.toContain("SourceAttribution");
+    expect(Object.keys(mod)).not.toContain("SourceLicensingTerms");
+  });
+});
+
+describe("property — well-fact (RRC operations lens)", () => {
+  it("validates on-parcel producing oil well", () => {
+    expect(WELL_FACT_SCHEMA.safeParse(BASTROP_WELL_ON_PARCEL_FIXTURE).success).toBe(
+      true,
+    );
+    expect(BASTROP_WELL_ON_PARCEL_FIXTURE.parcelRelation).toBe("on-parcel");
+  });
+
+  it("validates near-parcel plugged injection well with distance", () => {
+    expect(
+      WELL_FACT_SCHEMA.safeParse(BASTROP_WELL_NEAR_PARCEL_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_WELL_NEAR_PARCEL_FIXTURE.wellStatus).toBe("plugged-abandoned");
+  });
+
+  it("validates no-well-on-or-near honest absence with legible radius", () => {
+    expect(WELL_FACT_SCHEMA.safeParse(BASTROP_WELL_ABSENCE_FIXTURE).success).toBe(
+      true,
+    );
+    expect(BASTROP_WELL_ABSENCE_FIXTURE.proximityRadiusMeters).toBe(152);
+  });
+
+  it("rejects near-parcel without proximityDistanceMeters", () => {
+    expect(
+      WELL_FACT_SCHEMA.safeParse(NEGATIVE_WELL_NEAR_NO_DISTANCE).success,
+    ).toBe(false);
+  });
+
+  it("rejects public-paid — well-fact is public-free", () => {
+    expect(WELL_FACT_SCHEMA.safeParse(NEGATIVE_WELL_PUBLIC_PAID).success).toBe(
+      false,
+    );
+  });
+
+  it("createWellFact round-trips a valid atom", () => {
+    const atom = createWellFact(BASTROP_WELL_ON_PARCEL_FIXTURE);
+    expect(atom.entityType).toBe("well-fact");
   });
 });
 

@@ -39,6 +39,9 @@ import type { FloodHazardFactAtomInstance } from "./flood-hazard-fact.js";
 import type { CadParcelRollAtomInstance } from "./cad-parcel-roll.js";
 import type { LandUseFactAtomInstance } from "./land-use-fact.js";
 import type { OwnerFactAtomInstance } from "./owner-fact.js";
+import type { RailCorridorFactAtomInstance } from "./rail-corridor-fact.js";
+import type { WellFactAtomInstance } from "./well-fact.js";
+import { RAIL_CORRIDOR_DEFAULT_BUFFER_METERS } from "./common.js";
 
 const SAMPLE_ASSERTED = createWidthedConfidence({
   estimate: 0.9,
@@ -1623,7 +1626,168 @@ export const NEGATIVE_LAND_USE_COTALITY_TIER = {
   atomTier: "data" as const,
 };
 
-// special-district-fact fixtures
+/** Bastrop parcel near UP mainline — buffer-intersect present. */
+export const BASTROP_RAIL_NEAR_FIXTURE: RailCorridorFactAtomInstance = {
+  entityType: "rail-corridor-fact",
+  atomDid: "railfact_c3d4e5f678901234",
+  parcelNodeId: "48021:27303",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "ntad-narn",
+  bufferMeters: RAIL_CORRIDOR_DEFAULT_BUFFER_METERS,
+  nearRailCorridor: true,
+  corridorStatus: "active",
+  corridorClass: "mainline",
+  nearestCorridorDistanceMeters: 42.5,
+  atGradeCrossings: [{ crossingId: "416320C", distanceMeters: 88.2 }],
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "NTAD NARN Lines 2026-07 + NTAD Grade Crossings county 48021",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  sourceVintage: "2026-07-21",
+  verificationStatus: "machine",
+  sourceAdapter: "ntad-narn-proximity-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Rural Bastrop parcel outside corridor buffer — present not absent. */
+export const BASTROP_RAIL_OUTSIDE_BUFFER_FIXTURE: RailCorridorFactAtomInstance = {
+  entityType: "rail-corridor-fact",
+  atomDid: "railfact_d4e5f67890123456",
+  parcelNodeId: "48021:99999",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "ntad-narn",
+  bufferMeters: RAIL_CORRIDOR_DEFAULT_BUFFER_METERS,
+  nearRailCorridor: false,
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "NTAD NARN Lines 2026-07 county 48021",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  sourceVintage: "2026-07-21",
+  verificationStatus: "machine",
+  sourceAdapter: "ntad-narn-proximity-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+export const BASTROP_RAIL_NO_GEOMETRY_FIXTURE: RailCorridorFactAtomInstance = {
+  entityType: "rail-corridor-fact",
+  atomDid: "railfact_e5f6789012345678",
+  parcelNodeId: "48021:88888",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "ntad-narn",
+  bufferMeters: RAIL_CORRIDOR_DEFAULT_BUFFER_METERS,
+  absence: {
+    kind: "no-parcel-geometry",
+    reason: "txgio_parcel row missing geometry for 48021:88888",
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "NTAD NARN Lines 2026-07 county 48021",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "ntad-narn-proximity-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+export const NEGATIVE_RAIL_CORRIDOR_NEAR_AND_ABSENCE = {
+  ...BASTROP_RAIL_NEAR_FIXTURE,
+  absence: {
+    kind: "no-parcel-geometry" as const,
+    reason: "conflict",
+  },
+};
+
+export const NEGATIVE_RAIL_CORRIDOR_NEAR_INCOMPLETE = {
+  ...BASTROP_RAIL_NEAR_FIXTURE,
+  nearestCorridorDistanceMeters: undefined,
+};
+
+// ============================================================================
+// well-fact fixtures (RRC public GIS — operations lens)
+// ============================================================================
+
+/** Harris-adjacent probe — on-parcel producing oil well. */
+export const BASTROP_WELL_ON_PARCEL_FIXTURE: WellFactAtomInstance = {
+  entityType: "well-fact",
+  atomDid: "wlfact_a1b2c3d4e5f67890",
+  parcelNodeId: "48021:27303",
+  wellKey: "42201043200000",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "texas-rrc-gis",
+  apiNumber14: "42201043200000",
+  wellStatus: "producing",
+  wellType: "oil",
+  orphaned: false,
+  surfaceLocation: { lng: -97.315, lat: 30.11 },
+  parcelRelation: "on-parcel",
+  proximityRadiusMeters: 152,
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Texas RRC public GIS (Harris County mirror) surface wells",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "texas-rrc-wells-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Near-parcel injection well within the named radius. */
+export const BASTROP_WELL_NEAR_PARCEL_FIXTURE: WellFactAtomInstance = {
+  entityType: "well-fact",
+  atomDid: "wlfact_b2c3d4e5f6789012",
+  parcelNodeId: "48021:27303",
+  wellKey: "42201058930000",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "texas-rrc-gis",
+  apiNumber14: "42201058930000",
+  wellStatus: "plugged-abandoned",
+  wellType: "injection",
+  orphaned: false,
+  surfaceLocation: { lng: -97.314, lat: 30.1115 },
+  parcelRelation: "near-parcel",
+  proximityRadiusMeters: 152,
+  proximityDistanceMeters: 48.5,
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Texas RRC public GIS (Harris County mirror) surface wells",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "texas-rrc-wells-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Honest absence — no RRC well on or near the parcel within radius. */
+export const BASTROP_WELL_ABSENCE_FIXTURE: WellFactAtomInstance = {
+  entityType: "well-fact",
+  atomDid: "wlfact_c3d4e5f678901234",
+  parcelNodeId: "48113:12345",
+  wellKey: "none",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "texas-rrc-gis",
+  absence: {
+    kind: "no-well-on-or-near",
+    reason:
+      "no Texas RRC surface well within 152 m of parcel geometry in county bbox index",
+  },
+  proximityRadiusMeters: 152,
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Texas RRC public GIS (Harris County mirror) surface wells",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "texas-rrc-wells-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Negative — near-parcel without distance. */
+export const NEGATIVE_WELL_NEAR_NO_DISTANCE = {
+  ...BASTROP_WELL_NEAR_PARCEL_FIXTURE,
+  proximityDistanceMeters: undefined,
+};
+
+/** Negative — public-paid forbidden on well-fact. */
+export const NEGATIVE_WELL_PUBLIC_PAID = {
+  ...BASTROP_WELL_ON_PARCEL_FIXTURE,
+  accessPolicy: "public-paid" as const,
+};
 
 export const BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE = {
   entityType: "special-district-fact" as const,

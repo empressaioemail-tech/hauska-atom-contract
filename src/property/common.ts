@@ -462,6 +462,65 @@ export const FLOOD_HAZARD_ABSENCE_SCHEMA = z
 export type FloodHazardAbsence = z.infer<typeof FLOOD_HAZARD_ABSENCE_SCHEMA>;
 
 // ============================================================================
+// rail-corridor-fact (Rail — NTAD NARN railroad tracks, NOT RRC oil/gas)
+// ============================================================================
+
+export type RailCorridorSourceTier = "ntad-narn" | "absent";
+
+export const RAIL_CORRIDOR_SOURCE_TIER_SCHEMA = z.enum(["ntad-narn", "absent"]);
+
+export const RAIL_CORRIDOR_STATUS_VALUES = [
+  "active",
+  "abandoned",
+  "rail-trail",
+] as const;
+
+export type RailCorridorStatus = (typeof RAIL_CORRIDOR_STATUS_VALUES)[number];
+
+export const RAIL_CORRIDOR_STATUS_SCHEMA = z.enum(RAIL_CORRIDOR_STATUS_VALUES);
+
+export const RAIL_CORRIDOR_CLASS_VALUES = [
+  "mainline",
+  "spur",
+  "yard",
+] as const;
+
+export type RailCorridorClass = (typeof RAIL_CORRIDOR_CLASS_VALUES)[number];
+
+export const RAIL_CORRIDOR_CLASS_SCHEMA = z.enum(RAIL_CORRIDOR_CLASS_VALUES);
+
+export const RAIL_CORRIDOR_ABSENCE_KINDS = [
+  "no-rail-coverage",
+  "no-parcel-geometry",
+] as const;
+
+export type RailCorridorAbsenceKind =
+  (typeof RAIL_CORRIDOR_ABSENCE_KINDS)[number];
+
+export const RAIL_CORRIDOR_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.enum(RAIL_CORRIDOR_ABSENCE_KINDS),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type RailCorridorAbsence = z.infer<typeof RAIL_CORRIDOR_ABSENCE_SCHEMA>;
+
+export const RAIL_CORRIDOR_AT_GRADE_CROSSING_SCHEMA = z
+  .object({
+    crossingId: z.string().min(1),
+    distanceMeters: z.number().nonnegative(),
+  })
+  .strict();
+
+export type RailCorridorAtGradeCrossing = z.infer<
+  typeof RAIL_CORRIDOR_AT_GRADE_CROSSING_SCHEMA
+>;
+
+/** Default parcel-edge buffer for NTAD NARN proximity (500 ft ROW / horn screening). */
+export const RAIL_CORRIDOR_DEFAULT_BUFFER_METERS = 152.4;
+
+// ============================================================================
 // cad-parcel-roll / land-use-fact (Rail — county appraisal roll)
 // ============================================================================
 
@@ -506,6 +565,57 @@ export const LAND_USE_ABSENCE_SCHEMA = z
   .strict();
 
 export type LandUseAbsence = z.infer<typeof LAND_USE_ABSENCE_SCHEMA>;
+
+// ============================================================================
+// well-fact (Rail — RRC public GIS surface wells, operations lens)
+// ============================================================================
+
+export type WellFactSourceTier = "texas-rrc-gis" | "absent";
+
+export const WELL_FACT_SOURCE_TIER_SCHEMA = z.enum(["texas-rrc-gis", "absent"]);
+
+export const WELL_STATUS_VALUES = [
+  "producing",
+  "permitted",
+  "dry",
+  "plugged-abandoned",
+] as const;
+
+export type WellStatus = (typeof WELL_STATUS_VALUES)[number];
+
+export const WELL_STATUS_SCHEMA = z.enum(WELL_STATUS_VALUES);
+
+export const WELL_TYPE_VALUES = ["oil", "gas", "injection", "disposal"] as const;
+
+export type WellType = (typeof WELL_TYPE_VALUES)[number];
+
+export const WELL_TYPE_SCHEMA = z.enum(WELL_TYPE_VALUES);
+
+export const WELL_PARCEL_RELATION_VALUES = ["on-parcel", "near-parcel"] as const;
+
+export type WellParcelRelation = (typeof WELL_PARCEL_RELATION_VALUES)[number];
+
+export const WELL_PARCEL_RELATION_SCHEMA = z.enum(WELL_PARCEL_RELATION_VALUES);
+
+export const WELL_SURFACE_LOCATION_SCHEMA = z
+  .object({
+    lng: z.number().finite(),
+    lat: z.number().finite(),
+  })
+  .strict();
+
+export type WellSurfaceLocation = z.infer<typeof WELL_SURFACE_LOCATION_SCHEMA>;
+
+export const WELL_FACT_ABSENCE_KIND = "no-well-on-or-near" as const;
+
+export const WELL_FACT_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.literal(WELL_FACT_ABSENCE_KIND),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type WellFactAbsence = z.infer<typeof WELL_FACT_ABSENCE_SCHEMA>;
 
 /**
  * Owner absence kinds. `owner-withheld` is the one that does NOT exist for the
