@@ -1622,3 +1622,45 @@ export const NEGATIVE_LAND_USE_COTALITY_TIER = {
   evaluatedAt: "2026-08-08T12:00:00.000Z",
   atomTier: "data" as const,
 };
+
+// special-district-fact fixtures
+
+export const BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE = {
+  entityType: "special-district-fact" as const,
+  atomDid: "sdfact_a1b2c3d4e5f67890",
+  parcelNodeId: "48021:27303",
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "tceq-water-districts" as const,
+  districtName: "EXAMPLE MUD NO 1",
+  districtId: "1234500",
+  districtType: "MUD",
+  countyFips: "48021",
+  membershipBasis: "point-in-polygon" as const,
+  accessPolicy: "public-free" as const,
+  sourceCitation: "TCEQ Public/WaterDistricts MapServer/0",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "tceq-water-districts-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: "data" as const,
+};
+
+export const BASTROP_SPECIAL_DISTRICT_OUTSIDE_FIXTURE = {
+  entityType: "special-district-fact" as const,
+  atomDid: "sdfact_b2c3d4e5f6789012",
+  parcelNodeId: "48021:99999",
+  reasoningChain: { reasoningKind: "observed" as const },
+  sourceTier: "tceq-water-districts" as const,
+  absence: {
+    kind: "outside-tceq-source-boundaries" as const,
+    reason:
+      "Centroid does not intersect tx_special_district (TCEQ Public/WaterDistricts). Scoped to that source only.",
+  },
+  accessPolicy: "public-free" as const,
+  sourceCitation: "TCEQ Public/WaterDistricts MapServer/0",
+  extractedAt: "2026-08-10T12:00:00.000Z",
+  verificationStatus: "machine" as const,
+  sourceAdapter: "tceq-water-districts-v1",
+  evaluatedAt: "2026-08-10T12:00:00.000Z",
+  atomTier: "data" as const,
+};

@@ -62,6 +62,8 @@ import {
   NEGATIVE_CAD_ROLL_EMPTY_PRESENT,
   BASTROP_LAND_USE_FIXTURE,
   BASTROP_OWNER_FACT_FIXTURE,
+  BASTROP_SPECIAL_DISTRICT_OUTSIDE_FIXTURE,
+  BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE,
   BASTROP_OWNER_WITHHELD_FIXTURE,
   NEGATIVE_OWNER_FACT_BARE_MAILING,
   NEGATIVE_OWNER_FACT_PUBLIC_FREE,
@@ -87,6 +89,10 @@ import { FLOOD_HAZARD_FACT_SCHEMA, createFloodHazardFact } from "../flood-hazard
 import { CAD_PARCEL_ROLL_SCHEMA, createCadParcelRoll } from "../cad-parcel-roll.js";
 import { LAND_USE_FACT_SCHEMA, createLandUseFact } from "../land-use-fact.js";
 import { OWNER_FACT_SCHEMA, createOwnerFact } from "../owner-fact.js";
+import {
+  SPECIAL_DISTRICT_FACT_SCHEMA,
+  createSpecialDistrictFact,
+} from "../special-district-fact.js";
 
 describe("property — parcel-node (Rail 1 anchor)", () => {
   it("validates Bastrop 48021:27303 with a resolved geometry pointer", () => {
@@ -720,6 +726,38 @@ describe("property — owner-fact (the paid facet)", () => {
         ...BASTROP_OWNER_WITHHELD_FIXTURE,
         sourceTier: "absent",
         absence: undefined,
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("property — special-district-fact", () => {
+  it("createSpecialDistrictFact round-trips a present PIP membership", () => {
+    const atom = createSpecialDistrictFact(BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE);
+    expect(atom.entityType).toBe("special-district-fact");
+    expect(atom.membershipBasis).toBe("point-in-polygon");
+  });
+
+  it("accepts scoped outside-source absence without district fields", () => {
+    const atom = createSpecialDistrictFact(BASTROP_SPECIAL_DISTRICT_OUTSIDE_FIXTURE);
+    expect(atom.absence?.kind).toBe("outside-tceq-source-boundaries");
+    expect(atom.districtId).toBeUndefined();
+  });
+
+  it("REJECTS proximity membership basis", () => {
+    expect(
+      SPECIAL_DISTRICT_FACT_SCHEMA.safeParse({
+        ...BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE,
+        membershipBasis: "proximity",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("REJECTS district fields coexisting with absence", () => {
+    expect(
+      SPECIAL_DISTRICT_FACT_SCHEMA.safeParse({
+        ...BASTROP_SPECIAL_DISTRICT_OUTSIDE_FIXTURE,
+        districtId: "123",
       }).success,
     ).toBe(false);
   });

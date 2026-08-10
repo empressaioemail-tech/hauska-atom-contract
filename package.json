@@ -1,6 +1,6 @@
 {
   "name": "@empressaio/atom-contract",
-  "version": "1.16.0",
+  "version": "1.18.0",
   "description": "The typed-data substrate every Empressa atom satisfies: identity, context interface, composition declaration, and history anchoring. Peer to the Hauska SDK (`@hauska-sdk/*`); consumed directly by every product surface and MCP server.",
   "type": "module",
   "main": "./dist/index.js",
