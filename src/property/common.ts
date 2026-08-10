@@ -462,6 +462,65 @@ export const FLOOD_HAZARD_ABSENCE_SCHEMA = z
 export type FloodHazardAbsence = z.infer<typeof FLOOD_HAZARD_ABSENCE_SCHEMA>;
 
 // ============================================================================
+// rail-corridor-fact (Rail — NTAD NARN railroad tracks, NOT RRC oil/gas)
+// ============================================================================
+
+export type RailCorridorSourceTier = "ntad-narn" | "absent";
+
+export const RAIL_CORRIDOR_SOURCE_TIER_SCHEMA = z.enum(["ntad-narn", "absent"]);
+
+export const RAIL_CORRIDOR_STATUS_VALUES = [
+  "active",
+  "abandoned",
+  "rail-trail",
+] as const;
+
+export type RailCorridorStatus = (typeof RAIL_CORRIDOR_STATUS_VALUES)[number];
+
+export const RAIL_CORRIDOR_STATUS_SCHEMA = z.enum(RAIL_CORRIDOR_STATUS_VALUES);
+
+export const RAIL_CORRIDOR_CLASS_VALUES = [
+  "mainline",
+  "spur",
+  "yard",
+] as const;
+
+export type RailCorridorClass = (typeof RAIL_CORRIDOR_CLASS_VALUES)[number];
+
+export const RAIL_CORRIDOR_CLASS_SCHEMA = z.enum(RAIL_CORRIDOR_CLASS_VALUES);
+
+export const RAIL_CORRIDOR_ABSENCE_KINDS = [
+  "no-rail-coverage",
+  "no-parcel-geometry",
+] as const;
+
+export type RailCorridorAbsenceKind =
+  (typeof RAIL_CORRIDOR_ABSENCE_KINDS)[number];
+
+export const RAIL_CORRIDOR_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.enum(RAIL_CORRIDOR_ABSENCE_KINDS),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type RailCorridorAbsence = z.infer<typeof RAIL_CORRIDOR_ABSENCE_SCHEMA>;
+
+export const RAIL_CORRIDOR_AT_GRADE_CROSSING_SCHEMA = z
+  .object({
+    crossingId: z.string().min(1),
+    distanceMeters: z.number().nonnegative(),
+  })
+  .strict();
+
+export type RailCorridorAtGradeCrossing = z.infer<
+  typeof RAIL_CORRIDOR_AT_GRADE_CROSSING_SCHEMA
+>;
+
+/** Default parcel-edge buffer for NTAD NARN proximity (500 ft ROW / horn screening). */
+export const RAIL_CORRIDOR_DEFAULT_BUFFER_METERS = 152.4;
+
+// ============================================================================
 // cad-parcel-roll / land-use-fact (Rail — county appraisal roll)
 // ============================================================================
 
