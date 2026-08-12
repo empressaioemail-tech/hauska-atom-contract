@@ -803,6 +803,18 @@ describe("property — rail-corridor-fact", () => {
     });
     expect(atom.entityType).toBe("rail-corridor-fact");
   });
+
+  it("accepts unknown corridorStatus and corridorClass", () => {
+    const parsed = RAIL_CORRIDOR_FACT_SCHEMA.safeParse({
+      ...BASTROP_RAIL_NEAR_FIXTURE,
+      corridorStatus: "unknown",
+      corridorClass: "unknown",
+      atGradeCrossings: BASTROP_RAIL_NEAR_FIXTURE.atGradeCrossings
+        ? [...BASTROP_RAIL_NEAR_FIXTURE.atGradeCrossings]
+        : undefined,
+    });
+    expect(parsed.success).toBe(true);
+  });
 });
 
 describe("property — rrc-pipeline-fact", () => {
