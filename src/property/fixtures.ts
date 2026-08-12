@@ -40,8 +40,12 @@ import type { CadParcelRollAtomInstance } from "./cad-parcel-roll.js";
 import type { LandUseFactAtomInstance } from "./land-use-fact.js";
 import type { OwnerFactAtomInstance } from "./owner-fact.js";
 import type { RailCorridorFactAtomInstance } from "./rail-corridor-fact.js";
+import type { RrcPipelineFactAtomInstance } from "./rrc-pipeline-fact.js";
 import type { WellFactAtomInstance } from "./well-fact.js";
-import { RAIL_CORRIDOR_DEFAULT_BUFFER_METERS } from "./common.js";
+import {
+  RAIL_CORRIDOR_DEFAULT_BUFFER_METERS,
+  RRC_PIPELINE_DEFAULT_BUFFER_METERS,
+} from "./common.js";
 
 const SAMPLE_ASSERTED = createWidthedConfidence({
   estimate: 0.9,
@@ -1699,6 +1703,93 @@ export const NEGATIVE_RAIL_CORRIDOR_NEAR_AND_ABSENCE = {
 export const NEGATIVE_RAIL_CORRIDOR_NEAR_INCOMPLETE = {
   ...BASTROP_RAIL_NEAR_FIXTURE,
   nearestCorridorDistanceMeters: undefined,
+};
+
+// ============================================================================
+// rrc-pipeline-fact fixtures (RRC T-4 pipelines — NOT PHMSA NPMS / NOT rail)
+// ============================================================================
+
+/** Bastrop parcel near a T-4 pipeline — buffer-intersect present. */
+export const BASTROP_PIPELINE_NEAR_FIXTURE: RrcPipelineFactAtomInstance = {
+  entityType: "rrc-pipeline-fact",
+  atomDid: "pipefact_a1b2c3d4e5f67890",
+  parcelNodeId: "48021:27303",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "rrc-public-gis",
+  bufferMeters: RRC_PIPELINE_DEFAULT_BUFFER_METERS,
+  nearPipeline: true,
+  nearestPipelineDistanceMeters: 38.2,
+  t4permit: "T-01234",
+  p5Num: "12345",
+  operatorName: "EXAMPLE PIPELINE CO",
+  systemName: "BASTROP LATERAL",
+  commodity: "CRUDE",
+  commodityDescription: "Crude Oil",
+  systemType: "Gathering",
+  status: "In Service",
+  diameter: 8,
+  interstate: false,
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Texas RRC public GIS T-4 pipelines county 48021",
+  extractedAt: "2026-08-12T12:00:00.000Z",
+  sourceVintage: "2026-08-01",
+  verificationStatus: "machine",
+  sourceAdapter: "rrc-t4-pipeline-proximity-v1",
+  evaluatedAt: "2026-08-12T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/** Rural Bastrop parcel outside pipeline buffer — present not absent. */
+export const BASTROP_PIPELINE_OUTSIDE_BUFFER_FIXTURE: RrcPipelineFactAtomInstance =
+  {
+    entityType: "rrc-pipeline-fact",
+    atomDid: "pipefact_b2c3d4e5f6789012",
+    parcelNodeId: "48021:99999",
+    reasoningChain: { reasoningKind: "observed" },
+    sourceTier: "rrc-public-gis",
+    bufferMeters: RRC_PIPELINE_DEFAULT_BUFFER_METERS,
+    nearPipeline: false,
+    accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+    sourceCitation: "Texas RRC public GIS T-4 pipelines county 48021",
+    extractedAt: "2026-08-12T12:00:00.000Z",
+    sourceVintage: "2026-08-01",
+    verificationStatus: "machine",
+    sourceAdapter: "rrc-t4-pipeline-proximity-v1",
+    evaluatedAt: "2026-08-12T12:00:00.000Z",
+    atomTier: PROPERTY_ATOM_TIER,
+  };
+
+export const BASTROP_PIPELINE_NO_GEOMETRY_FIXTURE: RrcPipelineFactAtomInstance = {
+  entityType: "rrc-pipeline-fact",
+  atomDid: "pipefact_c3d4e5f678901234",
+  parcelNodeId: "48021:88888",
+  reasoningChain: { reasoningKind: "observed" },
+  sourceTier: "rrc-public-gis",
+  bufferMeters: RRC_PIPELINE_DEFAULT_BUFFER_METERS,
+  absence: {
+    kind: "no-parcel-geometry",
+    reason: "txgio_parcel row missing geometry for 48021:88888",
+  },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "Texas RRC public GIS T-4 pipelines county 48021",
+  extractedAt: "2026-08-12T12:00:00.000Z",
+  verificationStatus: "machine",
+  sourceAdapter: "rrc-t4-pipeline-proximity-v1",
+  evaluatedAt: "2026-08-12T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+export const NEGATIVE_PIPELINE_NEAR_AND_ABSENCE = {
+  ...BASTROP_PIPELINE_NEAR_FIXTURE,
+  absence: {
+    kind: "no-parcel-geometry" as const,
+    reason: "conflict",
+  },
+};
+
+export const NEGATIVE_PIPELINE_NEAR_INCOMPLETE = {
+  ...BASTROP_PIPELINE_NEAR_FIXTURE,
+  nearestPipelineDistanceMeters: undefined,
 };
 
 // ============================================================================

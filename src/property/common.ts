@@ -521,6 +521,37 @@ export type RailCorridorAtGradeCrossing = z.infer<
 export const RAIL_CORRIDOR_DEFAULT_BUFFER_METERS = 152.4;
 
 // ============================================================================
+// rrc-pipeline-fact (RRC T-4 pipelines — NOT PHMSA NPMS; NOT railroad tracks)
+// ============================================================================
+
+export type RrcPipelineSourceTier = "rrc-public-gis" | "absent";
+
+export const RRC_PIPELINE_SOURCE_TIER_SCHEMA = z.enum([
+  "rrc-public-gis",
+  "absent",
+]);
+
+export const RRC_PIPELINE_ABSENCE_KINDS = [
+  "no-pipeline-coverage",
+  "no-parcel-geometry",
+] as const;
+
+export type RrcPipelineAbsenceKind =
+  (typeof RRC_PIPELINE_ABSENCE_KINDS)[number];
+
+export const RRC_PIPELINE_ABSENCE_SCHEMA = z
+  .object({
+    kind: z.enum(RRC_PIPELINE_ABSENCE_KINDS),
+    reason: z.string().min(1),
+  })
+  .strict();
+
+export type RrcPipelineAbsence = z.infer<typeof RRC_PIPELINE_ABSENCE_SCHEMA>;
+
+/** Default parcel-edge buffer for RRC T-4 pipeline proximity (exact 500 ft). */
+export const RRC_PIPELINE_DEFAULT_BUFFER_METERS = 152.4;
+
+// ============================================================================
 // cad-parcel-roll / land-use-fact (Rail — county appraisal roll)
 // ============================================================================
 
