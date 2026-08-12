@@ -610,13 +610,14 @@ export const WELL_STATUS_VALUES = [
   "permitted",
   "dry",
   "plugged-abandoned",
+  "unknown",
 ] as const;
 
 export type WellStatus = (typeof WELL_STATUS_VALUES)[number];
 
 export const WELL_STATUS_SCHEMA = z.enum(WELL_STATUS_VALUES);
 
-export const WELL_TYPE_VALUES = ["oil", "gas", "injection", "disposal"] as const;
+export const WELL_TYPE_VALUES = ["oil", "gas", "injection", "disposal", "unknown"] as const;
 
 export type WellType = (typeof WELL_TYPE_VALUES)[number];
 

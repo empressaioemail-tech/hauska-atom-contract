@@ -897,6 +897,15 @@ describe("property — well-fact (RRC operations lens)", () => {
     const atom = createWellFact(BASTROP_WELL_ON_PARCEL_FIXTURE);
     expect(atom.entityType).toBe("well-fact");
   });
+
+  it("accepts unknown wellStatus and wellType", () => {
+    const parsed = WELL_FACT_SCHEMA.safeParse({
+      ...BASTROP_WELL_ON_PARCEL_FIXTURE,
+      wellStatus: "unknown",
+      wellType: "unknown",
+    });
+    expect(parsed.success).toBe(true);
+  });
 });
 
 describe("property — special-district-fact", () => {
