@@ -73,6 +73,11 @@ import {
   BASTROP_RAIL_NO_GEOMETRY_FIXTURE,
   NEGATIVE_RAIL_CORRIDOR_NEAR_AND_ABSENCE,
   NEGATIVE_RAIL_CORRIDOR_NEAR_INCOMPLETE,
+  BASTROP_PIPELINE_NEAR_FIXTURE,
+  BASTROP_PIPELINE_OUTSIDE_BUFFER_FIXTURE,
+  BASTROP_PIPELINE_NO_GEOMETRY_FIXTURE,
+  NEGATIVE_PIPELINE_NEAR_AND_ABSENCE,
+  NEGATIVE_PIPELINE_NEAR_INCOMPLETE,
   BASTROP_WELL_ON_PARCEL_FIXTURE,
   BASTROP_WELL_NEAR_PARCEL_FIXTURE,
   BASTROP_WELL_ABSENCE_FIXTURE,
@@ -100,6 +105,10 @@ import {
   RAIL_CORRIDOR_FACT_SCHEMA,
   createRailCorridorFact,
 } from "../rail-corridor-fact.js";
+import {
+  RRC_PIPELINE_FACT_SCHEMA,
+  createRrcPipelineFact,
+} from "../rrc-pipeline-fact.js";
 import { CAD_PARCEL_ROLL_SCHEMA, createCadParcelRoll } from "../cad-parcel-roll.js";
 import { LAND_USE_FACT_SCHEMA, createLandUseFact } from "../land-use-fact.js";
 import { OWNER_FACT_SCHEMA, createOwnerFact } from "../owner-fact.js";
@@ -793,6 +802,52 @@ describe("property — rail-corridor-fact", () => {
         : undefined,
     });
     expect(atom.entityType).toBe("rail-corridor-fact");
+  });
+});
+
+describe("property — rrc-pipeline-fact", () => {
+  it("validates near-pipeline present with identity fields and distance", () => {
+    expect(
+      RRC_PIPELINE_FACT_SCHEMA.safeParse(BASTROP_PIPELINE_NEAR_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_PIPELINE_NEAR_FIXTURE.nearPipeline).toBe(true);
+    expect(BASTROP_PIPELINE_NEAR_FIXTURE.bufferMeters).toBe(152.4);
+    expect(BASTROP_PIPELINE_NEAR_FIXTURE.t4permit).toBe("T-01234");
+  });
+
+  it("validates outside-buffer as present nearPipeline false (not absence)", () => {
+    expect(
+      RRC_PIPELINE_FACT_SCHEMA.safeParse(BASTROP_PIPELINE_OUTSIDE_BUFFER_FIXTURE)
+        .success,
+    ).toBe(true);
+    expect(BASTROP_PIPELINE_OUTSIDE_BUFFER_FIXTURE.nearPipeline).toBe(false);
+    expect(BASTROP_PIPELINE_OUTSIDE_BUFFER_FIXTURE.absence).toBeUndefined();
+  });
+
+  it("validates no-parcel-geometry absence", () => {
+    expect(
+      RRC_PIPELINE_FACT_SCHEMA.safeParse(BASTROP_PIPELINE_NO_GEOMETRY_FIXTURE)
+        .success,
+    ).toBe(true);
+  });
+
+  it("rejects near finding and absence together", () => {
+    expect(
+      RRC_PIPELINE_FACT_SCHEMA.safeParse(NEGATIVE_PIPELINE_NEAR_AND_ABSENCE)
+        .success,
+    ).toBe(false);
+  });
+
+  it("rejects nearPipeline true without nearestPipelineDistanceMeters", () => {
+    expect(
+      RRC_PIPELINE_FACT_SCHEMA.safeParse(NEGATIVE_PIPELINE_NEAR_INCOMPLETE)
+        .success,
+    ).toBe(false);
+  });
+
+  it("createRrcPipelineFact round-trips a valid atom", () => {
+    const atom = createRrcPipelineFact({ ...BASTROP_PIPELINE_NEAR_FIXTURE });
+    expect(atom.entityType).toBe("rrc-pipeline-fact");
   });
 });
 
