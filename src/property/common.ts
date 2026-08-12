@@ -473,6 +473,7 @@ export const RAIL_CORRIDOR_STATUS_VALUES = [
   "active",
   "abandoned",
   "rail-trail",
+  "unknown",
 ] as const;
 
 export type RailCorridorStatus = (typeof RAIL_CORRIDOR_STATUS_VALUES)[number];
@@ -483,6 +484,7 @@ export const RAIL_CORRIDOR_CLASS_VALUES = [
   "mainline",
   "spur",
   "yard",
+  "unknown",
 ] as const;
 
 export type RailCorridorClass = (typeof RAIL_CORRIDOR_CLASS_VALUES)[number];
