@@ -2,6 +2,21 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.30.0] - 2026-08-27
+
+Additive minor — Track 2.12 access as two fields (F-15).
+`discoverability` and `entitlement` sit alongside the existing
+`accessPolicy` string, which stays exported and mapped until F-10
+migrates the column. Neither field is defaulted. `parse` refuses an
+atom carrying one without the other.
+
+### Added
+
+- **`AccessPair`** on `.` and `./access`.
+- `parseAccessPair`, `mapAccessPolicy`.
+- Conformance fixture `src/conformance/track2-access.ts`.
+- Existing `access-policy.types.test.ts` stays green.
+
 ## [1.29.0] - 2026-08-27
 
 Additive minor — Track 2.11 selector predicate (F-15). Closed

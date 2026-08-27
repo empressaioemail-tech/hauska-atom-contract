@@ -182,3 +182,10 @@ export {
   match,
   parseSelector,
 } from "./selector/selector-predicate.js";
+
+export {
+  AccessPair,
+  AccessParseError,
+  mapAccessPolicy,
+  parseAccessPair,
+} from "./access/access-pair.js";
