@@ -144,3 +144,10 @@ export {
   parseAliasKey,
   parseLineageEdge,
 } from "./identity/alias.js";
+
+export {
+  PROVENANCE_CLASSES,
+  ProvenanceClass,
+  ProvenanceParseError,
+  parseProvenance,
+} from "./provenance/provenance-class.js";

@@ -2,6 +2,19 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.25.0] - 2026-08-27
+
+Additive minor — Track 2.2 provenance class discriminated union (F-15).
+Factory four (Record, Derivation, Assertion, Absence) plus Observation and
+Synthesis from 19. A class missing a required field does not compile and
+`parse` refuses it.
+
+### Added
+
+- **`ProvenanceClass`** on `.` and `./provenance`.
+- `parseProvenance` with per-class required fields.
+- Fixtures per class under `src/conformance/track2-provenance.ts`.
+
 ## [1.24.0] - 2026-08-27
 
 Additive minor — Track 2.10 alias as an atom and lineage as edges (F-15).
