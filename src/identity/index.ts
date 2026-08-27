@@ -16,3 +16,14 @@ export {
   nodeIdToString,
   parse,
 } from "./node-id.js";
+
+export {
+  LINEAGE_NODE_COLUMNS,
+  AliasAtom,
+  AliasParseError,
+  LineageParseError,
+  acceptNodeWithoutLineage,
+  parseAliasAtom,
+  parseAliasKey,
+  parseLineageEdge,
+} from "./alias.js";

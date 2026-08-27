@@ -2,6 +2,20 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.24.0] - 2026-08-27
+
+Additive minor — Track 2.10 alias as an atom and lineage as edges (F-15).
+`identity.alias` requires a validity era (`validFrom`, `validTo` nullable).
+Lineage is `mergedInto` / `dividedInto` / `unmerged` edges. A node type
+with a `mergedInto` field does not compile.
+
+### Added
+
+- **`AliasAtom`** on `.` and `./identity`.
+- `parseAliasAtom`, `parseAliasKey`, `parseLineageEdge`,
+  `acceptNodeWithoutLineage`.
+- Conformance fixture `src/conformance/track2-alias.ts`.
+
 ## [1.23.0] - 2026-08-27
 
 Additive minor — Track 2.1 branded `NodeId` (F-15). Constructible only by

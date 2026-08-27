@@ -45,3 +45,8 @@ export {
   TRACK2_NODE_ID_FIXTURE,
   track2NodeIdRoundTrip,
 } from "./track2-node-id.js";
+
+export {
+  TRACK2_ALIAS_FIXTURE,
+  TRACK2_LINEAGE_MERGED,
+} from "./track2-alias.js";

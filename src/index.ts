@@ -133,3 +133,14 @@ export {
   nodeIdToString,
   parse,
 } from "./identity/node-id.js";
+
+export {
+  LINEAGE_NODE_COLUMNS,
+  AliasAtom,
+  AliasParseError,
+  LineageParseError,
+  acceptNodeWithoutLineage,
+  parseAliasAtom,
+  parseAliasKey,
+  parseLineageEdge,
+} from "./identity/alias.js";
