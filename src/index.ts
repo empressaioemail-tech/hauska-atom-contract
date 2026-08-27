@@ -120,3 +120,72 @@ export {
   ICC_ACTOR_RECORD_FIXTURE,
   createActorRecord,
 } from "./actor-record.js";
+
+export {
+  COUNTY_PROP_ALIAS_KEY,
+  NODE_ID_PATTERN,
+  NodeId,
+  NodeIdParseError,
+  bindNodeIdForWrite,
+  isCountyPropAliasKey,
+  isNodeId,
+  mint,
+  nodeIdToString,
+  parse,
+} from "./identity/node-id.js";
+
+export {
+  LINEAGE_NODE_COLUMNS,
+  AliasAtom,
+  AliasParseError,
+  LineageParseError,
+  acceptNodeWithoutLineage,
+  parseAliasAtom,
+  parseAliasKey,
+  parseLineageEdge,
+} from "./identity/alias.js";
+
+export {
+  PROVENANCE_CLASSES,
+  ProvenanceClass,
+  ProvenanceParseError,
+  parseProvenance,
+} from "./provenance/provenance-class.js";
+
+export {
+  Derivation,
+  DerivationParseError,
+  parseDerivation,
+  parseDerivesFrom,
+} from "./derivation/derivation.js";
+
+export {
+  AbsenceParseError,
+  AbsenceVerdict,
+  parseAbsenceVerdict,
+} from "./absence/absence-verdict.js";
+
+export {
+  SUPERSEDED_BY,
+  SUPERSEDED_BY_COLUMN,
+  SupersessionEdge,
+  SupersessionParseError,
+  acceptAtomWithoutSupersededBy,
+  parseSupersessionEdge,
+} from "./lineage/supersession.js";
+
+export {
+  FLOOD_ZONE_SELECTORS,
+  SELECTOR_KINDS,
+  SelectorParseError,
+  SelectorPredicate,
+  match,
+  parseSelector,
+} from "./selector/selector-predicate.js";
+
+export {
+  AccessPair,
+  AccessParseError,
+  mapAccessPolicy,
+  parseAccessPair,
+} from "./access/access-pair.js";

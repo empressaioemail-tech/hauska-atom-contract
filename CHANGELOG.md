@@ -2,6 +2,118 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.30.0] - 2026-08-27
+
+Additive minor — Track 2.12 access as two fields (F-15).
+`discoverability` and `entitlement` sit alongside the existing
+`accessPolicy` string, which stays exported and mapped until F-10
+migrates the column. Neither field is defaulted. `parse` refuses an
+atom carrying one without the other.
+
+### Added
+
+- **`AccessPair`** on `.` and `./access`.
+- `parseAccessPair`, `mapAccessPolicy`.
+- Conformance fixture `src/conformance/track2-access.ts`.
+- Existing `access-policy.types.test.ts` stays green.
+
+## [1.29.0] - 2026-08-27
+
+Additive minor — Track 2.11 selector predicate (F-15). Closed
+discriminated union: spatial-contains, set-member, eq, range, and, or.
+`match` is exhaustive. Factory flood selectors A, AE, AO, X type-check.
+
+### Added
+
+- **`SelectorPredicate`** on `.` and `./selector`.
+- `parseSelector`, `match`, `FLOOD_ZONE_SELECTORS`.
+- Conformance fixture `src/conformance/track2-selector.ts`.
+
+## [1.28.0] - 2026-08-27
+
+Additive minor — Track 2.8 supersession as an edge (F-15). No
+`supersededBy` column exists to write. `SUPERSEDED_BY` is an edge with
+`closedAt` on the prior window.
+
+### Added
+
+- **`SupersessionEdge`** on `.` and `./lineage`.
+- `parseSupersessionEdge`, `acceptAtomWithoutSupersededBy`.
+- Conformance fixture `src/conformance/track2-supersession.ts`.
+
+## [1.27.0] - 2026-08-27
+
+Additive minor — Track 2.4 absence verdicts (F-15). `absent-verified`
+requires sourceId plus responseRef. `lookup-failed` requires failureRef.
+`not-applicable` requires excludingRule. A bare verdict string does not
+compile.
+
+### Added
+
+- **`AbsenceVerdict`** on `.` and `./absence`.
+- `parseAbsenceVerdict` with three refusal paths.
+- Fixtures `src/conformance/track2-absence.ts`.
+
+## [1.26.0] - 2026-08-27
+
+Additive minor — Track 2.3 `derivesFrom` required on Derivation, absent
+on Record (F-15). `parseDerivation` refuses a missing `derivesFrom`.
+`parseProvenance` refuses a Record that carries one.
+
+### Added
+
+- **`Derivation`** on `.` and `./derivation`.
+- `parseDerivation`, `parseDerivesFrom`.
+- Conformance fixture `src/conformance/track2-derivation.ts`.
+
+## [1.25.0] - 2026-08-27
+
+Additive minor — Track 2.2 provenance class discriminated union (F-15).
+Factory four (Record, Derivation, Assertion, Absence) plus Observation and
+Synthesis from 19. A class missing a required field does not compile and
+`parse` refuses it.
+
+### Added
+
+- **`ProvenanceClass`** on `.` and `./provenance`.
+- `parseProvenance` with per-class required fields.
+- Fixtures per class under `src/conformance/track2-provenance.ts`.
+
+## [1.24.0] - 2026-08-27
+
+Additive minor — Track 2.10 alias as an atom and lineage as edges (F-15).
+`identity.alias` requires a validity era (`validFrom`, `validTo` nullable).
+Lineage is `mergedInto` / `dividedInto` / `unmerged` edges. A node type
+with a `mergedInto` field does not compile.
+
+### Added
+
+- **`AliasAtom`** on `.` and `./identity`.
+- `parseAliasAtom`, `parseAliasKey`, `parseLineageEdge`,
+  `acceptNodeWithoutLineage`.
+- Conformance fixture `src/conformance/track2-alias.ts`.
+
+## [1.23.0] - 2026-08-27
+
+Additive minor — Track 2.1 branded `NodeId` (F-15). Constructible only by
+`mint()` or validating `parse()`. A raw string does not type-check as a
+node id. `parse("48021:34137")` refuses as a node id; that grammar is an
+alias key only.
+
+### Added
+
+- **`NodeId`** branded type on `.` and `./identity`.
+- `mint`, `parse`, `isNodeId`, `isCountyPropAliasKey`, `bindNodeIdForWrite`,
+  `NODE_ID_PATTERN`, `NodeIdParseError`.
+- Conformance fixture `src/conformance/track2-node-id.ts`.
+- Type-level test: a string literal is not `NodeId`.
+
+### Explicitly NOT in 1.23.0
+
+- AliasAtom, lineage edges, provenance, derivation, absence, supersession,
+  selector, two-field access (later F-15 minors).
+- Merge of PR #22 (accessPolicy CHECK emitter stays on that PR).
+
 ## [1.15.0] - 2026-08-09
 
 Additive minor — first-class typed absence for `buildable-envelope`, closing the

@@ -40,3 +40,36 @@ export {
   SAMPLE_DATA_CONFORMANCE_EVENTS,
   SAMPLE_DATA_CONFORMANCE_TARGET,
 } from "./fixtures.js";
+
+export {
+  TRACK2_NODE_ID_FIXTURE,
+  track2NodeIdRoundTrip,
+} from "./track2-node-id.js";
+
+export {
+  TRACK2_ALIAS_FIXTURE,
+  TRACK2_LINEAGE_MERGED,
+} from "./track2-alias.js";
+
+export {
+  TRACK2_PROVENANCE_ABSENCE,
+  TRACK2_PROVENANCE_ASSERTION,
+  TRACK2_PROVENANCE_DERIVATION,
+  TRACK2_PROVENANCE_OBSERVATION,
+  TRACK2_PROVENANCE_RECORD,
+  TRACK2_PROVENANCE_SYNTHESIS,
+} from "./track2-provenance.js";
+
+export { TRACK2_DERIVATION_FIXTURE } from "./track2-derivation.js";
+
+export {
+  TRACK2_ABSENT_VERIFIED,
+  TRACK2_LOOKUP_FAILED,
+  TRACK2_NOT_APPLICABLE,
+} from "./track2-absence.js";
+
+export { TRACK2_SUPERSESSION_FIXTURE } from "./track2-supersession.js";
+
+export { TRACK2_FLOOD_SELECTORS } from "./track2-selector.js";
+
+export { TRACK2_ACCESS_FIXTURE } from "./track2-access.js";
