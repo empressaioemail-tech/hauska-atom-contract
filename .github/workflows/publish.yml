@@ -10,6 +10,11 @@ on:
         description: "git tag to publish (e.g. v1.23.0)"
         required: true
         type: string
+      set_latest:
+        description: "Point the npm latest dist-tag at this version"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   publish:
@@ -39,5 +44,9 @@ jobs:
           fi
           echo "publishing $name@$version"
           npm publish --access public
+          if [ "${{ inputs.set_latest }}" = "true" ]; then
+            echo "dist-tag latest -> $name@$version"
+            npm dist-tag add "$name@$version" latest
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
