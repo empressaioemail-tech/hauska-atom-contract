@@ -40,10 +40,10 @@ jobs:
           version=$(node -p "require('./package.json').version")
           if npm view "$name@$version" version >/dev/null 2>&1; then
             echo "skip $name@$version (already published)"
-            exit 0
+          else
+            echo "publishing $name@$version"
+            npm publish --access public
           fi
-          echo "publishing $name@$version"
-          npm publish --access public
           if [ "${{ inputs.set_latest }}" = "true" ]; then
             echo "dist-tag latest -> $name@$version"
             npm dist-tag add "$name@$version" latest
