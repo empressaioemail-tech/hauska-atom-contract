@@ -164,3 +164,12 @@ export {
   AbsenceVerdict,
   parseAbsenceVerdict,
 } from "./absence/absence-verdict.js";
+
+export {
+  SUPERSEDED_BY,
+  SUPERSEDED_BY_COLUMN,
+  SupersessionEdge,
+  SupersessionParseError,
+  acceptAtomWithoutSupersededBy,
+  parseSupersessionEdge,
+} from "./lineage/supersession.js";

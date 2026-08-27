@@ -67,3 +67,5 @@ export {
   TRACK2_LOOKUP_FAILED,
   TRACK2_NOT_APPLICABLE,
 } from "./track2-absence.js";
+
+export { TRACK2_SUPERSESSION_FIXTURE } from "./track2-supersession.js";

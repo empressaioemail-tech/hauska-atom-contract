@@ -2,6 +2,18 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.28.0] - 2026-08-27
+
+Additive minor — Track 2.8 supersession as an edge (F-15). No
+`supersededBy` column exists to write. `SUPERSEDED_BY` is an edge with
+`closedAt` on the prior window.
+
+### Added
+
+- **`SupersessionEdge`** on `.` and `./lineage`.
+- `parseSupersessionEdge`, `acceptAtomWithoutSupersededBy`.
+- Conformance fixture `src/conformance/track2-supersession.ts`.
+
 ## [1.27.0] - 2026-08-27
 
 Additive minor — Track 2.4 absence verdicts (F-15). `absent-verified`
