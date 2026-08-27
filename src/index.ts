@@ -173,3 +173,12 @@ export {
   acceptAtomWithoutSupersededBy,
   parseSupersessionEdge,
 } from "./lineage/supersession.js";
+
+export {
+  FLOOD_ZONE_SELECTORS,
+  SELECTOR_KINDS,
+  SelectorParseError,
+  SelectorPredicate,
+  match,
+  parseSelector,
+} from "./selector/selector-predicate.js";

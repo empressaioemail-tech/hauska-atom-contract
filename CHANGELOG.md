@@ -2,6 +2,18 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.29.0] - 2026-08-27
+
+Additive minor — Track 2.11 selector predicate (F-15). Closed
+discriminated union: spatial-contains, set-member, eq, range, and, or.
+`match` is exhaustive. Factory flood selectors A, AE, AO, X type-check.
+
+### Added
+
+- **`SelectorPredicate`** on `.` and `./selector`.
+- `parseSelector`, `match`, `FLOOD_ZONE_SELECTORS`.
+- Conformance fixture `src/conformance/track2-selector.ts`.
+
 ## [1.28.0] - 2026-08-27
 
 Additive minor — Track 2.8 supersession as an edge (F-15). No
