@@ -2,6 +2,19 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.27.0] - 2026-08-27
+
+Additive minor — Track 2.4 absence verdicts (F-15). `absent-verified`
+requires sourceId plus responseRef. `lookup-failed` requires failureRef.
+`not-applicable` requires excludingRule. A bare verdict string does not
+compile.
+
+### Added
+
+- **`AbsenceVerdict`** on `.` and `./absence`.
+- `parseAbsenceVerdict` with three refusal paths.
+- Fixtures `src/conformance/track2-absence.ts`.
+
 ## [1.26.0] - 2026-08-27
 
 Additive minor — Track 2.3 `derivesFrom` required on Derivation, absent

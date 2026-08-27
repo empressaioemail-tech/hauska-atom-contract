@@ -158,3 +158,9 @@ export {
   parseDerivation,
   parseDerivesFrom,
 } from "./derivation/derivation.js";
+
+export {
+  AbsenceParseError,
+  AbsenceVerdict,
+  parseAbsenceVerdict,
+} from "./absence/absence-verdict.js";

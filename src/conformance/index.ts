@@ -61,3 +61,9 @@ export {
 } from "./track2-provenance.js";
 
 export { TRACK2_DERIVATION_FIXTURE } from "./track2-derivation.js";
+
+export {
+  TRACK2_ABSENT_VERIFIED,
+  TRACK2_LOOKUP_FAILED,
+  TRACK2_NOT_APPLICABLE,
+} from "./track2-absence.js";
