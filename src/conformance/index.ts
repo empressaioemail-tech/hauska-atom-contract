@@ -59,3 +59,5 @@ export {
   TRACK2_PROVENANCE_RECORD,
   TRACK2_PROVENANCE_SYNTHESIS,
 } from "./track2-provenance.js";
+
+export { TRACK2_DERIVATION_FIXTURE } from "./track2-derivation.js";

@@ -151,3 +151,10 @@ export {
   ProvenanceParseError,
   parseProvenance,
 } from "./provenance/provenance-class.js";
+
+export {
+  Derivation,
+  DerivationParseError,
+  parseDerivation,
+  parseDerivesFrom,
+} from "./derivation/derivation.js";

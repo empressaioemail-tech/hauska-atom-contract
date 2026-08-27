@@ -2,6 +2,18 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.26.0] - 2026-08-27
+
+Additive minor — Track 2.3 `derivesFrom` required on Derivation, absent
+on Record (F-15). `parseDerivation` refuses a missing `derivesFrom`.
+`parseProvenance` refuses a Record that carries one.
+
+### Added
+
+- **`Derivation`** on `.` and `./derivation`.
+- `parseDerivation`, `parseDerivesFrom`.
+- Conformance fixture `src/conformance/track2-derivation.ts`.
+
 ## [1.25.0] - 2026-08-27
 
 Additive minor — Track 2.2 provenance class discriminated union (F-15).
