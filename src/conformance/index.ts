@@ -40,3 +40,8 @@ export {
   SAMPLE_DATA_CONFORMANCE_EVENTS,
   SAMPLE_DATA_CONFORMANCE_TARGET,
 } from "./fixtures.js";
+
+export {
+  TRACK2_NODE_ID_FIXTURE,
+  track2NodeIdRoundTrip,
+} from "./track2-node-id.js";

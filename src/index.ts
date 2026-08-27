@@ -120,3 +120,16 @@ export {
   ICC_ACTOR_RECORD_FIXTURE,
   createActorRecord,
 } from "./actor-record.js";
+
+export {
+  COUNTY_PROP_ALIAS_KEY,
+  NODE_ID_PATTERN,
+  NodeId,
+  NodeIdParseError,
+  bindNodeIdForWrite,
+  isCountyPropAliasKey,
+  isNodeId,
+  mint,
+  nodeIdToString,
+  parse,
+} from "./identity/node-id.js";

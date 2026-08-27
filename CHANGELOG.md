@@ -2,6 +2,27 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.23.0] - 2026-08-27
+
+Additive minor — Track 2.1 branded `NodeId` (F-15). Constructible only by
+`mint()` or validating `parse()`. A raw string does not type-check as a
+node id. `parse("48021:34137")` refuses as a node id; that grammar is an
+alias key only.
+
+### Added
+
+- **`NodeId`** branded type on `.` and `./identity`.
+- `mint`, `parse`, `isNodeId`, `isCountyPropAliasKey`, `bindNodeIdForWrite`,
+  `NODE_ID_PATTERN`, `NodeIdParseError`.
+- Conformance fixture `src/conformance/track2-node-id.ts`.
+- Type-level test: a string literal is not `NodeId`.
+
+### Explicitly NOT in 1.23.0
+
+- AliasAtom, lineage edges, provenance, derivation, absence, supersession,
+  selector, two-field access (later F-15 minors).
+- Merge of PR #22 (accessPolicy CHECK emitter stays on that PR).
+
 ## [1.15.0] - 2026-08-09
 
 Additive minor — first-class typed absence for `buildable-envelope`, closing the
