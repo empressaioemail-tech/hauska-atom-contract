@@ -2,6 +2,36 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.31.0] - 2026-09-07
+
+Additive minor — property boundary edge atom (27f S2-U2 / WDLL 4-5).
+Per-parcel boundary edges (front/side/rear/side_corner) with role,
+adjacency classification, resolved setback (or typed absence), and
+local-ENU interior-frame geometry. A parcel normally carries several
+of these, one per boundary side, unlike most other property atom
+kinds which are one-per-parcel. Real writer and serving code have
+existed in hauska-engine since before this registration — this
+package previously had no published shape for it at all (see
+hauska-engine#394, which registers the type in `PROPERTY_ENTITY_TYPES`,
+and hauska-mcp-server#81, which mirrors it into
+`ENGINE_PROPERTY_ENTITY_TYPES_MIRROR` so `get_property_atom_chain`
+can reach it).
+
+### Added
+
+- **`BoundaryEdgeAtomInstance`**, **`BOUNDARY_EDGE_SCHEMA`** on `.` and
+  `./property`.
+- `createBoundaryEdge`, `boundaryEdgeIdFromParts`,
+  `BOUNDARY_EDGE_ID_PATTERN`.
+- `BoundaryEdgeRole`, `BoundaryAdjacencyKind`, `BoundaryFrontBasis`,
+  `BoundaryFacingRoad`, `BoundaryResolvedSetback`,
+  `BoundarySetbackAbsence` / `BOUNDARY_SETBACK_ABSENCE_KINDS`,
+  `BoundaryInteriorFrame`, `BoundaryPropertyLineTags`.
+- Fixtures `BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE` (resolved setback,
+  situs-street-matched front edge) and
+  `BASTROP_BOUNDARY_EDGE_NO_SETBACK_FIXTURE` (typed setback absence,
+  no facing road).
+
 ## [1.30.0] - 2026-08-27
 
 Additive minor — Track 2.12 access as two fields (F-15).

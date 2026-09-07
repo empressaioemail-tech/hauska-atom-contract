@@ -85,8 +85,15 @@ import {
   NEGATIVE_WELL_PUBLIC_PAID,
   BASTROP_SPECIAL_DISTRICT_OUTSIDE_FIXTURE,
   BASTROP_SPECIAL_DISTRICT_PRESENT_FIXTURE,
+  BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE,
+  BASTROP_BOUNDARY_EDGE_NO_SETBACK_FIXTURE,
 } from "../fixtures.js";
 import { countyCoverageParcelNodeId } from "../common.js";
+import {
+  BOUNDARY_EDGE_SCHEMA,
+  boundaryEdgeIdFromParts,
+  createBoundaryEdge,
+} from "../boundary-edge.js";
 import {
   PARCEL_TERRAIN_MODEL_SCHEMA,
   TERRAIN_DEFAULT_ACCESS_POLICY,
@@ -477,6 +484,85 @@ describe("property — road-node (27c WDLL 3 / R1)", () => {
       "approximate-assumed-per-class",
     );
     expect(BASTROP_SPRING_STREET_ROAD_FIXTURE.attachPoints.length).toBeGreaterThan(0);
+  });
+});
+
+describe("property — property-boundary-edge (27f S2-U2 / WDLL 4-5)", () => {
+  it("validates the front-edge fixture with a resolved setback", () => {
+    expect(
+      BOUNDARY_EDGE_SCHEMA.safeParse(BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE).success,
+    ).toBe(true);
+    expect(BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE.role).toBe("front");
+    expect(BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE.frontBasis).toBe(
+      "situs-street-match",
+    );
+    expect(BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE.boundaryEdgeId).toBe(
+      "48021:27303:boundary:0",
+    );
+    expect(BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE.setback).toMatchObject({
+      feet: 25,
+    });
+    expect(BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE.facingRoad?.roadNodeId).toBe(
+      "48021:road:123456789",
+    );
+  });
+
+  it("validates the rear-edge fixture with a typed setback absence, not a fabricated figure", () => {
+    expect(
+      BOUNDARY_EDGE_SCHEMA.safeParse(BASTROP_BOUNDARY_EDGE_NO_SETBACK_FIXTURE)
+        .success,
+    ).toBe(true);
+    expect(BASTROP_BOUNDARY_EDGE_NO_SETBACK_FIXTURE.setback).toMatchObject({
+      kind: "no-setback-row",
+    });
+    expect(BASTROP_BOUNDARY_EDGE_NO_SETBACK_FIXTURE.facingRoad).toBeNull();
+    expect(BASTROP_BOUNDARY_EDGE_NO_SETBACK_FIXTURE.frontBasis).toBeUndefined();
+  });
+
+  it("boundaryEdgeIdFromParts builds the stable per-edge id", () => {
+    expect(boundaryEdgeIdFromParts("48021", "27303", 3)).toBe(
+      "48021:27303:boundary:3",
+    );
+  });
+
+  it("createBoundaryEdge builds and validates a fresh instance", () => {
+    const atom = createBoundaryEdge({
+      ...BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE,
+      edgeIndex: 1,
+      boundaryEdgeId: boundaryEdgeIdFromParts("48021", "27303", 1),
+      atomDid:
+        "did:hauska:property-boundary-edge:" +
+        boundaryEdgeIdFromParts("48021", "27303", 1),
+    });
+    expect(atom.edgeIndex).toBe(1);
+    expect(atom.entityType).toBe("property-boundary-edge");
+  });
+
+  it("rejects a malformed atomDid (wrong prefix)", () => {
+    expect(
+      BOUNDARY_EDGE_SCHEMA.safeParse({
+        ...BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE,
+        atomDid: "did:hauska:road-node:48021:27303:boundary:0",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("rejects a malformed boundaryEdgeId (missing :boundary: segment)", () => {
+    expect(
+      BOUNDARY_EDGE_SCHEMA.safeParse({
+        ...BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE,
+        boundaryEdgeId: "48021:27303",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("rejects an unrecognized role", () => {
+    expect(
+      BOUNDARY_EDGE_SCHEMA.safeParse({
+        ...BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE,
+        role: "diagonal",
+      }).success,
+    ).toBe(false);
   });
 });
 

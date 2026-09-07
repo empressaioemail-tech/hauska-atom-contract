@@ -42,6 +42,8 @@ import type { OwnerFactAtomInstance } from "./owner-fact.js";
 import type { RailCorridorFactAtomInstance } from "./rail-corridor-fact.js";
 import type { RrcPipelineFactAtomInstance } from "./rrc-pipeline-fact.js";
 import type { WellFactAtomInstance } from "./well-fact.js";
+import type { BoundaryEdgeAtomInstance } from "./boundary-edge.js";
+import { boundaryEdgeIdFromParts } from "./boundary-edge.js";
 import {
   RAIL_CORRIDOR_DEFAULT_BUFFER_METERS,
   RRC_PIPELINE_DEFAULT_BUFFER_METERS,
@@ -677,6 +679,106 @@ export const BASTROP_SPRING_STREET_ROAD_FIXTURE: RoadNodeAtomInstance = {
     assembledAt: "2026-07-25T12:00:00.000Z",
   }),
 };
+
+/**
+ * Bastrop County (48021) — front boundary edge on parcel 48021:27303,
+ * situs-street-matched to Spring Street (same road-node as the fixture
+ * above). 27f S2-U2 / WDLL 4-5.
+ */
+export const BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE: BoundaryEdgeAtomInstance = {
+  entityType: "property-boundary-edge",
+  atomDid:
+    "did:hauska:property-boundary-edge:" +
+    boundaryEdgeIdFromParts("48021", "27303", 0),
+  boundaryEdgeId: boundaryEdgeIdFromParts("48021", "27303", 0),
+  parcelNodeId: "48021:27303",
+  countyFips: "48021",
+  propId: "27303",
+  edgeIndex: 0,
+  role: "front",
+  frontBasis: "situs-street-match",
+  adjacencyKind: "ROW",
+  parcelNeighborPropId: null,
+  facingRoad: {
+    roadNodeId: roadNodeIdFromParts("48021", 123456789),
+    classification: "residential",
+    provenance: "osm-overpass-v1",
+    osmHighwayTag: "residential",
+  },
+  setback: {
+    feet: 25,
+    provenance: "bastrop-tx.json district R-1 front_ft",
+  },
+  interior: {
+    ringCcw: true,
+    centroidInside: true,
+    inwardNormal: { x: 0, y: 1 },
+    edgeEndpoints: [
+      [0, 0],
+      [42.5, 0],
+    ],
+  },
+  propertyLineTags: {
+    bearing: "N88.4E",
+    distanceFeet: 42.5,
+    provenance: {
+      kind: "gis-approximate",
+      honesty: "gis-approximate-not-survey-grade",
+      source: "txgio-stratmap-ring",
+    },
+  },
+  effectiveDate: "2026-07-25T12:00:00.000Z",
+  status: "active",
+  supersedesEntityId: null,
+  reasoningChain: { reasoningKind: "observed" },
+  accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+  sourceCitation: "boundary-primitive S2-U2 (PRE-2 adjacency + road-node attach)",
+  extractedAt: "2026-07-25T12:00:00.000Z",
+  atomTier: PROPERTY_ATOM_TIER,
+};
+
+/**
+ * Bastrop County (48021) — rear boundary edge on the same parcel as
+ * {@link BASTROP_BOUNDARY_EDGE_FRONT_FIXTURE}, with no known setback row
+ * for the rear yard (typed absence, not a fabricated figure).
+ */
+export const BASTROP_BOUNDARY_EDGE_NO_SETBACK_FIXTURE: BoundaryEdgeAtomInstance =
+  {
+    entityType: "property-boundary-edge",
+    atomDid:
+      "did:hauska:property-boundary-edge:" +
+      boundaryEdgeIdFromParts("48021", "27303", 2),
+    boundaryEdgeId: boundaryEdgeIdFromParts("48021", "27303", 2),
+    parcelNodeId: "48021:27303",
+    countyFips: "48021",
+    propId: "27303",
+    edgeIndex: 2,
+    role: "rear",
+    adjacencyKind: "neighbor-parcel",
+    parcelNeighborPropId: "27304",
+    facingRoad: null,
+    setback: {
+      kind: "no-setback-row",
+      reason: "R-1 district table has no rear_ft row for this ordinance edition",
+    },
+    interior: {
+      ringCcw: true,
+      centroidInside: true,
+      inwardNormal: { x: 0, y: -1 },
+      edgeEndpoints: [
+        [42.5, 30],
+        [0, 30],
+      ],
+    },
+    effectiveDate: "2026-07-25T12:00:00.000Z",
+    status: "active",
+    supersedesEntityId: null,
+    reasoningChain: { reasoningKind: "observed" },
+    accessPolicy: PROPERTY_DEFAULT_ACCESS_POLICY,
+    sourceCitation: "boundary-primitive S2-U2 (PRE-2 adjacency + road-node attach)",
+    extractedAt: "2026-07-25T12:00:00.000Z",
+    atomTier: PROPERTY_ATOM_TIER,
+  };
 
 /**
  * Bastrop County (48021) — ML-derived building footprint on parcel 48021:27303.

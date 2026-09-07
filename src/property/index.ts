@@ -25,6 +25,7 @@ export * from "./rail-corridor-fact.js";
 export * from "./rrc-pipeline-fact.js";
 export * from "./well-fact.js";
 export * from "./special-district-fact.js";
+export * from "./boundary-edge.js";
 export * from "./fixtures.js";
 
 export type {
