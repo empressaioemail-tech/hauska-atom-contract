@@ -2,6 +2,55 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.32.0] - 2026-09-11
+
+Additive minor — display vocabulary substrate (OPS-23 R-6 / P-167, wave 1
+package half). Before this release, the human-facing display strings for a
+buildable/setback claim existed as five byte-identical, hand-synced copies
+(hauska-map, twice in hauska-engine) locked together by two parity-lock
+files and a vendor-drift test that silently skips in CI without a local
+map checkout, and the Smart Site MCP wire-token vocabulary existed only in
+legacy-design-tools with no package dependency at all. This release does
+not yet retire any of those copies — that is P-167 steps 3-4, gated on
+P-153 DRAW merging in hauska-map and legacy-design-tools — it only stands
+up the one place both are meant to move to.
+
+### Added
+
+- **`./display`** subpath. Two modules, both moved verbatim from their
+  source-of-truth copies (see the finding record,
+  `_inbox/2026-09-11_ops23_wave1_verify_p167.md`, for the exact SHAs and
+  line numbers this was moved from):
+  - `buildable`: `BuildableDisplayKind`, `EnvelopeStatusInput`,
+    `WarmEnvelopeKind`, `BuildableDisplayInput`, `BuildableDisplayVocab`,
+    `resolveBuildableAreaSqFt`, `mapBuildableDisplay`,
+    `violatesHistoricalDisagreementGuard` — moved from hauska-map
+    `apps/property-explorer/src/lib/buildable-display-vocab.ts` (origin/main
+    6ab6914, sha256 `45c277d7...29cac`, byte-identical across all five
+    prior copies). No string or branch changed.
+  - `wire`: `VocabularyEntry`, `WIRE_DISPOSITION_DISPLAY_TEXT`,
+    `DERIVED_FIGURES_POLICY`, `VOCABULARY` (34 entries — the source
+    table's own comment said 19; corrected here and enforced by a counting
+    test, `DOCUMENTED_VOCABULARY_COUNT`) — moved from legacy-design-tools
+    `artifacts/smartsite-mcp/src/vocabulary.ts` (origin/main 55c4ad44), the
+    P-91 v3 table. The nine display constants that table used to import as
+    values from the MCP server's own `mcp-app.ts` (`STATE_WORDS`,
+    `OPEN_DID_NOT_REACH_ME`, `NOT_ON_FILE_PREFIX`,
+    `NO_BAKED_SNAPSHOT_PREFIX`, `UPGRADE_TO_OPEN`,
+    `NOT_IMPLEMENTED_PREFIX`, `CITATION_DEGRADED`, `EDGE_WORDS`,
+    `envelopeHuman`) moved in with it, so this module has no dependency on
+    the MCP server. Not moved: `VOCABULARY_RESOURCE_URI`,
+    `buildVocabularyResourceText`, `registerVocabularyResource`,
+    `STANDING_VOCAB_BLOCK_TEXT`, `STANDING_VOCAB_CONTENT_PART` — these stay
+    MCP-specific per the mission; legacy-design-tools' `vocabulary.ts`
+    becomes a thin re-export of this subpath plus that resource
+    registration in a later step of this row.
+- Self-tests: every `VOCABULARY` token unique, the documented count matches
+  the real count, every entry has non-empty fields, a snapshot of the full
+  string table; an exhaustiveness self-test that every `BuildableDisplayKind`
+  produces a non-empty `pdfLabel`, plus a snapshot of the canonical
+  per-kind output table.
+
 ## [1.31.0] - 2026-09-07
 
 Additive minor — property boundary edge atom (27f S2-U2 / WDLL 4-5).

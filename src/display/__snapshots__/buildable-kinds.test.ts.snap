@@ -1,0 +1,62 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BuildableDisplayKind exhaustiveness self-test > the canonical per-kind output table is snapshotted so a branch-string edit is a visible diff 1`] = `
+{
+  "absent": {
+    "agreementToken": "absent",
+    "cardLabel": null,
+    "cardState": "absent",
+    "kind": "absent",
+    "pdfLabel": "unavailable — no buildable envelope on file",
+  },
+  "buildable-with-area": {
+    "agreementToken": "buildable:13641",
+    "cardLabel": "~13,641 sq ft",
+    "cardState": "present",
+    "kind": "buildable-with-area",
+    "pdfLabel": "13,641 sq ft",
+  },
+  "declined-consume": {
+    "agreementToken": "declined-consume",
+    "cardLabel": "0% — setbacks consume lot",
+    "cardState": "present",
+    "kind": "declined-consume",
+    "pdfLabel": "unavailable — setbacks consume lot",
+  },
+  "loading": {
+    "agreementToken": "loading",
+    "cardLabel": "Loading buildable area…",
+    "cardState": "pending",
+    "kind": "loading",
+    "pdfLabel": "pending — atom path loading",
+  },
+  "not-applicable": {
+    "agreementToken": "not-applicable",
+    "cardLabel": "Not zoned — no setback requirements",
+    "cardState": "absent",
+    "kind": "not-applicable",
+    "pdfLabel": "not applicable — unincorporated, no zoning ordinance",
+  },
+  "not_specified": {
+    "agreementToken": "not_specified",
+    "cardLabel": "build-to-line · buildable % pending",
+    "cardState": "pending",
+    "kind": "not_specified",
+    "pdfLabel": "pending — build-to-line governs (scalar setback silent)",
+  },
+  "pending": {
+    "agreementToken": "pending",
+    "cardLabel": "setbacks present · buildable % pending",
+    "cardState": "pending",
+    "kind": "pending",
+    "pdfLabel": "pending — setbacks on file; buildable area not yet derived",
+  },
+  "provisional": {
+    "agreementToken": "provisional:9000",
+    "cardLabel": "~9,000 sq ft (provisional)",
+    "cardState": "present",
+    "kind": "provisional",
+    "pdfLabel": "9,000 sq ft (PROVISIONAL)",
+  },
+}
+`;

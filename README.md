@@ -338,6 +338,39 @@ Engine `AtomRegistration` literals and ingest producers belong in
 `hauska-engine/packages/atoms/` (cc-agent-E); Cortex Phase 1 may
 validate uploads with these schemas before the engine registry lands.
 
+## Display vocabulary (OPS-23 R-6 / P-167)
+
+The human-facing display strings for a claim ship on the `./display`
+subpath (v1.32.0+), so the Property Explorer panel, the feasibility PDF,
+and the Smart Site MCP connector render the same words for the same atom
+from one place instead of hand-synced copies. Two modules:
+
+- `buildable`: `mapBuildableDisplay` and its types — the buildable/setback
+  card, PDF, and cross-surface agreement-token vocabulary. Moved verbatim
+  from the five byte-identical `buildable-display-vocab.ts` copies that
+  used to live in hauska-map and hauska-engine, locked together by parity
+  fixtures.
+- `wire`: `VOCABULARY`, `WIRE_DISPOSITION_DISPLAY_TEXT`,
+  `DERIVED_FIGURES_POLICY` — the Smart Site MCP wire-token vocabulary
+  table. Moved verbatim from legacy-design-tools
+  `artifacts/smartsite-mcp/src/vocabulary.ts` (the P-91 v3 table), along
+  with the nine display constants it used to import from the MCP server's
+  own `mcp-app.ts`, so this module has no dependency on the MCP server.
+
+```ts
+import {
+  mapBuildableDisplay,
+  type BuildableDisplayInput,
+  VOCABULARY,
+  WIRE_DISPOSITION_DISPLAY_TEXT,
+} from "@empressaio/atom-contract/display";
+```
+
+As of 1.32.0 no consumer imports this subpath yet and the prior copies
+still exist; retiring them (deleting the copies, the parity locks, and the
+skipping vendor-drift test) is a later step of the same plan row, gated on
+`P-153` merging in hauska-map and legacy-design-tools.
+
 ## Read-contract types (Calibrated Spine F4 / F6 / K6)
 
 Widthed, three-axis confidence returned at read time. Unwidthed,
