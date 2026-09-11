@@ -1,0 +1,176 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`VOCABULARY self-tests > the full string table is snapshotted so an edit is a visible diff 1`] = `
+[
+  {
+    "displayText": "Present",
+    "meaning": "The section or rail carries confirmed on-record data for this parcel.",
+    "token": "present",
+  },
+  {
+    "displayText": "Reported absent",
+    "meaning": "The source claims no record exists, not yet verified by provenance or a known vintage. A claim, not yet a confirmed absence.",
+    "token": "absent",
+  },
+  {
+    "displayText": "absent, verified",
+    "meaning": "Confirmed absent: the absence claim carries provenance or a known source vintage. A panel-side paint state, earned from a wire 'absent' claim, never asserted directly on the wire.",
+    "token": "absent-verified",
+  },
+  {
+    "displayText": "unknown",
+    "meaning": "Not a finding either way. The record neither confirms present nor earns a verified absence.",
+    "token": "unknown",
+  },
+  {
+    "displayText": "Refused",
+    "meaning": "The producer declined to answer on this read path. See the refusal code and reason for why.",
+    "token": "refused",
+  },
+  {
+    "displayText": "Not read",
+    "meaning": "Not read on this call. Distinct from absent: nothing was checked, so there is no claim to report either way.",
+    "token": "unread",
+  },
+  {
+    "displayText": "citation degraded",
+    "meaning": "A present claim carries no verifiable https citation; the source exists but could not be linked.",
+    "token": "citationsDegraded",
+  },
+  {
+    "displayText": "GIS-approximate",
+    "meaning": "frame.quality: the boundary ring is derived from public GIS parcel geometry, not a field survey. Printed distances are approximate, not surveyed.",
+    "token": "gis-approximate",
+  },
+  {
+    "displayText": "Seed confidence",
+    "meaning": "draw.confidence: a first-pass geometric estimate, not a calibrated confidence score, a percentage, or a probability.",
+    "token": "seed",
+  },
+  {
+    "displayText": "corner side",
+    "meaning": "The property line runs along a corner lot's side yard, not its primary front or rear line.",
+    "token": "side_corner",
+  },
+  {
+    "displayText": "Withheld, setbacks unruled",
+    "meaning": "Setbacks and the buildable envelope have not been ruled or baked for this jurisdiction yet; no distance or polygon exists to report.",
+    "token": "atom_path_pending",
+  },
+  {
+    "displayText": "Upgrade to open this parcel",
+    "meaning": "The caller's tier does not include this depth of read. A plan upgrade or a 30-day unlock on the parcel is required.",
+    "token": "upgrade_required",
+  },
+  {
+    "displayText": "Not on file in <county>",
+    "meaning": "No parcel record exists in this server's coverage for the given id. A genuine server-declared miss (missClass absent), distinct from 'open_did_not_reach_me', which is a client-side delivery failure and makes no claim about the parcel.",
+    "token": "parcel_not_found",
+  },
+  {
+    "displayText": "No baked snapshot yet for <parcelNodeId>",
+    "meaning": "The parcel itself may exist, but the Smart Site facet snapshot has not been baked yet. parcelExists states whether the parcel itself was confirmed, independent of this snapshot miss.",
+    "token": "baked_snapshot_not_found",
+  },
+  {
+    "displayText": "Batch too large",
+    "meaning": "The request exceeded the array cap for this depth: 50 at stub, 25 at node.",
+    "token": "parcel_batch_cap",
+  },
+  {
+    "displayText": "Open did not reach me",
+    "meaning": "Client-side only: the Open click produced no tool result within the host's timeout window. No claim was made about the parcel; this is not a miss, distinct from 'parcel_not_found'.",
+    "token": "open_did_not_reach_me",
+  },
+  {
+    "displayText": "Not implemented",
+    "meaning": "hop1 and subgraph depths are not built yet. Not a data miss; the read path itself does not exist.",
+    "token": "depth_not_implemented",
+  },
+  {
+    "displayText": "Declined in bake",
+    "meaning": "refusal.code: the producer evaluated this facet during the bake and declined it. refusal.declineReason carries the specific sub-reason (for example no-zoning-stamp).",
+    "token": "declined-in-bake",
+  },
+  {
+    "displayText": "Not in bake",
+    "meaning": "refusal.code: this facet was never attempted in the bake that produced this snapshot.",
+    "token": "not-in-bake",
+  },
+  {
+    "displayText": "Invalid radius search input",
+    "meaning": "serve_refused reason (near): lat, lng, or radiusFt was missing, non-finite, or radiusFt was not a positive number. A caller-input problem on this specific call, not a claim about the area.",
+    "token": "radius_invalid",
+  },
+  {
+    "displayText": "Radius exceeds the maximum",
+    "meaning": "serve_refused reason (near): radiusFt exceeded the stated maximum this search allows. Lower the radius and retry; not a claim that no parcels exist out there.",
+    "token": "radius_exceeds_max",
+  },
+  {
+    "displayText": "Too many parcels in that radius",
+    "meaning": "serve_refused reason (near): the candidate parcel count for that point and radius exceeded what this search can bound honestly. Too many parcels in that radius to answer, not that the search failed; narrow the radius or lower cap.",
+    "token": "radius_unbounded",
+  },
+  {
+    "displayText": "Street name needs a locality",
+    "meaning": "serve_refused reason (street): a bare street name with no city, ZIP, or countyFips was refused rather than run as an unbounded contains across every county in coverage. Add a city, ZIP, or countyFips and retry.",
+    "token": "bare_street_unbounded",
+  },
+  {
+    "displayText": "Not a bare street name",
+    "meaning": "serve_refused reason (street): the query reads as a house-number-prefixed address, not a bare street name. Use find_parcel's plain query (or near) for one specific address instead of street.",
+    "token": "bare_street_not_a_street",
+  },
+  {
+    "displayText": "A county is required",
+    "meaning": "serve_refused reason (find_parcels): no geographic bound was given. There is no statewide constraint search, because incorporation is dispositioned for a small share of Texas parcels and a statewide answer would imply coverage that does not exist. Give countyFips.",
+    "token": "constraint_bound_missing",
+  },
+  {
+    "displayText": "No constraint index for that county",
+    "meaning": "serve_refused reason (find_parcels): the projection has never been built for that county. Refused rather than answered with an empty set, because an empty set reads as "no parcels match" and this is not that claim.",
+    "token": "constraint_county_out_of_scope",
+  },
+  {
+    "displayText": "That is a lookup, not a search",
+    "meaning": "serve_refused reason (find_parcels): the query reads as one street address. Use find_parcel, singular, for a single address; find_parcels answers questions across parcels.",
+    "token": "constraint_single_address",
+  },
+  {
+    "displayText": "At least one filter is required",
+    "meaning": "serve_refused reason (find_parcels): a county with no filter is not a search. Give at least one {rail, op, value}.",
+    "token": "constraint_filters_missing",
+  },
+  {
+    "displayText": "Unknown rail",
+    "meaning": "serve_refused reason (find_parcels): the named rail is not one this search carries. The refusal lists the rails that are.",
+    "token": "constraint_rail_unknown",
+  },
+  {
+    "displayText": "That operator does not apply to that rail",
+    "meaning": "serve_refused reason (find_parcels): an ordered comparison on a rail with no ordered value, a categorical match on a rail with no categorical value, or a flag test on a rail with no flag. A caller-input problem on this call, not a claim about the parcels.",
+    "token": "constraint_op_unsupported",
+  },
+  {
+    "displayText": "Invalid cap",
+    "meaning": "serve_refused reason (find_parcels): cap was outside the range this search allows.",
+    "token": "constraint_cap_invalid",
+  },
+  {
+    "displayText": "Too little of that rail is measured to search on it",
+    "meaning": "serve_refused reason (find_parcels): the filtered rail is unmeasured on more of the county than the configured ceiling allows, so a search over it would evaluate a small fraction of the county while presenting itself as a search. detail carries the measured percentage, the parcel counts it came from, and the ceiling. Not a claim that no parcels match.",
+    "token": "constraint_rail_unmeasured",
+  },
+  {
+    "displayText": "The projection has no rows for that county",
+    "meaning": "serve_refused reason (find_parcels): the constraint index holds no parcels for that county, so there is nothing to filter. Refused rather than reported as zero matches, because zero matches and never built are different facts.",
+    "token": "constraint_projection_missing",
+  },
+  {
+    "displayText": "Outside Smart Site coverage",
+    "meaning": "find_parcel missClass: the query resolved to a state Smart Site's parcel store has not reached yet. The honest opposite of 'no-hit': this is not a claim that the address is unverified or missing, only that coverage has not extended there. agentGuidance names what is covered today.",
+    "token": "out_of_coverage",
+  },
+]
+`;
