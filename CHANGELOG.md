@@ -2,6 +2,25 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.33.1] - 2026-09-12
+
+Patch — test-coverage gap found while preparing hauska-map for the P-167
+consumer cutover. hauska-map's own `buildable-display-vocab.test.ts`
+(current origin/main, post P-153) carries two tests this package's moved
+copy did not yet have: the `modelled-figure-withheld` positive case
+(with a falsifier asserting no digit appears in either customer string)
+and its negative control (`atom_path_pending` with no geometry still
+falls to the `loading` shell, unchanged). 1.33.0 folded the *source*
+token correctly but missed folding this *test* coverage — a DEV_PROCESS
+violation (a class subtracted, not carried) caught before any consumer
+deleted their own copy of these tests. Folded verbatim from hauska-map
+origin/main; `buildable.test.ts` now diffs against hauska-map's current
+file as exactly the header comment, nothing else.
+
+### Fixed
+
+- `buildable.test.ts` gains the two R-2 tests. 366/366 package tests pass.
+
 ## [1.33.0] - 2026-09-12
 
 Additive minor — P-167 step 2 (OPS-23 R-6). Folds P-153's one new token
