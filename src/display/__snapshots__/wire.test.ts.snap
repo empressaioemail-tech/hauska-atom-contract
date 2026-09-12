@@ -58,6 +58,11 @@ exports[`VOCABULARY self-tests > the full string table is snapshotted so an edit
     "token": "atom_path_pending",
   },
   {
+    "displayText": "Buildable envelope modelled from setbacks — area withheld pending an atom",
+    "meaning": "draw overlay basis (present-state envelope only): the buildable-envelope polygon is drawn from a real, resolved district + setback table, but the buildable-area figure (sq ft or percent) stays withheld pending an atom. DERIVED_FIGURES_POLICY denies buildable_area regardless of this token.",
+    "token": "modelled-figure-withheld",
+  },
+  {
     "displayText": "Upgrade to open this parcel",
     "meaning": "The caller's tier does not include this depth of read. A plan upgrade or a 30-day unlock on the parcel is required.",
     "token": "upgrade_required",
