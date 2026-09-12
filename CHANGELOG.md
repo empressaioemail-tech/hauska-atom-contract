@@ -2,6 +2,32 @@
 
 All notable changes to `@empressaio/atom-contract` (formerly `@hauska/atom-contract`) are documented here.
 
+## [1.33.0] - 2026-09-12
+
+Additive minor — P-167 step 2 (OPS-23 R-6). Folds P-153's one new token
+(Ruling B reversed for the polygon only) into `./display`, now that P-153
+DRAW has merged in both hauska-map (#384 `1aef5dd5`, #386 `8b44f68d`) and
+legacy-design-tools (#661 `6b579020`). Verified before folding: diffing
+hauska-map's current `buildable-display-vocab.ts` (origin/main) against
+this package's pre-fold `buildable.ts` produced exactly the token addition
+below and nothing else (the falsifier pre-registered for this step).
+Consumers should import `^1.33.0`, never `1.32.0`, once they cut in.
+
+### Added
+
+- `buildable`: `BuildableDisplayKind` gains `"modelled-figure-withheld"` —
+  a real modelled polygon on file (district + setback table resolved) while
+  the atom-chain read is still pending; `mapBuildableDisplay` draws the
+  polygon and withholds only the area figure. Moved verbatim from
+  hauska-map PR #384.
+- `wire`: `envelopeBasisHuman`, the P-153 sibling of `envelopeHuman` for a
+  `state: "present"` overlay's `basis` field, moved verbatim from
+  mcp-app.ts:462-467 (legacy-design-tools PR #661). `VOCABULARY` gains the
+  `modelled-figure-withheld` entry (`DOCUMENTED_VOCABULARY_COUNT` 34 → 35);
+  its `displayText` reads through `envelopeBasisHuman` exactly as the other
+  envelope entry reads through `envelopeHuman`, so the panel card label, the
+  MCP `basis` display text, and this table's row cannot drift apart.
+
 ## [1.32.0] - 2026-09-11
 
 Additive minor — display vocabulary substrate (OPS-23 R-6 / P-167, wave 1

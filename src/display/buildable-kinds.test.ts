@@ -3,7 +3,7 @@
  * has a `pdfLabel`. `pdfLabel` is typed as a required `string` (never
  * nullable) on `BuildableDisplayVocab`, so this test is an exhaustiveness
  * check — one representative input per kind — that the type promise holds
- * at runtime for all eight kinds, plus a snapshot of that canonical output
+ * at runtime for all nine kinds, plus a snapshot of that canonical output
  * table so any edit to the branch strings is a visible diff.
  */
 import { describe, it, expect } from "vitest";
@@ -28,18 +28,20 @@ const REPRESENTATIVE_INPUT_BY_KIND: Record<BuildableDisplayKind, BuildableDispla
   "declined-consume": { envelopeStatus: "no-buildable-area", buildableAreaPct: 0 },
   not_specified: { envelopeStatus: "ok", notSpecifiedAxes: true },
   "not-applicable": { warmEnvelopeKind: "not-applicable" },
+  "modelled-figure-withheld": { declineReason: "atom_path_pending", hasGeometry: true },
 };
 
 describe("BuildableDisplayKind exhaustiveness self-test", () => {
   const kinds = Object.keys(REPRESENTATIVE_INPUT_BY_KIND) as BuildableDisplayKind[];
 
-  it("covers all eight kinds (fails to compile if a kind is added without a fixture)", () => {
+  it("covers all nine kinds (fails to compile if a kind is added without a fixture)", () => {
     expect(kinds.sort()).toEqual(
       [
         "absent",
         "buildable-with-area",
         "declined-consume",
         "loading",
+        "modelled-figure-withheld",
         "not-applicable",
         "not_specified",
         "pending",

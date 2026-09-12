@@ -30,6 +30,13 @@ exports[`BuildableDisplayKind exhaustiveness self-test > the canonical per-kind 
     "kind": "loading",
     "pdfLabel": "pending — atom path loading",
   },
+  "modelled-figure-withheld": {
+    "agreementToken": "modelled-figure-withheld",
+    "cardLabel": "Buildable envelope modelled from setbacks — area withheld pending an atom",
+    "cardState": "present",
+    "kind": "modelled-figure-withheld",
+    "pdfLabel": "withheld — buildable envelope modelled from setbacks, not yet backed by an atom",
+  },
   "not-applicable": {
     "agreementToken": "not-applicable",
     "cardLabel": "Not zoned — no setback requirements",
